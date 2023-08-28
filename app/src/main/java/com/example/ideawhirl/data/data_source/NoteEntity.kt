@@ -1,5 +1,6 @@
 package com.example.ideawhirl.data.data_source
 
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Entity;
@@ -12,7 +13,10 @@ import java.util.Date
 
 @Entity
 data class NoteEntity(
-    @PrimaryKey(autoGenerate = true) private val _uid: Int = 0,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "uid")
+    private val _uid: Int = 0,
+
     val name: String,
     val detail: String = "",
     val createdAt: Date = Date(),
@@ -30,4 +34,14 @@ interface NoteDao {
 
     @Query("select * from NoteEntity")
     fun getAll(): Flow<List<NoteEntity>>
+
+    @Query("select * from noteentity join tagentity on noteentity.uid = tagentity.noteId")
+    fun getAllNotesWithTags(): Flow<Map<NoteEntity, List<TagEntity>>>
+
+    @Query(
+        "select *" +
+                " from noteentity note join tagentity tag on note.uid = tag.noteId" +
+                " where note.name like :name"
+    )
+    fun findNoteAndTagsByName(name: String): Flow<Map<NoteEntity, List<TagEntity>>>
 }

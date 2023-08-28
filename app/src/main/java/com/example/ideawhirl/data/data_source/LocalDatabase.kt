@@ -7,10 +7,11 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.ideawhirl.data.DateTimeConverter
 
-@Database(entities = [NoteEntity::class], version = 1)
+@Database(entities = [NoteEntity::class, TagEntity::class], version = 1)
 @TypeConverters(DateTimeConverter::class)
 abstract class LocalDatabase: RoomDatabase() {
     abstract fun noteDao(): NoteDao
+    abstract fun tagDao(): TagDao
     companion object {
         @Volatile
         private var INSTANCE: LocalDatabase? = null

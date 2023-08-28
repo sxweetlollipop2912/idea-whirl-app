@@ -27,7 +27,7 @@ data class NoteEntity(
 @Dao
 interface NoteDao {
     @Insert
-    suspend fun insert(vararg noteEntities: NoteEntity)
+    suspend fun insert(vararg noteEntities: NoteEntity): List<Long>
 
     @Delete
     suspend fun delete(noteEntity: NoteEntity)

@@ -23,11 +23,11 @@ data class NoteEntity(
 @Dao
 interface NoteDao {
     @Insert
-    fun insert(vararg noteEntities: NoteEntity)
+    suspend fun insert(vararg noteEntities: NoteEntity)
 
     @Delete
     suspend fun delete(noteEntity: NoteEntity)
 
     @Query("select * from NoteEntity")
-    fun getAll(): List<NoteEntity>
+    fun getAll(): Flow<List<NoteEntity>>
 }

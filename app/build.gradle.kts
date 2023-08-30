@@ -56,6 +56,8 @@ android {
 }
 
 dependencies {
+    implementation("com.github.SmartToolFactory:Compose-Extended-Gestures:3.1")
+
     val coroutines_version = "1.7.1"
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version")
 

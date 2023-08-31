@@ -54,19 +54,19 @@ class MainActivity : ComponentActivity() {
                 scope.launch {
                     animatableRotation.animateTo(
                         targetValue = -15f,
-                        animationSpec = tween(100, easing = EaseInOut),
+                        animationSpec = tween(50, easing = EaseInOut),
                     )
                     animatableRotation.animateTo(
                         targetValue = 15f,
                         animationSpec = repeatable(
-                            iterations = 10,
+                            iterations = 9,
                             animation = tween(100, easing = EaseInOut),
                             repeatMode = RepeatMode.Reverse
                         )
                     )
                     animatableRotation.animateTo(
                         targetValue = 0f,
-                        animationSpec = tween(100, easing = EaseInOut),
+                        animationSpec = tween(50, easing = EaseInOut),
                     )
                 }
             }

@@ -1,5 +1,6 @@
 package com.example.ideawhirl.ui.navigation
 
+import android.hardware.SensorManager
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.ideawhirl.data.repo.NoteRepo
+import com.example.ideawhirl.ui.home.HomeRoute
+import com.example.ideawhirl.ui.home.HomeViewModel
 
 @Composable
 fun ThisNavGraph(
@@ -16,6 +20,7 @@ fun ThisNavGraph(
     repository: NoteRepo,
     thisNavController: ThisNavController,
     startDestination: String,
+    sensorManager: SensorManager
 ) {
     NavHost(
         navController = thisNavController.navController,
@@ -33,6 +38,7 @@ fun ThisNavGraph(
                 onToNote = { id -> thisNavController.navigateToNote(navBackStackEntry, id) },
                 onToNoteList = { thisNavController.navigateTo(NavRoutes.NOTE_LIST) },
                 onToSettings = { thisNavController.navigateTo(NavRoutes.SETTINGS) },
+                sensorManager = sensorManager
             )
         }
         composable(
@@ -94,25 +100,6 @@ fun NoteListRoute(noteListViewModel: NoteListViewModel, onToNote: (String) -> Un
 @Composable
 fun NoteRoute(noteViewModel: NoteViewModel, id: String, onBack: () -> Unit) {}
 
-@Composable
-fun HomeRoute(homeViewModel: HomeViewModel, onToNote: (String) -> Unit, onToNoteList: () -> Unit, onToSettings: () -> Unit) {}
-
-class NoteRepo
-
-class HomeViewModel(
-    private val repository: NoteRepo
-) : ViewModel() {
-    companion object {
-        fun provideFactory(
-            repository: NoteRepo,
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return HomeViewModel(repository) as T
-            }
-        }
-    }
-}
 
 class NoteViewModel(
     private val repository: NoteRepo,

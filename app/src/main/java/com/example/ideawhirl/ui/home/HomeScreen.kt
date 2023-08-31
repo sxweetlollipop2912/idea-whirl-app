@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
-import com.example.ideawhirl.Greeting
 import com.example.ideawhirl.R
 import com.example.ideawhirl.ui.theme.IdeaWhirlTheme
 import kotlinx.coroutines.launch
@@ -72,7 +71,6 @@ fun HomeScreen(
             color = MaterialTheme.colorScheme.background
         ) {
             Column {
-                Greeting("Android")
                 AnimationBox(animatableRotation)
             }
         }

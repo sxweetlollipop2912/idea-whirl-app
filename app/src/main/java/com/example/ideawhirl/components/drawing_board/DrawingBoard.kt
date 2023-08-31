@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledIconToggleButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,20 +26,22 @@ enum class MotionEvent {
     Idle, Down, Move, Up
 }
 
+const val OFFSET_TOLERANCE = 2
+
 @kotlinx.serialization.Serializable
 class DrawingPath(
     val strokeWidth: StrokeWidth,
-    val strokeColor: Int,
+    val strokeColorIndex: Int,
 ) {
     val pointXs: MutableList<Float> = mutableListOf()
     val pointYs: MutableList<Float> = mutableListOf()
 
     constructor(
         strokeWidth: StrokeWidth,
-        strokeColor: Int,
+        strokeColorIndex: Int,
         pointXs: List<Float>,
         pointYs: List<Float>,
-    ) : this(strokeWidth, strokeColor) {
+    ) : this(strokeWidth, strokeColorIndex) {
         this.pointXs.clear()
         this.pointYs.clear()
         this.pointXs.addAll(pointXs)
@@ -49,26 +52,6 @@ class DrawingPath(
     private lateinit var path: Path
 
     init {
-        path = Path()
-        if (pointXs.size != pointYs.size) {
-            throw (Throwable("Invalid state"))
-        }
-        if (pointXs.isNotEmpty()) {
-            path.moveTo(pointXs.first(), pointYs.first())
-            var lastPoints = Pair(pointXs.first(), pointYs.first())
-            pointXs.zip(pointYs).drop(1).dropLast(1).forEach {
-                val (fl1, fl2) = lastPoints
-                val (x, y) = it
-                val x1 = (x + fl1) / 2
-                val x2 = (y + fl2) / 2
-                path.quadraticBezierTo(fl1, fl2, x1, x2)
-                lastPoints = Pair(x, y)
-            }
-            path.lineTo(pointXs.last(), pointYs.last())
-        }
-    }
-
-    fun initFromPoints() {
         path = Path()
         if (pointXs.size != pointYs.size) {
             throw (Throwable("Invalid state"))
@@ -136,21 +119,30 @@ enum class StrokeWidth {
 }
 
 @Composable
-fun DrawingPanel() {
+fun DrawingBoard(availableStrokeColors: List<Color>, backgroundColor: Color) {
+    if (availableStrokeColors.size != 10) {
+        throw (Throwable("Invalid arguments, colors list must have exactly 10 colors."))
+    }
     var paths: List<DrawingPath> by remember { mutableStateOf(listOf()) }
     var strokeWidth by remember { mutableStateOf(StrokeWidth.Normal) }
-    var strokeColor by remember { mutableStateOf(Color.Black) }
+    var strokeColorIndex by remember { mutableStateOf(0) }
     var showColorChooser by remember { mutableStateOf(false) }
     var showStrokeWidthChooser by remember { mutableStateOf(false) }
     var inViewMode by remember { mutableStateOf(false) }
 
     if (!inViewMode) {
-        DrawingSurface(paths, { newPaths -> paths = newPaths }, strokeColor, strokeWidth)
+        DrawingSurface(
+            paths,
+            { newPaths -> paths = newPaths },
+            strokeColorIndex,
+            strokeWidth,
+            availableStrokeColors,
+            backgroundColor
+        )
     } else {
-        DisplayBoard(paths) {
-            inViewMode = false
-        }
+        DisplayBoard(paths, { inViewMode = false }, availableStrokeColors, backgroundColor)
     }
+    // A layer in front of Canvas to capture user input while toolbar being expanded
     if (showColorChooser || showStrokeWidthChooser) {
         Box(modifier = Modifier
             .pointerInput(Unit) {
@@ -165,12 +157,13 @@ fun DrawingPanel() {
             expanded = showColorChooser,
             onExpanded = { showColorChooser = true },
             onCollapsed = { showColorChooser = false },
-            currentStrokeColor = strokeColor,
-            onStrokeColorChanged = { color -> strokeColor = color }
+            currentStrokeColorIndex = strokeColorIndex,
+            onStrokeColorChanged = { index -> strokeColorIndex = index },
+            availableStrokeColors,
         )
         Spacer(modifier = Modifier.width(5.dp))
         StrokeWidthBox(
-            strokeColor = strokeColor,
+            strokeColor = availableStrokeColors[strokeColorIndex],
             expanded = showStrokeWidthChooser,
             onExpanded = { showStrokeWidthChooser = true },
             onCollapsed = { showStrokeWidthChooser = false },
@@ -180,11 +173,10 @@ fun DrawingPanel() {
         Button(onClick = { paths = paths.dropLast(1) }) {
             Text(text = "Undo")
         }
-        FilledIconToggleButton(
-            checked = !inViewMode,
-            onCheckedChange = { checked -> inViewMode = !checked }) {
+        if (!inViewMode) {
+            OutlinedButton(onClick = { inViewMode = true }) {
+                Text(text = "Done")
+            }
         }
     }
 }
-
-const val OFFSET_TOLERANCE = 2

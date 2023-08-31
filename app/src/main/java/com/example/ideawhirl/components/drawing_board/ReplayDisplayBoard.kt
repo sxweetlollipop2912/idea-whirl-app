@@ -1,6 +1,7 @@
 package com.example.ideawhirl.components.drawing_board
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -15,6 +16,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
@@ -22,6 +24,8 @@ import kotlinx.coroutines.delay
 fun DisplayBoard(
     paths: List<DrawingPath>,
     onEditRequested: () -> Unit,
+    availableStrokeColors: List<Color>,
+    backgroundColor: Color,
 ) {
     var playAnimation by remember { mutableStateOf(true) }
     var currentSegment by remember { mutableStateOf(0) }
@@ -65,10 +69,11 @@ fun DisplayBoard(
     }
     Canvas(modifier = Modifier
         .fillMaxSize()
+        .background(backgroundColor)
         .clickable { onEditRequested() }) {
         for (i in 0 .. currentDrawingPath) {
             drawPath(
-                color = Color(paths[i].strokeColor),
+                color = Color(availableStrokeColors[paths[i].strokeColorIndex].toArgb()),
                 path = partialPathLists[i],
                 style = Stroke(
                     width = paths[i].strokeWidth.toFloat().dp.toPx(),

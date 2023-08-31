@@ -5,16 +5,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.FilledIconToggleButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,28 +24,29 @@ fun ColorBox(
     expanded: Boolean,
     onExpanded: () -> Unit,
     onCollapsed: () -> Unit,
-    currentStrokeColor: Color,
-    onStrokeColorChanged: (Color) -> Unit
+    currentStrokeColorIndex: Int,
+    onStrokeColorChanged: (Int) -> Unit,
+    availableStrokeColors: List<Color>,
 ) {
-    val colorList = listOf(Color.Black, Color.Green, Color.Blue, Color.Yellow)
-    val colorChooserModifier = { color: Color ->
+    val colorChooserModifier = { index: Int ->
         Modifier
             .size(40.dp)
             .clip(CircleShape)
             .border(2.dp, color = Color.DarkGray, shape = CircleShape)
-            .background(color = color)
+            .background(color = availableStrokeColors[index])
             .clickable {
-                onStrokeColorChanged(color)
+                onStrokeColorChanged(index)
                 onCollapsed()
             }
     }
+    val currentStrokeColor = availableStrokeColors[currentStrokeColorIndex]
     Box {
         if (expanded) {
-            Popup(onDismissRequest = { onCollapsed }) {
+            Popup(onDismissRequest = { onCollapsed() }) {
                 Column {
-                    val colors = (colorList - currentStrokeColor).toMutableList()
+                    val colors = (availableStrokeColors - currentStrokeColor).toMutableList()
                     colors.add(0, currentStrokeColor)
-                    colors.forEach {
+                    (0 until 10).forEach {
                         Box(modifier = colorChooserModifier(it))
                         Spacer(modifier = Modifier.height(4.dp))
                     }
@@ -145,8 +140,4 @@ fun StrokeWidthBox(
                 }
         )
     }
-}
-
-@Composable
-fun ToolBar() {
 }

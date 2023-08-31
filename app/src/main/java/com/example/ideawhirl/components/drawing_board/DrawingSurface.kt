@@ -1,6 +1,7 @@
 package com.example.ideawhirl.components.drawing_board
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,10 +18,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.example.ideawhirl.components.drawing_board.DrawingPath
-import com.example.ideawhirl.components.drawing_board.MotionEvent
-import com.example.ideawhirl.components.drawing_board.OFFSET_TOLERANCE
-import com.example.ideawhirl.components.drawing_board.StrokeWidth
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.math.abs
@@ -29,14 +26,17 @@ import kotlin.math.abs
 fun DrawingSurface(
     paths: List<DrawingPath>,
     onPathsChanged: (List<DrawingPath>) -> Unit,
-    strokeColor: Color,
-    strokeWidth: StrokeWidth
+    strokeColorIndex: Int,
+    strokeWidth: StrokeWidth,
+    availableStrokeColors: List<Color>,
+    backgroundColor: Color,
 ) {
     var motionEvent by remember { mutableStateOf(MotionEvent.Idle) }
     var currentPosition by remember { mutableStateOf(Offset.Unspecified) }
     var previousPosition by remember { mutableStateOf(Offset.Unspecified) }
     val canvasModifier = Modifier
         .fillMaxSize()
+        .background(backgroundColor)
         .pointerInput(Unit) {
             awaitPointerEventScope {
                 while (true) {
@@ -68,7 +68,7 @@ fun DrawingSurface(
         when (motionEvent) {
             MotionEvent.Down -> {
                 newPaths += DrawingPath(
-                    strokeColor = strokeColor.toArgb(),
+                    strokeColorIndex = strokeColorIndex,
                     strokeWidth = strokeWidth
                 )
                 newPaths.last().start(currentPosition.x, currentPosition.y)
@@ -101,7 +101,7 @@ fun DrawingSurface(
 
         for (path in paths) {
             drawPath(
-                color = Color(path.strokeColor),
+                color = Color(availableStrokeColors[path.strokeColorIndex].toArgb()),
                 path = Json.decodeFromString<DrawingPath>(Json.encodeToString(path)).drawData,
                 style = Stroke(
                     width = path.strokeWidth.toFloat().dp.toPx(),

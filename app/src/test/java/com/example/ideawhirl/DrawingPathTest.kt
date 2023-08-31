@@ -1,8 +1,8 @@
 package com.example.ideawhirl
 
 import androidx.compose.ui.graphics.Color
-import com.example.ideawhirl.components.DrawingPath
-import com.example.ideawhirl.components.StrokeWidth
+import com.example.ideawhirl.components.drawing_board.DrawingPath
+import com.example.ideawhirl.components.drawing_board.StrokeWidth
 import junit.framework.TestCase
 import org.junit.Test
 

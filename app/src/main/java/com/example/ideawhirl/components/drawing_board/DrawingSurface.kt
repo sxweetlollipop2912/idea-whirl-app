@@ -24,12 +24,14 @@ import kotlin.math.abs
 
 @Composable
 fun DrawingSurface(
-    paths: List<DrawingPath>,
-    onPathsChanged: (List<DrawingPath>) -> Unit,
+    paths: List<com.example.ideawhirl.components.drawing_board.Stroke>,
+    onPathsChanged: (List<com.example.ideawhirl.components.drawing_board.Stroke>) -> Unit,
     strokeColorIndex: Int,
     strokeWidth: StrokeWidth,
     availableStrokeColors: List<Color>,
     backgroundColor: Color,
+    erasing: Boolean,
+    eraserWidth: EraserWidth,
 ) {
     var motionEvent by remember { mutableStateOf(MotionEvent.Idle) }
     var currentPosition by remember { mutableStateOf(Offset.Unspecified) }
@@ -41,7 +43,6 @@ fun DrawingSurface(
             awaitPointerEventScope {
                 while (true) {
                     val event = awaitPointerEvent()
-                    // handle pointer event
                     when (event.type) {
                         PointerEventType.Press -> {
                             motionEvent = MotionEvent.Down
@@ -64,13 +65,19 @@ fun DrawingSurface(
             }
         }
     Canvas(modifier = canvasModifier) {
-        var newPaths = paths
+        val newPaths = paths.toMutableList()
         when (motionEvent) {
             MotionEvent.Down -> {
-                newPaths += DrawingPath(
-                    strokeColorIndex = strokeColorIndex,
-                    strokeWidth = strokeWidth
-                )
+                if (erasing) {
+                    newPaths.add(EraserPath(eraserWidth))
+                } else {
+                    newPaths.add(
+                        DrawingPath(
+                            strokeColorIndex = strokeColorIndex,
+                            strokeWidth = strokeWidth
+                        )
+                    )
+                }
                 newPaths.last().start(currentPosition.x, currentPosition.y)
                 previousPosition = currentPosition
                 motionEvent = MotionEvent.Move
@@ -97,14 +104,20 @@ fun DrawingSurface(
 
             else -> Unit
         }
-        onPathsChanged(newPaths)
+        onPathsChanged(newPaths.toList())
 
         for (path in paths) {
+            val pathColorIndex = path.strokeColorIndex() ?: -1
+            val pathColor = if (pathColorIndex == -1) {
+                backgroundColor
+            } else {
+                availableStrokeColors[pathColorIndex]
+            }
             drawPath(
-                color = Color(availableStrokeColors[path.strokeColorIndex].toArgb()),
-                path = Json.decodeFromString<DrawingPath>(Json.encodeToString(path)).drawData,
+                color = pathColor,
+                path = Json.decodeFromString<com.example.ideawhirl.components.drawing_board.Stroke>(Json.encodeToString(path)).drawData,
                 style = Stroke(
-                    width = path.strokeWidth.toFloat().dp.toPx(),
+                    width = path.strokeWidth().dp.toPx(),
                     cap = StrokeCap.Round,
                     join = StrokeJoin.Round
                 )

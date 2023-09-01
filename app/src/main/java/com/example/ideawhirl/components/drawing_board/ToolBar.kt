@@ -1,18 +1,14 @@
 package com.example.ideawhirl.components.drawing_board
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -28,41 +24,33 @@ fun ColorBox(
     onStrokeColorChanged: (Int) -> Unit,
     availableStrokeColors: List<Color>,
 ) {
-    val colorChooserModifier = { index: Int ->
-        Modifier
-            .size(40.dp)
-            .clip(CircleShape)
-            .border(2.dp, color = Color.DarkGray, shape = CircleShape)
-            .background(color = availableStrokeColors[index])
-            .clickable {
-                onStrokeColorChanged(index)
-                onCollapsed()
-            }
-    }
-    val currentStrokeColor = availableStrokeColors[currentStrokeColorIndex]
-    Box {
+    Box() {
         if (expanded) {
             Popup(onDismissRequest = { onCollapsed() }) {
                 Column {
-                    val colors = (availableStrokeColors - currentStrokeColor).toMutableList()
-                    colors.add(0, currentStrokeColor)
+                    val colors = availableStrokeColors.zip(0 until 10).toMutableList()
+                    val color = colors.removeAt(currentStrokeColorIndex)
+                    colors.add(0, color)
                     (0 until 10).forEach {
-                        Box(modifier = colorChooserModifier(it))
-                        Spacer(modifier = Modifier.height(4.dp))
+                        OutlinedIconButton(
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = colors[it].first
+                            ),
+                            onClick = {
+                                onStrokeColorChanged(colors[it].second)
+                                onCollapsed()
+                            }) {}
                     }
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(color = currentStrokeColor)
-                .border(2.dp, color = Color.DarkGray, shape = CircleShape)
-                .clickable {
-                    onExpanded()
-                }
-        )
+        OutlinedIconButton(
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = availableStrokeColors[currentStrokeColorIndex]
+            ),
+            onClick = {
+                onExpanded()
+            }) {}
     }
 }
 
@@ -89,55 +77,108 @@ fun StrokeWidthBox(
                     val strokes = (strokeList - currentStrokeWidth).toMutableList()
                     strokes.add(0, currentStrokeWidth)
                     strokes.forEach {
-                        Box(modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(color = Color.White)
-                            .border(2.dp, color = Color.DarkGray, shape = CircleShape)
-                            .drawWithContent {
-                                val canvasWidth = size.width
-                                val canvasHeight = size.height
-                                drawLine(
-                                    cap = StrokeCap.Round,
-                                    strokeWidth = it.toFloat().dp.toPx(),
-                                    start = Offset(
-                                        x = canvasWidth - 10f.dp.toPx(),
-                                        y = canvasHeight / 2
-                                    ),
-                                    end = Offset(x = 10f.dp.toPx(), y = canvasHeight / 2),
-                                    color = strokeColor
-                                )
-                            }
-                            .clickable {
+                        OutlinedIconButton(
+                            modifier = Modifier
+                                .drawBehind {
+                                    val canvasWidth = size.width
+                                    val canvasHeight = size.height
+                                    val padding = canvasWidth * 0.1
+                                    drawLine(
+                                        cap = StrokeCap.Round,
+                                        strokeWidth = it.toFloat().dp.toPx(),
+                                        start = Offset(
+                                            x = canvasWidth - padding.dp.toPx(),
+                                            y = canvasHeight / 2
+                                        ),
+                                        end = Offset(x = padding.dp.toPx(), y = canvasHeight / 2),
+                                        color = strokeColor
+                                    )
+                                },
+                            onClick = {
                                 onStrokeWidthChanged(it)
                                 onCollapsed()
-                            }
-                        )
+                            }) {}
                         Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
         }
-        Box(
+        OutlinedIconButton(
             modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(color = Color.White)
-                .border(2.dp, color = Color.DarkGray, shape = CircleShape)
-                .drawWithContent {
+                .drawBehind {
                     val canvasWidth = size.width
                     val canvasHeight = size.height
+                    val padding = canvasWidth * 0.1
                     drawLine(
                         cap = StrokeCap.Round,
                         strokeWidth = currentStrokeWidth.toFloat().dp.toPx(),
-                        start = Offset(x = canvasWidth - 10f.dp.toPx(), y = canvasHeight / 2),
-                        end = Offset(x = 10f.dp.toPx(), y = canvasHeight / 2),
+                        start = Offset(x = canvasWidth - padding.dp.toPx(), y = canvasHeight / 2),
+                        end = Offset(x = padding.dp.toPx(), y = canvasHeight / 2),
                         color = strokeColor
                     )
+                },
+            onClick = {
+                onExpanded()
+            }
+        ) {}
+    }
+}
+@Composable
+fun EraserWidthBox(
+    expanded: Boolean,
+    onExpanded: () -> Unit,
+    onCollapsed: () -> Unit,
+    currentEraserWidth: EraserWidth,
+    onEraserWidthChanged: (EraserWidth) -> Unit
+) {
+    val strokeList = listOf(
+        EraserWidth.Lighter,
+        EraserWidth.Light,
+        EraserWidth.Normal,
+        EraserWidth.Bold,
+        EraserWidth.Bolder
+    )
+    Box {
+        if (expanded) {
+            Popup(onDismissRequest = { onCollapsed() }) {
+                Column {
+                    val strokes = (strokeList - currentEraserWidth).toMutableList()
+                    strokes.add(0, currentEraserWidth)
+                    strokes.forEach {
+                        OutlinedIconButton(
+                            modifier = Modifier
+                                .drawBehind {
+                                    val canvasWidth = size.width
+                                    val canvasHeight = size.height
+                                    drawCircle(
+                                        color = Color.DarkGray,
+                                        center = Offset(canvasWidth / 2, canvasHeight / 2),
+                                        radius = it.toFloat().dp.toPx() / 2,
+                                    )
+                                },
+                            onClick = {
+                                onEraserWidthChanged(it)
+                                onCollapsed()
+                            }) {}
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
                 }
-                .clickable {
-                    onExpanded()
-                }
-        )
+            }
+        }
+        OutlinedIconButton(
+            modifier = Modifier
+                .drawBehind {
+                    val canvasWidth = size.width
+                    val canvasHeight = size.height
+                    drawCircle(
+                        color = Color.DarkGray,
+                        center = Offset(canvasWidth / 2, canvasHeight / 2),
+                        radius = currentEraserWidth.toFloat().dp.toPx() / 2,
+                    )
+                },
+            onClick = {
+                onExpanded()
+            }
+        ) {}
     }
 }

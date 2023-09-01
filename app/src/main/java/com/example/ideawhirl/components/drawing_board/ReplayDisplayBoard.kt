@@ -22,7 +22,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun DisplayBoard(
-    paths: List<DrawingPath>,
+    paths: List<com.example.ideawhirl.components.drawing_board.Stroke>,
     onEditRequested: () -> Unit,
     availableStrokeColors: List<Color>,
     backgroundColor: Color,
@@ -72,11 +72,17 @@ fun DisplayBoard(
         .background(backgroundColor)
         .clickable { onEditRequested() }) {
         for (i in 0 .. currentDrawingPath) {
+            val pathColorIndex = paths[i].strokeColorIndex() ?: -1
+            val pathColor = if (pathColorIndex == -1) {
+                backgroundColor
+            } else {
+                availableStrokeColors[pathColorIndex]
+            }
             drawPath(
-                color = Color(availableStrokeColors[paths[i].strokeColorIndex].toArgb()),
+                color = pathColor,
                 path = partialPathLists[i],
                 style = Stroke(
-                    width = paths[i].strokeWidth.toFloat().dp.toPx(),
+                    width = paths[i].strokeWidth().dp.toPx(),
                     cap = StrokeCap.Round,
                     join = StrokeJoin.Round
                 )

@@ -4,6 +4,7 @@ import com.example.ideawhirl.data.data_source.LocalDatabase
 import com.example.ideawhirl.data.data_source.NoteEntity
 import com.example.ideawhirl.data.data_source.TagEntity
 import com.example.ideawhirl.model.Note
+import com.example.ideawhirl.model.NotePalette
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -25,6 +26,7 @@ class NoteRepo(val database: LocalDatabase) {
                 detail = entry.key.detail,
                 createdAt = entry.key.createdAt,
                 tags = entry.value.map { it.name },
+                palette = NotePalette.fromId(entry.key.paletteId),
             )
             note
         }
@@ -34,6 +36,7 @@ class NoteRepo(val database: LocalDatabase) {
         val noteEntity = NoteEntity(
             name = note.name,
             detail = note.detail,
+            paletteId = note.palette.id,
         )
         val noteId = database.noteDao().insert(noteEntity)[0]
         val tagEntities = note.tags.map { TagEntity(noteId = noteId.toInt(), it) }
@@ -50,6 +53,7 @@ class NoteRepo(val database: LocalDatabase) {
             name = note.name,
             detail = note.detail,
             createdAt = note.createdAt!!,
+            paletteId = note.palette.id,
         )
         database.noteDao().delete(noteEntity)
     }

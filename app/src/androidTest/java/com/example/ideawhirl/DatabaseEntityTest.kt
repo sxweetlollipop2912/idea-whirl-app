@@ -8,6 +8,7 @@ import com.example.ideawhirl.data.data_source.NoteDao
 import com.example.ideawhirl.data.data_source.NoteEntity
 import com.example.ideawhirl.data.data_source.TagDao
 import com.example.ideawhirl.data.data_source.TagEntity
+import com.example.ideawhirl.model.NotePalette
 import junit.framework.TestCase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -40,8 +41,8 @@ class DatabaseEntityTest {
 
     @Test
     fun basicInsertWithoutTag(): Unit = runBlocking {
-        val noteEntity = NoteEntity(name = "test note", detail = "test detail")
-        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2")
+        val noteEntity = NoteEntity(name = "test note", detail = "test detail", paletteId = NotePalette.random().id)
+        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2", paletteId = NotePalette.random().id)
         noteDao.insert(noteEntity)
         noteDao.insert(noteEntity2)
         val noteEntities = noteDao.getAll()
@@ -49,14 +50,16 @@ class DatabaseEntityTest {
         TestCase.assertEquals(2, notes.size)
         TestCase.assertEquals(noteEntity.name, notes[0].name)
         TestCase.assertEquals(noteEntity.detail, notes[0].detail)
+        TestCase.assertEquals(noteEntity.paletteId, notes[0].paletteId)
         TestCase.assertEquals(noteEntity2.name, notes[1].name)
         TestCase.assertEquals(noteEntity2.detail, notes[1].detail)
+        TestCase.assertEquals(noteEntity2.paletteId, notes[1].paletteId)
     }
 
     @Test
     fun insertWithTag(): Unit = runBlocking {
-        val noteEntity = NoteEntity(name = "test note", detail = "test detail")
-        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2")
+        val noteEntity = NoteEntity(name = "test note", detail = "test detail", paletteId = NotePalette.random().id)
+        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2", paletteId = NotePalette.random().id)
         noteDao.insert(noteEntity)
         noteDao.insert(noteEntity2)
         val noteEntities = noteDao.getAll()
@@ -84,8 +87,8 @@ class DatabaseEntityTest {
 
     @Test
     fun insertWithTagThenFindByName(): Unit = runBlocking {
-        val noteEntity = NoteEntity(name = "test note", detail = "test detail")
-        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2")
+        val noteEntity = NoteEntity(name = "test note", detail = "test detail", paletteId = NotePalette.random().id)
+        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2", paletteId = NotePalette.random().id)
         noteDao.insert(noteEntity)
         noteDao.insert(noteEntity2)
         val noteEntities = noteDao.getAll()
@@ -116,8 +119,8 @@ class DatabaseEntityTest {
 
     @Test
     fun findNoteAndTagsByTags(): Unit = runBlocking {
-        val noteEntity = NoteEntity(name = "test note", detail = "test detail")
-        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2")
+        val noteEntity = NoteEntity(name = "test note", detail = "test detail", paletteId = NotePalette.random().id)
+        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2", paletteId = NotePalette.random().id)
         noteDao.insert(noteEntity)
         noteDao.insert(noteEntity2)
         val noteEntities = noteDao.getAll()
@@ -149,8 +152,8 @@ class DatabaseEntityTest {
 
     @Test
     fun findTagsByNoteIds(): Unit = runBlocking {
-        val noteEntity = NoteEntity(name = "test note", detail = "test detail")
-        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2")
+        val noteEntity = NoteEntity(name = "test note", detail = "test detail", paletteId = NotePalette.random().id)
+        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2", paletteId = NotePalette.random().id)
         noteDao.insert(noteEntity)
         noteDao.insert(noteEntity2)
         val noteEntities = noteDao.getAll()
@@ -176,8 +179,8 @@ class DatabaseEntityTest {
 
     @Test
     fun getAllTagNames(): Unit = runBlocking {
-        val noteEntity = NoteEntity(name = "test note", detail = "test detail")
-        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2")
+        val noteEntity = NoteEntity(name = "test note", detail = "test detail", paletteId = NotePalette.random().id)
+        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2", paletteId = NotePalette.random().id)
         noteDao.insert(noteEntity)
         noteDao.insert(noteEntity2)
         val noteEntities = noteDao.getAll()
@@ -203,8 +206,8 @@ class DatabaseEntityTest {
 
     @Test
     fun deleteNote(): Unit = runBlocking {
-        val noteEntity = NoteEntity(name = "test note", detail = "test detail")
-        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2")
+        val noteEntity = NoteEntity(name = "test note", detail = "test detail", paletteId = NotePalette.random().id)
+        val noteEntity2 = NoteEntity(name = "test note 2", detail = "test detail 2", paletteId = NotePalette.random().id)
         noteDao.insert(noteEntity)
         noteDao.insert(noteEntity2)
         val noteEntities = noteDao.getAll()
@@ -238,7 +241,7 @@ class DatabaseEntityTest {
 
     @Test
     fun findNoteByUid(): Unit = runBlocking {
-        val noteEntity = NoteEntity(name = "test note", detail = "test detail")
+        val noteEntity = NoteEntity(name = "test note", detail = "test detail", paletteId = NotePalette.random().id)
         noteDao.insert(noteEntity)
         val noteEntities = noteDao.getAll()
         val notes = noteEntities.first()

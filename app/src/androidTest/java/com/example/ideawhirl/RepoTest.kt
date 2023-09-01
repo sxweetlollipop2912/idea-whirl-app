@@ -46,6 +46,7 @@ class RepoTest {
             TestCase.assertEquals(note.name, notes[0].name)
             TestCase.assertEquals(note.detail, notes[0].detail)
             TestCase.assertEquals(note.tags, notes[0].tags)
+            TestCase.assertEquals(note.palette, notes[0].palette)
         }
     }
 
@@ -70,9 +71,11 @@ class RepoTest {
             TestCase.assertEquals(note.name, notes[0].name)
             TestCase.assertEquals(note.detail, notes[0].detail)
             TestCase.assertEquals(note.tags, notes[0].tags)
+            TestCase.assertEquals(note.palette, notes[0].palette)
             TestCase.assertEquals(note2.name, notes[1].name)
             TestCase.assertEquals(note2.detail, notes[1].detail)
             TestCase.assertEquals(note2.tags, notes[1].tags)
+            TestCase.assertEquals(note2.palette, notes[1].palette)
         }
     }
     @Test
@@ -96,6 +99,7 @@ class RepoTest {
             TestCase.assertEquals(note.name, notes[0].name)
             TestCase.assertEquals(note.detail, notes[0].detail)
             TestCase.assertEquals(note.tags, notes[0].tags)
+            TestCase.assertEquals(note.palette, notes[0].palette)
         }
     }
 
@@ -118,6 +122,7 @@ class RepoTest {
             TestCase.assertEquals(note2.name, notes[0].name)
             TestCase.assertEquals(note2.detail, notes[0].detail)
             TestCase.assertEquals(note2.tags, notes[0].tags)
+            TestCase.assertEquals(note2.palette, notes[0].palette)
         }
     }
 
@@ -139,20 +144,23 @@ class RepoTest {
             TestCase.assertEquals(note.name, notes[0].name)
             TestCase.assertEquals(note.detail, notes[0].detail)
             TestCase.assertEquals(note.tags, notes[0].tags)
+            TestCase.assertEquals(note.palette, notes[0].palette)
             TestCase.assertEquals(note2.name, notes[1].name)
             TestCase.assertEquals(note2.detail, notes[1].detail)
             TestCase.assertEquals(note2.tags, notes[1].tags)
+            TestCase.assertEquals(note2.palette, notes[1].palette)
 
             val notes2 = noteRepo.findNotesByTags(listOf("test tag 1")).first()
             TestCase.assertEquals(1, notes2.size)
             TestCase.assertEquals(note.name, notes2[0].name)
             TestCase.assertEquals(note.detail, notes2[0].detail)
             TestCase.assertEquals(note.tags, notes2[0].tags)
+            TestCase.assertEquals(note.palette, notes2[0].palette)
         }
     }
 
     @Test
-    fun getALlTagNames() {
+    fun getAllTagNames() {
         val note = Note(name = "test note", detail = "test detail", tags = listOf(
             "test tag 1",
             "test tag 2",

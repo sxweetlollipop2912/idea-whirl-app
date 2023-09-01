@@ -33,4 +33,10 @@ interface TagDao {
 
     @Query("select distinct name from TagEntity")
     fun getAllTagNames(): Flow<List<String>>
+
+    @Query("select * from tagentity where tagentity.noteId = :noteId")
+    fun findTagsByNoteId(noteId: Int): Flow<List<TagEntity>>
+
+    @Query("select * from tagentity where tagentity.noteId in (:noteIds)")
+    fun findTagsByNoteIds(noteIds: List<Int>): Flow<List<TagEntity>>
 }

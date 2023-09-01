@@ -13,6 +13,8 @@ import androidx.navigation.navArgument
 import com.example.ideawhirl.data.repo.NoteRepo
 import com.example.ideawhirl.ui.home.HomeRoute
 import com.example.ideawhirl.ui.home.HomeViewModel
+import com.example.ideawhirl.ui.notelist.NoteListRoute
+import com.example.ideawhirl.ui.notelist.NoteListViewModel
 
 @Composable
 fun ThisNavGraph(
@@ -95,9 +97,6 @@ fun ThisNavGraph(
 fun SettingsRoute(settingsViewModel: SettingsViewModel, onBack: () -> Unit) {}
 
 @Composable
-fun NoteListRoute(noteListViewModel: NoteListViewModel, onToNote: (String) -> Unit, onBack: () -> Unit) {}
-
-@Composable
 fun NoteRoute(noteViewModel: NoteViewModel, id: String, onBack: () -> Unit) {}
 
 
@@ -113,21 +112,6 @@ class NoteViewModel(
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return NoteViewModel(repository, id) as T
-            }
-        }
-    }
-}
-
-class NoteListViewModel(
-    private val repository: NoteRepo,
-) : ViewModel() {
-    companion object {
-        fun provideFactory(
-            repository: NoteRepo,
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return NoteListViewModel(repository) as T
             }
         }
     }

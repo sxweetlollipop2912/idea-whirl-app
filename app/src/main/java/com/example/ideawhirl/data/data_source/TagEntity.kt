@@ -3,11 +3,21 @@ package com.example.ideawhirl.data.data_source
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
-@Entity(primaryKeys = ["noteId", "name"])
+@Entity(primaryKeys = ["noteId", "name"], foreignKeys = [
+    ForeignKey(
+        entity = NoteEntity::class,
+        parentColumns = ["uid"],
+        childColumns = ["noteId"],
+        onDelete = CASCADE,
+        onUpdate = CASCADE
+    )
+])
 data class TagEntity(
     val noteId: Int,
     val name: String,

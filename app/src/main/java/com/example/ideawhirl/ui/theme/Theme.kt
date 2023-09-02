@@ -109,6 +109,7 @@ fun IdeaWhirlTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = PoppinsTypography,
+        shapes = Shapes,
         content = content
     )
 }

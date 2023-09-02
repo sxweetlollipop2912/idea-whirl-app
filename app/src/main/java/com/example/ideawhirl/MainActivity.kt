@@ -4,6 +4,9 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import androidx.room.Room
 import com.example.ideawhirl.data.data_source.LocalDatabase
 import com.example.ideawhirl.data.repo.NoteRepo
@@ -16,6 +19,10 @@ class MainActivity : ComponentActivity() {
     private lateinit var mSensorManager: SensorManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // for adaptability when keyboard is open
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
             IdeaWhirlTheme {
                 val thisNavController = rememberThisNavController()
@@ -29,8 +36,9 @@ class MainActivity : ComponentActivity() {
                 ThisNavGraph(
                     repository = noteRepo,
                     thisNavController = thisNavController,
-                    startDestination = NavRoutes.NOTE_LIST.route,
-                    sensorManager = mSensorManager
+                    startDestination = NavRoutes.NOTE.route + "/0",
+                    sensorManager = mSensorManager,
+                    modifier = Modifier.safeDrawingPadding()
                 )
             }
         }

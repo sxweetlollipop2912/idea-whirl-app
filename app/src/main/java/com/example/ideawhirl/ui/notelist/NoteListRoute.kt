@@ -8,18 +8,25 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun NoteListRoute(
     noteListViewModel: NoteListViewModel,
-    onToNote: (String) -> Unit,
-    onBack: () -> Unit,
+    onToNote: (Int) -> Unit,
+    onToCreateNote: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val notes by noteListViewModel.notes.collectAsStateWithLifecycle()
-    val fakeTags = listOf("tag1", "tag2", "tag3", "tag4", "tag5")
+    val tags by noteListViewModel.tags.collectAsStateWithLifecycle()
+    val selectedTags by noteListViewModel.tagOptions.collectAsStateWithLifecycle()
+
     NoteListScreen(
+        onInsertMockNote = noteListViewModel::insertMockNote,
         notes = notes,
-        tags = fakeTags,
+        tags = tags,
+        selectedTags = selectedTags,
+        onAddTagOption = noteListViewModel::addTagOption,
+        onRemoveTagOption = noteListViewModel::removeTagOption,
+        onSelectAllTags = noteListViewModel::selectAllTags,
+        onDeleteNote = noteListViewModel::deleteNote,
         onToNote = onToNote,
-        onBackClick = onBack,
-        onChangeTagOptions = { /* TODO */ },
-        modifier = modifier,
+        onTOCreateNote = onToCreateNote,
+        modifier = modifier
     )
 }

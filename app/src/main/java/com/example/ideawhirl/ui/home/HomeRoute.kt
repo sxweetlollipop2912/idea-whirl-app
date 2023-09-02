@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun HomeRoute(
     homeViewModel: HomeViewModel,
-    onToNote: (String) -> Unit,
+    onToNote: (Int) -> Unit,
     onToNoteList: () -> Unit,
     onToSettings: () -> Unit,
     sensorManager: SensorManager,

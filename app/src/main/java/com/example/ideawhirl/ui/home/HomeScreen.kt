@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
-    onToNote: (String) -> Unit,
+    onToNote: (Int) -> Unit,
     onToNoteList: () -> Unit,
     onToSettings: () -> Unit,
     onBoxShake: suspend () -> Unit,

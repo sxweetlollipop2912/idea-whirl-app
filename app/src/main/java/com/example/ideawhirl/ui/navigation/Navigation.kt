@@ -5,7 +5,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 
@@ -50,7 +49,7 @@ class ThisNavController(
 
     fun navigateToNote(
         from: NavBackStackEntry,
-        id: String,
+        id: Int
     ) {
         val url = "${NavRoutes.NOTE.route}/$id"
         // In order to discard duplicated navigation events, we check the Lifecycle

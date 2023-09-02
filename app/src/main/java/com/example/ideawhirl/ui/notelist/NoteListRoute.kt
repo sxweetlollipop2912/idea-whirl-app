@@ -10,23 +10,28 @@ fun NoteListRoute(
     noteListViewModel: NoteListViewModel,
     onToNote: (Int) -> Unit,
     onToCreateNote: () -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val notes by noteListViewModel.notes.collectAsStateWithLifecycle()
     val tags by noteListViewModel.tags.collectAsStateWithLifecycle()
-    val selectedTags by noteListViewModel.tagOptions.collectAsStateWithLifecycle()
+    val selectedTags by noteListViewModel.selectedTags.collectAsStateWithLifecycle()
 
     NoteListScreen(
-        onInsertMockNote = noteListViewModel::insertMockNote,
         notes = notes,
         tags = tags,
         selectedTags = selectedTags,
+
+        onToCreateNote = onToCreateNote,
+        onDeleteNote = noteListViewModel::deleteNote,
+
         onAddTagOption = noteListViewModel::addTagOption,
         onRemoveTagOption = noteListViewModel::removeTagOption,
         onSelectAllTags = noteListViewModel::selectAllTags,
-        onDeleteNote = noteListViewModel::deleteNote,
+
         onToNote = onToNote,
-        onTOCreateNote = onToCreateNote,
+        onBack = onBack,
+
         modifier = modifier
     )
 }

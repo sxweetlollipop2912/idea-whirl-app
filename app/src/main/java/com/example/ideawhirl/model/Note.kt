@@ -17,6 +17,9 @@ import com.example.compose.note_dark_orange_variant
 import com.example.compose.note_dark_pink
 import com.example.compose.note_dark_pink_background
 import com.example.compose.note_dark_pink_variant
+import com.example.compose.note_dark_purple
+import com.example.compose.note_dark_purple_background
+import com.example.compose.note_dark_purple_variant
 import com.example.compose.note_light_blue
 import com.example.compose.note_light_blue_background
 import com.example.compose.note_light_blue_variant
@@ -30,6 +33,9 @@ import com.example.compose.note_light_orange_variant
 import com.example.compose.note_light_pink
 import com.example.compose.note_light_pink_background
 import com.example.compose.note_light_pink_variant
+import com.example.compose.note_light_purple
+import com.example.compose.note_light_purple_background
+import com.example.compose.note_light_purple_variant
 import java.util.Date
 
 enum class NotePalette(
@@ -71,7 +77,15 @@ enum class NotePalette(
         note_dark_orange,
         note_dark_orange_variant,
         note_dark_orange_background,
-        4);
+        4),
+    PALETTE_5(
+        note_light_purple,
+        note_light_purple_variant,
+        note_light_purple_background,
+        note_dark_purple,
+        note_dark_purple_variant,
+        note_dark_purple_background,
+        5);
 
     val main: Color
         @Composable

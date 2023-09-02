@@ -17,10 +17,9 @@ fun HomeRoute(
         onToNote = onToNote,
         onToNoteList = onToNoteList,
         onToSettings = onToSettings,
-        onBoxShake = {
-            homeViewModel.getRandomNote()
-        },
         sensorManager = sensorManager,
+        onShake = { homeViewModel.getRandomNote() },
+        onStopDrag = { homeViewModel.getRandomNote() },
         modifier = modifier,
     )
 }

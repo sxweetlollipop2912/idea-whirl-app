@@ -28,17 +28,17 @@ fun TagPill(
             containerColor = if (selected) {
                 MaterialTheme.colorScheme.primary
             } else {
-                MaterialTheme.colorScheme.surface
+                MaterialTheme.colorScheme.surfaceVariant
             },
             contentColor = if (selected) {
                 MaterialTheme.colorScheme.onPrimary
             } else {
-                MaterialTheme.colorScheme.onSurface
+                MaterialTheme.colorScheme.onSurfaceVariant
             },
         ),
     ) {
         Text(
-            text = tag.uppercase(),
+            text = tag,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 2.dp),
             style = MaterialTheme.typography.labelLarge,
         )

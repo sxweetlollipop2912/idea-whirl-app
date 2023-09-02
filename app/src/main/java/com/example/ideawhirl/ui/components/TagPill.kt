@@ -39,8 +39,8 @@ fun TagPill(
     ) {
         Text(
             text = tag.uppercase(),
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 2.dp),
+            style = MaterialTheme.typography.labelLarge,
         )
     }
 }

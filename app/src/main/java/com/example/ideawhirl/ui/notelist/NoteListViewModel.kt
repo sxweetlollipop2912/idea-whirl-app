@@ -1,4 +1,4 @@
-package com.example.ideawhirl.ui.note_list
+package com.example.ideawhirl.ui.notelist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

@@ -1,4 +1,4 @@
-package com.example.ideawhirl.ui.note_list
+package com.example.ideawhirl.ui.notelist
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

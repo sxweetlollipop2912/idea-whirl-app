@@ -7,8 +7,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.room.Room
 import com.example.ideawhirl.data.data_source.LocalDatabase
 import com.example.ideawhirl.data.repo.NoteRepo
-import com.example.ideawhirl.ui.note_list.NoteListRoute
-import com.example.ideawhirl.ui.note_list.NoteListViewModel
+import com.example.ideawhirl.ui.notelist.NoteListRoute
+import com.example.ideawhirl.ui.notelist.NoteListViewModel
 import com.example.ideawhirl.ui.theme.IdeaWhirlTheme
 
 class MainActivity : ComponentActivity() {

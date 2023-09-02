@@ -1,4 +1,4 @@
-package com.example.ideawhirl.ui.note_list
+package com.example.ideawhirl.ui.notelist
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

@@ -17,8 +17,12 @@ import kotlinx.coroutines.launch
 
 data class NoteUiState(
     val isLoading: Boolean,
-    val isEditing: Boolean,
-)
+    val isEditingTitle: Boolean,
+    val isEditingContent: Boolean,
+) {
+    val isInEditMode: Boolean
+        get() = isEditingTitle || isEditingContent
+}
 
 data class NoteState(
     val note: Note,
@@ -39,11 +43,17 @@ data class NoteState(
 
 class NoteViewModel(
     private val noteId: Int,
-    editingAsFirstState: Boolean,
     private val repository: NoteRepo,
 ): ViewModel() {
+    private val createNote: Boolean
+        get() = noteId == -1
+
     private val _uiState = MutableStateFlow(
-        NoteUiState(isLoading = false, isEditing = editingAsFirstState)
+        NoteUiState(
+            isLoading = false,
+            isEditingTitle = false,
+            isEditingContent = createNote,
+        )
     )
     val uiState = _uiState.asStateFlow()
 
@@ -63,13 +73,25 @@ class NoteViewModel(
     )
 
     init {
-        if (noteId != -1) {
+        if (!createNote) {
             _uiState.update { it.copy(isLoading = true) }
             viewModelScope.launch {
                 _noteState.update { NoteState(repository.findNoteByUid(noteId).first()) }
                 _uiState.update { it.copy(isLoading = false) }
             }
+        } else {
+            _noteState.update { NoteState(
+                note = Note(
+                    name = "Untitled",
+                    detail = "",
+                    tags = emptyList(),
+                )
+            ) }
         }
+    }
+
+    fun onRequestTitleEdit() {
+        _uiState.update { it.copy(isEditingTitle = true) }
     }
 
     fun onTitleChanged(title: String) {
@@ -78,7 +100,11 @@ class NoteViewModel(
         ) }
     }
 
-    fun onDetailChanged(detail: String) {
+    fun onTitleEditDone() {
+        _uiState.update { it.copy(isEditingTitle = false) }
+    }
+
+    fun onContentChanged(detail: String) {
         _noteState.update { it.copy(
             note = it.note.copy(detail = detail)
         ) }
@@ -109,23 +135,25 @@ class NoteViewModel(
         }
     }
 
-    fun onEdit() {
-        _uiState.update { it.copy(isEditing = true) }
+    fun onEditMode() {
+        _uiState.update { it.copy(isEditingContent = true) }
     }
 
-    fun onView() {
-        _uiState.update { it.copy(isEditing = false) }
+    fun onViewMode() {
+        _uiState.update { it.copy(
+            isEditingContent = false,
+            isEditingTitle = false,
+        ) }
     }
 
     companion object {
         fun provideFactory(
             noteId: Int,
-            editingAsFirstState: Boolean,
             repository: NoteRepo,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return NoteViewModel(noteId, editingAsFirstState, repository) as T
+                return NoteViewModel(noteId, repository) as T
             }
         }
     }

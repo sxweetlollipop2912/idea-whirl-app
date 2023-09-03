@@ -61,14 +61,12 @@ fun ThisNavGraph(
 
             val noteViewModel: NoteViewModel = viewModel(
                 factory = NoteViewModel.provideFactory(
-                    repository = repository,
                     noteId = id,
-                    editingAsFirstState = false,
+                    repository = repository,
                 )
             )
             NoteRoute(
                 noteViewModel = noteViewModel,
-                noteId = id,
                 onBack = { thisNavController.popBackStack() }
             )
         }

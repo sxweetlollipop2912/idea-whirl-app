@@ -62,7 +62,8 @@ fun ThisNavGraph(
             val noteViewModel: NoteViewModel = viewModel(
                 factory = NoteViewModel.provideFactory(
                     repository = repository,
-                    id = id,
+                    noteId = id,
+                    editingAsFirstState = false,
                 )
             )
             NoteRoute(

@@ -1,6 +1,7 @@
 package com.example.ideawhirl.model
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.example.compose.note_dark_blue
@@ -9,6 +10,7 @@ import com.example.compose.note_dark_blue_variant
 import com.example.compose.note_dark_green
 import com.example.compose.note_dark_green_background
 import com.example.compose.note_dark_green_variant
+import com.example.compose.note_dark_on_custom
 import com.example.compose.note_dark_orange
 import com.example.compose.note_dark_orange_background
 import com.example.compose.note_dark_orange_variant
@@ -21,6 +23,7 @@ import com.example.compose.note_light_blue_variant
 import com.example.compose.note_light_green
 import com.example.compose.note_light_green_background
 import com.example.compose.note_light_green_variant
+import com.example.compose.note_light_on_custom
 import com.example.compose.note_light_orange
 import com.example.compose.note_light_orange_background
 import com.example.compose.note_light_orange_variant
@@ -37,6 +40,9 @@ enum class NotePalette(
     private val darkVariant: Color,
     private val darkBackground: Color,
     val id: Int) {
+    PALETTE_0(
+        Color(0), Color(0), Color(0), Color(0), Color(0), Color(0),
+        0),
     PALETTE_1(
         note_light_pink,
         note_light_pink_variant,
@@ -73,7 +79,9 @@ enum class NotePalette(
     val main: Color
         @Composable
         get() {
-            return if (isSystemInDarkTheme()) {
+            return if (id == 0) {
+                MaterialTheme.colorScheme.primary
+            } else if (isSystemInDarkTheme()) {
                 dark
             } else {
                 light
@@ -82,7 +90,9 @@ enum class NotePalette(
     val variant: Color
         @Composable
         get() {
-            return if (isSystemInDarkTheme()) {
+            return if (id == 0) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else if (isSystemInDarkTheme()) {
                 darkVariant
             } else {
                 lightVariant
@@ -91,11 +101,29 @@ enum class NotePalette(
     val background: Color
         @Composable
         get() {
-            return if (isSystemInDarkTheme()) {
+            return if (id == 0) {
+                MaterialTheme.colorScheme.background
+            } else if (isSystemInDarkTheme()) {
                 darkBackground
             } else {
                 lightBackground
             }
+        }
+    val onVariant: Color
+        @Composable
+        get() {
+            return if (id == 0) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else if (isSystemInDarkTheme()) {
+                note_dark_on_custom
+            } else {
+                note_light_on_custom
+            }
+        }
+    val onBackground: Color
+        @Composable
+        get() {
+            return MaterialTheme.colorScheme.onBackground
         }
 
     companion object {

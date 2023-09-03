@@ -6,6 +6,7 @@ import com.example.ideawhirl.data.data_source.TagEntity
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.model.NotePalette
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -42,9 +43,7 @@ class NoteRepo(val database: LocalDatabase) {
         val tagEntities = note.tags.map { TagEntity(noteId = noteId.toInt(), it) }
         database.tagDao().insert(*tagEntities.toTypedArray())
 
-        val noteEntityFromDB = database.noteDao().findNoteByUid(noteId.toInt()).first()
-        val tagEntitiesFromDB = database.tagDao().findTagsByNoteIds(listOf(noteEntityFromDB.uid)).first()
-        return noteEntityMapToNote(mapOf(noteEntityFromDB to tagEntitiesFromDB))[0]
+        return findNoteByUid(noteId.toInt()).first()
     }
 
     suspend fun delete(note: Note) {
@@ -70,5 +69,22 @@ class NoteRepo(val database: LocalDatabase) {
 
     fun getALlTagNames(): Flow<List<String>> {
         return database.tagDao().getAllTagNames()
+    }
+
+    fun findNoteByUid(uid: Int): Flow<Note> {
+        val noteEntity = database.noteDao().findNoteByUid(uid)
+        val tagEntities = database.tagDao().findTagsByNoteId(uid)
+        return noteEntity.combine(tagEntities) { note, tags ->
+            noteEntityMapToNote(mapOf(note to tags))
+        }.map { it[0] }
+    }
+
+    suspend fun saveNote(note: Note, tagsAdded: List<String>, tagsDeleted: List<String>): Boolean {
+        // TODO: save note, tags, remove deleted tags
+        return true
+    }
+
+    suspend fun insertTag(noteId: Int, tag: String) {
+        database.tagDao().insert(TagEntity(noteId = noteId, name = tag))
     }
 }

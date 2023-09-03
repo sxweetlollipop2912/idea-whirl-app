@@ -24,6 +24,8 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import kotlinx.serialization.Transient
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 enum class MotionEvent {
     Idle, Down, Move, Up
@@ -32,7 +34,12 @@ enum class MotionEvent {
 const val OFFSET_TOLERANCE = 2
 
 @Composable
-fun DrawingBoard(availableStrokeColors: List<Color>, backgroundColor: Color) {
+fun DrawingBoard(
+    drawingData: DrawingData,
+    onUpdateDrawingData: (DrawingData) -> Unit,
+    onSave: (DrawingData) -> Unit,
+    availableStrokeColors: List<Color>, backgroundColor: Color
+) {
     if (availableStrokeColors.size != 10) {
         throw (Throwable("Invalid arguments, colors list must have exactly 10 colors."))
     }
@@ -41,7 +48,6 @@ fun DrawingBoard(availableStrokeColors: List<Color>, backgroundColor: Color) {
     }
     var eraserWidth by remember { mutableStateOf(EraserWidth.Normal) }
     var showEraserWidthChooser by remember { mutableStateOf(false) }
-    var paths: List<Stroke> by remember { mutableStateOf(listOf()) }
     var strokeWidth by remember { mutableStateOf(StrokeWidth.Normal) }
     var strokeColorIndex by remember { mutableStateOf(0) }
     var showColorChooser by remember { mutableStateOf(false) }
@@ -50,8 +56,8 @@ fun DrawingBoard(availableStrokeColors: List<Color>, backgroundColor: Color) {
 
     if (!inViewMode) {
         DrawingSurface(
-            paths,
-            { newPaths -> paths = newPaths },
+            drawingData.paths,
+            { newPaths -> onUpdateDrawingData(DrawingData(newPaths)) },
             strokeColorIndex,
             strokeWidth,
             availableStrokeColors,
@@ -60,7 +66,12 @@ fun DrawingBoard(availableStrokeColors: List<Color>, backgroundColor: Color) {
             eraserWidth = eraserWidth,
         )
     } else {
-        DisplayBoard(paths, { inViewMode = false }, availableStrokeColors, backgroundColor)
+        DisplayBoard(
+            drawingData.paths,
+            { inViewMode = false },
+            availableStrokeColors,
+            backgroundColor
+        )
     }
     // A layer in front of Canvas to capture user input while toolbar being expanded
     if (showColorChooser || showStrokeWidthChooser) {
@@ -110,13 +121,18 @@ fun DrawingBoard(availableStrokeColors: List<Color>, backgroundColor: Color) {
                 }
 
             }
-            OutlinedIconButton(onClick = { paths = paths.dropLast(1) }, Modifier.padding(0.dp)) {
+            OutlinedIconButton(onClick = {
+                onUpdateDrawingData(DrawingData(drawingData.paths.dropLast(1)))
+            }, Modifier.padding(0.dp)) {
                 Icon(Icons.Outlined.ArrowBack, "Undo")
             }
-            OutlinedIconButton(onClick = { paths = listOf() }) {
+            OutlinedIconButton(onClick = { onUpdateDrawingData(DrawingData(listOf())) }) {
                 Icon(Icons.Outlined.Delete, "Clear")
             }
-            OutlinedIconButton(onClick = { inViewMode = true }) {
+            OutlinedIconButton(onClick = {
+                onSave(drawingData)
+                inViewMode = true
+            }) {
                 Icon(Icons.Outlined.Done, "Done")
             }
         }

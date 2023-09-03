@@ -46,6 +46,9 @@ enum class NotePalette(
     private val darkVariant: Color,
     private val darkBackground: Color,
     val id: Int) {
+    PALETTE_0(
+        Color(0), Color(0), Color(0), Color(0), Color(0), Color(0),
+        0),
     PALETTE_1(
         note_light_pink,
         note_light_pink_variant,
@@ -90,7 +93,9 @@ enum class NotePalette(
     val main: Color
         @Composable
         get() {
-            return if (isSystemInDarkTheme()) {
+            return if (id == 0) {
+                MaterialTheme.colorScheme.primary
+            } else if (isSystemInDarkTheme()) {
                 dark
             } else {
                 light
@@ -99,7 +104,9 @@ enum class NotePalette(
     val variant: Color
         @Composable
         get() {
-            return if (isSystemInDarkTheme()) {
+            return if (id == 0) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else if (isSystemInDarkTheme()) {
                 darkVariant
             } else {
                 lightVariant
@@ -108,7 +115,9 @@ enum class NotePalette(
     val background: Color
         @Composable
         get() {
-            return if (isSystemInDarkTheme()) {
+            return if (id == 0) {
+                MaterialTheme.colorScheme.background
+            } else if (isSystemInDarkTheme()) {
                 darkBackground
             } else {
                 lightBackground
@@ -117,7 +126,9 @@ enum class NotePalette(
     val onVariant: Color
         @Composable
         get() {
-            return if (isSystemInDarkTheme()) {
+            return if (id == 0) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else if (isSystemInDarkTheme()) {
                 note_dark_on_custom
             } else {
                 note_light_on_custom

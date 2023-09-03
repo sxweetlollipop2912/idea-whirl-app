@@ -2,6 +2,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("plugin.serialization") version "1.8.10"
 }
 
 android {
@@ -56,6 +57,8 @@ android {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
     val coroutines_version = "1.7.1"
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version")
 

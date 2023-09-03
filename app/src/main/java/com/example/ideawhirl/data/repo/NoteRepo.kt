@@ -21,7 +21,6 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
     ): List<Note>
     {
         return map.map { entry ->
-            val drawingFilename = "Drawing_" + entry.key.uid.toString()
             val note = Note(
                 uid = entry.key.uid,
                 name = entry.key.name,

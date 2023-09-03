@@ -33,6 +33,11 @@ sealed class Stroke(
     abstract fun strokeWidth(): Float
     abstract fun strokeColorIndex(): Int?
 
+    override fun equals(other: Any?): Boolean {
+        if (other as Stroke == null) return false
+        return pointXs == other.pointXs && pointYs == other.pointYs
+    }
+
     fun drawTo(x: Float, y: Float) {
         val (fl1, fl2) = Pair(pointXs.last(), pointYs.last())
         pointXs.add(x)
@@ -74,6 +79,14 @@ class DrawingPath(
     override fun strokeColorIndex(): Int? {
         return strokeColorIndex
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (!super.equals(other)) return false
+        if (other as DrawingPath == null) return false
+        if (strokeColorIndex != other.strokeColorIndex) return false
+        if (strokeWidth != other.strokeWidth) return false
+        return true
+    }
 }
 
 @Serializable
@@ -82,6 +95,13 @@ class EraserPath(
 ) : Stroke() {
     override fun strokeWidth(): Float {
         return eraserWidth.toFloat()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (!super.equals(other)) return false
+        if (other as EraserPath == null) return false
+        if (eraserWidth != other.eraserWidth) return false
+        return true
     }
 
     override fun strokeColorIndex(): Int? {

@@ -11,9 +11,19 @@ data class Note(
     val uid: Int = 0,
     private val context: Context,
 ) {
-    val drawingData by lazy {
-        loadOrCreateDrawingData()
-    }
+    private var _drawingData: DrawingData? = null
+
+    var drawingData: DrawingData
+        get() {
+            if (_drawingData == null) {
+                return loadOrCreateDrawingData()
+            }
+            return _drawingData
+                ?: throw AssertionError("Set to null after initialized by another thread")
+        }
+        set(value) {
+            _drawingData = value
+        }
 
     private fun loadOrCreateDrawingData(): DrawingData {
         val filename = "drawing_$uid.data"

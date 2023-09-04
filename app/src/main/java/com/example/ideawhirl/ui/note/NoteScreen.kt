@@ -66,12 +66,11 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.model.NotePalette
-import com.example.ideawhirl.ui.theme.IdeaWhirlTheme
+import com.example.ideawhirl.ui.components.TagListWithAdd
 import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -89,6 +88,8 @@ fun NoteScreen(
     onContentChanged: (String) -> Unit,
     onSave: () -> Unit,
     onBack: () -> Unit,
+    onRequestToAddNewTags: () -> Unit,
+    onTagClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isInEditMode = uiState.isInEditMode
@@ -160,7 +161,6 @@ fun NoteScreen(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = note.palette.background,
                 ),
-                scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
                 modifier = Modifier.padding(end = 16.dp),
             )
         },
@@ -173,7 +173,7 @@ fun NoteScreen(
     ) { innerPadding ->
         val screenModifier = Modifier.padding(
             innerPadding.calculateStartPadding(LayoutDirection.Ltr),
-            innerPadding.calculateTopPadding() / 2,
+            innerPadding.calculateTopPadding(),
             innerPadding.calculateEndPadding(LayoutDirection.Ltr),
             0.dp,
         )
@@ -181,23 +181,34 @@ fun NoteScreen(
             note,
             uiState,
             richTextState,
+            onRequestToAddNewTags,
+            onTagClick,
             screenModifier
         )
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalRichTextApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteScreenContent(
     note: Note,
     uiState: NoteUiState,
     richTextState: RichTextState,
+    onRequestToAddNewTags: () -> Unit,
+    onTagClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isEditing = uiState.isEditingContent
 
-    Column(modifier = modifier
-        .fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
+        TagListWithAdd(
+            tags = note.tags,
+            onAddClick = onRequestToAddNewTags,
+            onTagClick = onTagClick,
+            palette = note.palette,
+            contentHorizontalPadding = 16.dp,
+            modifier = Modifier.fillMaxWidth(),
+        )
         RichTextEditor(
             state = richTextState,
             readOnly = !isEditing,
@@ -359,20 +370,6 @@ fun RTEControlButton(
             imageVector = iconId,
             contentDescription = description,
             modifier = Modifier.size(28.dp)
-        )
-    }
-}
-
-@Preview
-@Composable
-fun RTEControlButtonPreview() {
-    IdeaWhirlTheme {
-        RTEControlButton(
-            selected = true,
-            onClick = { /*TODO*/ },
-            iconId = Icons.Outlined.FormatBold,
-            palette = NotePalette.PALETTE_1,
-            description = ""
         )
     }
 }

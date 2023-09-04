@@ -23,6 +23,8 @@ fun NoteRoute(
         onContentChanged = noteViewModel::onContentChanged,
         onSave = noteViewModel::onSave,
         onBack = onBack,
+        onRequestToAddNewTags = { },
+        onTagClick = noteViewModel::onTagRemoved,
         modifier = modifier
     )
 }

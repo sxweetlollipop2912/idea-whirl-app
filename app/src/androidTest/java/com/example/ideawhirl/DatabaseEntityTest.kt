@@ -256,4 +256,30 @@ class DatabaseEntityTest {
         TestCase.assertEquals(notes[0].name, note.name)
         TestCase.assertEquals(notes[0].detail, note.detail)
     }
+
+    @Test
+    fun updateNote(): Unit = runBlocking {
+        val noteEntity = NoteEntity(name = "test note", detail = "test detail", paletteId = NotePalette.random().id)
+        noteDao.insert(noteEntity)
+        val noteEntities = noteDao.getAll()
+        val notes = noteEntities.first()
+
+        val tag1 = TagEntity(noteId = notes[0].uid, name = "tag1")
+        val tag2 = TagEntity(noteId = notes[0].uid, name = "tag2")
+        tagDao.insert(tag1)
+        tagDao.insert(tag2)
+
+        val noteEntity2 = NoteEntity(
+            _uid = notes[0].uid,
+            name = "test note 2",
+            detail = "test detail 2",
+            paletteId = NotePalette.random().id,
+        )
+        noteDao.update(noteEntity2)
+
+        val result = noteDao.findNoteByUid(notes[0].uid)
+        val note = result.first()
+        TestCase.assertEquals(noteEntity2.name, note.name)
+        TestCase.assertEquals(noteEntity2.detail, note.detail)
+    }
 }

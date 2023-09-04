@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -28,6 +29,10 @@ data class NoteEntity(
 interface NoteDao {
     @Insert
     suspend fun insert(vararg noteEntities: NoteEntity): List<Long>
+
+    @Update
+    fun update(noteEntity: NoteEntity)
+
 
     @Delete
     suspend fun delete(noteEntity: NoteEntity)

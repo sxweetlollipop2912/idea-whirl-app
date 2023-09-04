@@ -180,4 +180,35 @@ class RepoTest {
             TestCase.assertEquals("test tag 4", tagNames[3])
         }
     }
+
+    @Test
+    fun updateNote() {
+        val note = Note(name = "test note", detail = "test detail", tags = listOf(
+            "test tag 1",
+            "test tag 2",
+        ))
+        val note2 = Note(name = "test note 2", detail = "test detail 2", tags = listOf(
+            "test tag 3",
+            "test tag 4",
+        ))
+        runBlocking {
+            val note = noteRepo.insert(note)
+            noteRepo.insert(note2)
+            noteRepo.update(
+                note.copy(name = "test note updated", tags = listOf("test tag 1", "test tag 3")),
+                listOf("test tag 3", "test tag 4"),
+                listOf("test tag 2"),
+            )
+            val notes = noteRepo.getAll().first()
+            TestCase.assertEquals(2, notes.size)
+            TestCase.assertEquals("test note updated", notes[0].name)
+            TestCase.assertEquals(note.detail, notes[0].detail)
+            TestCase.assertEquals(listOf("test tag 1", "test tag 3", "test tag 4"), notes[0].tags)
+            TestCase.assertEquals(note.palette, notes[0].palette)
+            TestCase.assertEquals(note2.name, notes[1].name)
+            TestCase.assertEquals(note2.detail, notes[1].detail)
+            TestCase.assertEquals(note2.tags, notes[1].tags)
+            TestCase.assertEquals(note2.palette, notes[1].palette)
+        }
+    }
 }

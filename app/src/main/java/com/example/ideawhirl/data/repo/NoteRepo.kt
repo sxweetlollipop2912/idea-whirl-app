@@ -6,6 +6,7 @@ import com.example.ideawhirl.data.data_source.TagEntity
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.model.NotePalette
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -42,9 +43,7 @@ class NoteRepo(val database: LocalDatabase) {
         val tagEntities = note.tags.map { TagEntity(noteId = noteId.toInt(), it) }
         database.tagDao().insert(*tagEntities.toTypedArray())
 
-        val noteEntityFromDB = database.noteDao().findNoteByUid(noteId.toInt()).first()
-        val tagEntitiesFromDB = database.tagDao().findTagsByNoteIds(listOf(noteEntityFromDB.uid)).first()
-        return noteEntityMapToNote(mapOf(noteEntityFromDB to tagEntitiesFromDB))[0]
+        return findNoteByUid(noteId.toInt()).first()
     }
 
     suspend fun delete(note: Note) {
@@ -56,6 +55,20 @@ class NoteRepo(val database: LocalDatabase) {
             paletteId = note.palette.id,
         )
         database.noteDao().delete(noteEntity)
+    }
+
+    suspend fun update(note: Note, addedTags: List<String>, deletedTags: List<String>) {
+        addedTags.forEach { insertTag(it, note.uid) }
+        deletedTags.forEach { deleteTag(it, note.uid) }
+
+        val noteEntity = NoteEntity(
+            _uid = note.uid,
+            name = note.name,
+            detail = note.detail,
+            createdAt = note.createdAt!!,
+            paletteId = note.palette.id,
+        )
+        database.noteDao().update(noteEntity)
     }
 
     fun findNoteByName(name: String): Flow<List<Note>> {
@@ -70,5 +83,21 @@ class NoteRepo(val database: LocalDatabase) {
 
     fun getALlTagNames(): Flow<List<String>> {
         return database.tagDao().getAllTagNames()
+    }
+
+    fun findNoteByUid(uid: Int): Flow<Note> {
+        val noteEntity = database.noteDao().findNoteByUid(uid)
+        val tagEntities = database.tagDao().findTagsByNoteId(uid)
+        return noteEntity.combine(tagEntities) { note, tags ->
+            noteEntityMapToNote(mapOf(note to tags))
+        }.map { it[0] }
+    }
+
+    private suspend fun insertTag(tag: String, noteId: Int) {
+        database.tagDao().insert(TagEntity(noteId = noteId, name = tag))
+    }
+
+    private suspend fun deleteTag(tag: String, noteId: Int) {
+        database.tagDao().delete(TagEntity(noteId, tag))
     }
 }

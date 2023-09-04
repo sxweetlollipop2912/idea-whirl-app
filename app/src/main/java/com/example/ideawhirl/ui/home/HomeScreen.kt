@@ -12,6 +12,8 @@ import androidx.compose.animation.core.repeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,25 +24,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
@@ -50,6 +58,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.ideawhirl.R
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.ui.theme.IdeaWhirlTheme
@@ -61,12 +71,14 @@ fun HomeScreen(
     onToNote: (String) -> Unit,
     onToNoteList: () -> Unit,
     onToSettings: () -> Unit,
+    tags: Array<String>,
     getRandomNote: suspend () -> Note?,
     sensorManager: SensorManager,
     modifier: Modifier = Modifier,
 ) {
     val animatableRotation = remember { Animatable(0f) }
-    val tag: String by remember { mutableStateOf("") }
+    var currentTag by remember { mutableStateOf("") }
+    var showTagsDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     ShakeEventListener(LocalLifecycleOwner.current, sensorManager) {
         scope.launch {
@@ -87,6 +99,19 @@ fun HomeScreen(
                 animationSpec = tween(50, easing = EaseInOut),
             )
         }
+    }
+    if (showTagsDialog) {
+        TagsDialog(
+            tags = tags,
+            currentTag = currentTag,
+            onSelect = {selected ->
+                currentTag = selected
+                showTagsDialog = false
+            },
+            onDismiss = {
+                showTagsDialog = false
+            }
+        )
     }
     IdeaWhirlTheme {
         // A surface container using the 'background' color from the theme
@@ -129,10 +154,14 @@ fun HomeScreen(
                             animatableRotation = animatableRotation,
                             onStopDrag = getRandomNote
                         )
-                        Tags(tag = tag, onAddTag = { /*TODO*/ }, onRemoveTag = { /*TODO*/ })
+                        Tags(
+                            currentTag = currentTag,
+                            onRequestTags = {
+                                showTagsDialog = true
+                            }
+                        )
                     }
                 }
-
             }
         }
     }
@@ -185,28 +214,91 @@ fun TopBar(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TagsDialog(
+    tags: Array<String>,
+    currentTag: String,
+    onSelect: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var tag by remember { mutableStateOf(currentTag) }
+    Dialog(onDismissRequest = onDismiss) {
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it },
+        ) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .menuAnchor()
+                    .clickable(
+                        onClick = {
+                            expanded = !expanded
+                        }
+                    ),
+                readOnly = true,
+                value = if (tag != "") tag else "All ideas",
+                onValueChange = { },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(
+                        expanded = expanded
+                    )
+                },
+                colors = ExposedDropdownMenuDefaults.textFieldColors(
+                    containerColor = Color.White,
+                    selectionColors = TextSelectionColors(
+                        handleColor = Color.Transparent,
+                        backgroundColor = Color.Transparent,
+                    ),
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                )
+            )
+            ExposedDropdownMenu(
+                modifier = Modifier
+                    .background(Color.White),
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                }
+            ) {
+                tags.forEach { item ->
+                    DropdownMenuItem(
+                        onClick = {
+                            tag = item
+                            onSelect(item)
+                            expanded = false
+                        },
+                        text = { Text(
+                            text = item,
+                            fontSize = 12.sp,
+                            color = Color(0xFF001833),
+                        ) },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Tags(
     modifier: Modifier = Modifier,
-    tag: String,
-    onAddTag: () -> Unit,
-    onRemoveTag: () -> Unit,
+    currentTag: String = "",
+    onRequestTags: () -> Unit,
 ) {
     Card(
         modifier = modifier,
         shape = CircleShape,
+        onClick = onRequestTags
     ) {
-        if (tag != "") {
-            TextButton(onClick = { /*TODO*/ }) {
-                Text(text = tag)
-            }
-        } else {
-            TextButton(onClick = {
-                
-            }) {
-                Text(text = "All ideas")
-            }
-        }
+        Text(
+            modifier = Modifier.padding(8.dp),
+            text = if (currentTag != "") currentTag else "All ideas"
+        )
     }
 }
 

@@ -1,13 +1,16 @@
 package com.example.ideawhirl.data.repo
 
+import android.content.Context
+import com.example.ideawhirl.components.drawing_board.DrawingData
 import com.example.ideawhirl.data.data_source.LocalDatabase
 import com.example.ideawhirl.data.data_source.NoteEntity
 import com.example.ideawhirl.data.data_source.TagEntity
 import com.example.ideawhirl.model.Note
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 
-class NoteRepo(val database: LocalDatabase) {
+class NoteRepo(val database: LocalDatabase, val context: Context) {
     fun getAll(): Flow<List<Note>> {
         val entities = database.noteDao().getAllNotesWithTags()
         return entities.map { noteEntityMapToNote(it) }
@@ -22,7 +25,8 @@ class NoteRepo(val database: LocalDatabase) {
                 uid = entry.key.uid,
                 name = entry.key.name,
                 detail = entry.key.detail,
-                tag = entry.value.map { it.name }
+                tag = entry.value.map { it.name },
+                context = context,
             )
             note
         }

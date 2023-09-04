@@ -115,7 +115,7 @@ fun DrawingSurface(
             }
             drawPath(
                 color = pathColor,
-                path = Json.decodeFromString<com.example.ideawhirl.components.drawing_board.Stroke>(Json.encodeToString(path)).drawData,
+                path = path.drawData,
                 style = Stroke(
                     width = path.strokeWidth().dp.toPx(),
                     cap = StrokeCap.Round,

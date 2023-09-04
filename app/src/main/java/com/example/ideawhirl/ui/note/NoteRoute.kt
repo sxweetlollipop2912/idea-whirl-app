@@ -17,6 +17,7 @@ fun NoteRoute(
     NoteScreen(
         note = note,
         uiState = uiState,
+        onRequestNoteEdit = noteViewModel::onEditMode,
         onRequestTitleEdit = noteViewModel::onRequestTitleEdit,
         onTitleSubmit = noteViewModel::onTitleEditDone,
         onTitleChanged = noteViewModel::onTitleChanged,

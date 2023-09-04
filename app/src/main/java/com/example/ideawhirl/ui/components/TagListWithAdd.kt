@@ -27,6 +27,7 @@ fun TagListWithAdd(
     onTagClick: (String) -> Unit,
     palette: NotePalette,
     contentHorizontalPadding: Dp = 0.dp,
+    addButtonRemove: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val spaceBetweenTags = 8.dp
@@ -39,21 +40,23 @@ fun TagListWithAdd(
         key("startPadding") {
             Spacer(modifier = Modifier.size(contentHorizontalPadding - spaceBetweenTags))
         }
-        key("") {
-            FilledIconButton(
-                onClick = onAddClick,
-                shape = CircleShape,
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = palette.variant,
-                    contentColor = palette.onVariant
-                ),
-                modifier = Modifier
-                    .size(32.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Add,
-                    contentDescription = "add tag",
-                )
+        if (!addButtonRemove) {
+            key("") {
+                FilledIconButton(
+                    onClick = onAddClick,
+                    shape = CircleShape,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = palette.variant,
+                        contentColor = palette.onVariant
+                    ),
+                    modifier = Modifier
+                        .size(32.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        contentDescription = "add tag",
+                    )
+                }
             }
         }
         for (tag in tags) {

@@ -24,6 +24,7 @@ import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.FormatBold
 import androidx.compose.material.icons.outlined.FormatItalic
 import androidx.compose.material.icons.outlined.FormatListBulleted
@@ -82,6 +83,7 @@ import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults.richTextE
 fun NoteScreen(
     note: Note,
     uiState: NoteUiState,
+    onRequestNoteEdit: () -> Unit,
     onRequestTitleEdit: () -> Unit,
     onTitleSubmit: () -> Unit,
     onTitleChanged: (String) -> Unit,
@@ -101,6 +103,10 @@ fun NoteScreen(
         linkColor = note.palette.main,
         linkTextDecoration = TextDecoration.Underline,
     )
+    // load note content from viewmodel
+    if (!isInEditMode) {
+        richTextState.setMarkdown(note.detail)
+    }
 
     Scaffold(
         modifier = modifier,
@@ -141,12 +147,14 @@ fun NoteScreen(
                         )
                     }
                 },
-
                 actions = {
                     if (isInEditMode) {
                         FloatingActionButton(
                             modifier = Modifier.size(42.dp),
-                            onClick = onDoneEditing,
+                            onClick = {
+                                onContentChanged(richTextState.toMarkdown())
+                                onDoneEditing()
+                            },
                             shape = CircleShape,
                             containerColor = note.palette.variant,
                             contentColor = note.palette.onVariant,
@@ -154,6 +162,19 @@ fun NoteScreen(
                             Icon(
                                 imageVector = Icons.Outlined.Done,
                                 contentDescription = "save note",
+                            )
+                        }
+                    } else {
+                        FloatingActionButton(
+                            modifier = Modifier.size(42.dp),
+                            onClick = onRequestNoteEdit,
+                            shape = CircleShape,
+                            containerColor = note.palette.variant,
+                            contentColor = note.palette.onVariant,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.EditNote,
+                                contentDescription = "edit note",
                             )
                         }
                     }
@@ -198,7 +219,7 @@ fun NoteScreenContent(
     onTagClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isEditing = uiState.isEditingContent
+    val isInEditMode = uiState.isInEditMode
 
     Column(modifier = modifier.fillMaxSize()) {
         TagListWithAdd(
@@ -207,11 +228,12 @@ fun NoteScreenContent(
             onTagClick = onTagClick,
             palette = note.palette,
             contentHorizontalPadding = 16.dp,
+            addButtonRemove = !isInEditMode,
             modifier = Modifier.fillMaxWidth(),
         )
         RichTextEditor(
             state = richTextState,
-            readOnly = !isEditing,
+            readOnly = !isInEditMode,
             textStyle = MaterialTheme.typography.bodyLarge.copy(
                 color = note.palette.onBackground
             ),

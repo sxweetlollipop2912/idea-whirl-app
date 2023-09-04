@@ -75,6 +75,9 @@ dependencies {
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
 
+    val lottieVersion = "4.2.0"
+    implementation("com.airbnb.android:lottie-compose:$lottieVersion")
+
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.core:core-ktx:1.9.0")

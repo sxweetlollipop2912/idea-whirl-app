@@ -28,7 +28,8 @@ class MainActivity : ComponentActivity() {
                         Room.inMemoryDatabaseBuilder(
                             this,
                             LocalDatabase::class.java,
-                        ).fallbackToDestructiveMigration().build()
+                        ).fallbackToDestructiveMigration().build(),
+                        this
                     )
                 ),
                 onToNote = { /*TODO*/ },

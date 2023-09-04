@@ -20,6 +20,7 @@ fun HomeRoute(
         sensorManager = sensorManager,
         tags = arrayOf("Study", "Drafts", "Ideas"), // TODO: get tags from database
         getRandomNote = { homeViewModel.getRandomNote() },
+        getRandomNoteWithTag = { tag -> homeViewModel.getRandomNoteWithTag(tag) },
         modifier = modifier,
     )
 }

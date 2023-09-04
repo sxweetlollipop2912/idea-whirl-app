@@ -1,6 +1,5 @@
 package com.example.ideawhirl.ui.home
 
-import ShakeEventListener
 import android.graphics.RectF
 import android.hardware.SensorManager
 import androidx.compose.animation.core.Animatable
@@ -40,6 +39,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +47,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -60,7 +61,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCancellationBehavior
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.ideawhirl.R
+import com.example.ideawhirl.ShakeEventListener
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.ui.theme.IdeaWhirlTheme
 import kotlinx.coroutines.launch
@@ -73,12 +81,24 @@ fun HomeScreen(
     onToSettings: () -> Unit,
     tags: Array<String>,
     getRandomNote: suspend () -> Note?,
+    getRandomNoteWithTag: suspend (tag: String) -> Note?,
     sensorManager: SensorManager,
     modifier: Modifier = Modifier,
 ) {
     val animatableRotation = remember { Animatable(0f) }
     var currentTag by remember { mutableStateOf("") }
     var showTagsDialog by remember { mutableStateOf(false) }
+    var isPlaying by remember { mutableStateOf(false) }
+    val composition by rememberLottieComposition(
+        spec = LottieCompositionSpec.RawRes(R.raw.box_anim)
+    )
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = 1,
+        isPlaying = isPlaying,
+        restartOnPlay = true,
+        cancellationBehavior = LottieCancellationBehavior.OnIterationFinish,
+    )
     val scope = rememberCoroutineScope()
     ShakeEventListener(LocalLifecycleOwner.current, sensorManager) {
         scope.launch {
@@ -98,6 +118,12 @@ fun HomeScreen(
                 targetValue = 0f,
                 animationSpec = tween(50, easing = EaseInOut),
             )
+            isPlaying = true
+        }
+    }
+    LaunchedEffect(progress) {
+        if (progress >= 1f) {
+            isPlaying = false
         }
     }
     if (showTagsDialog) {
@@ -152,6 +178,8 @@ fun HomeScreen(
                             modifier = Modifier
                                 .size(250.dp),
                             animatableRotation = animatableRotation,
+                            composition,
+                            progress,
                             onStopDrag = getRandomNote
                         )
                         Tags(
@@ -239,7 +267,7 @@ fun TagsDialog(
                     ),
                 readOnly = true,
                 value = if (tag != "") tag else "All ideas",
-                onValueChange = { },
+                onValueChange = {  },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(
                         expanded = expanded
@@ -306,9 +334,11 @@ fun Tags(
 fun AnimationBox(
     modifier: Modifier = Modifier,
     animatableRotation: Animatable<Float, AnimationVector1D>,
+    composition: LottieComposition?,
+    progress: Float,
     onStopDrag: suspend () -> Note?,
 ) {
-    val offset = remember { Animatable(Offset.Zero, Offset.VectorConverter) }
+//    val offset = remember { Animatable(Offset.Zero, Offset.VectorConverter) }
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
@@ -328,6 +358,13 @@ fun AnimationBox(
                     }
                 }
             }
+//            LottieAnimation(
+//                modifier = Modifier
+//                    .size(250.dp)
+//                    .rotate(animatableRotation.value),
+//                composition = composition,
+//                progress = progress
+//            )
         }
     }
 }

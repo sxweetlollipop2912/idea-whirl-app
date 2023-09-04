@@ -20,10 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import kotlinx.serialization.Transient
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -35,21 +33,17 @@ const val OFFSET_TOLERANCE = 2
 
 @Composable
 fun DrawingBoard(
+    availableStrokeColors: List<Color>, backgroundColor: Color,
     drawingData: DrawingData,
     onUpdateDrawingData: (DrawingData) -> Unit,
     onSave: (DrawingData) -> Unit,
-    availableStrokeColors: List<Color>, backgroundColor: Color
+    drawingConfig: DrawingConfig,
+    onUpdateDrawingConfig: (DrawingConfig) -> Unit,
 ) {
     if (availableStrokeColors.size != 10) {
         throw (Throwable("Invalid arguments, colors list must have exactly 10 colors."))
     }
-    var usingEraser by remember {
-        mutableStateOf(false)
-    }
-    var eraserWidth by remember { mutableStateOf(EraserWidth.Normal) }
     var showEraserWidthChooser by remember { mutableStateOf(false) }
-    var strokeWidth by remember { mutableStateOf(StrokeWidth.Normal) }
-    var strokeColorIndex by remember { mutableStateOf(0) }
     var showColorChooser by remember { mutableStateOf(false) }
     var showStrokeWidthChooser by remember { mutableStateOf(false) }
     var inViewMode by remember { mutableStateOf(false) }
@@ -58,12 +52,9 @@ fun DrawingBoard(
         DrawingSurface(
             drawingData.paths,
             { newPaths -> onUpdateDrawingData(DrawingData(newPaths)) },
-            strokeColorIndex,
-            strokeWidth,
             availableStrokeColors,
             backgroundColor,
-            erasing = usingEraser,
-            eraserWidth = eraserWidth,
+            drawingConfig = drawingConfig,
         )
     } else {
         DisplayBoard(
@@ -89,32 +80,49 @@ fun DrawingBoard(
                 expanded = showColorChooser,
                 onExpanded = { showColorChooser = true },
                 onCollapsed = { showColorChooser = false },
-                currentStrokeColorIndex = strokeColorIndex,
-                onStrokeColorChanged = { index -> strokeColorIndex = index },
+                currentStrokeColorIndex = drawingConfig.strokeColorIndex,
+                onStrokeColorChanged = { index ->
+                    onUpdateDrawingConfig(drawingConfig.copy(strokeColorIndex = index))
+                },
                 availableStrokeColors,
             )
-            if (usingEraser) {
-                EraserWidthBox(
-                    expanded = showEraserWidthChooser,
-                    onExpanded = { showEraserWidthChooser = true },
-                    onCollapsed = { showEraserWidthChooser = false },
-                    currentEraserWidth = eraserWidth,
-                    onEraserWidthChanged = { newWidth -> eraserWidth = newWidth },
-                )
-            } else {
-                StrokeWidthBox(
-                    strokeColor = availableStrokeColors[strokeColorIndex],
-                    expanded = showStrokeWidthChooser,
-                    onExpanded = { showStrokeWidthChooser = true },
-                    onCollapsed = { showStrokeWidthChooser = false },
-                    currentStrokeWidth = strokeWidth,
-                    onStrokeWidthChanged = { width -> strokeWidth = width }
-                )
+            when (drawingConfig.mode) {
+                Mode.DRAWING -> {
+                    StrokeWidthBox(
+                        strokeColor = availableStrokeColors[drawingConfig.strokeColorIndex],
+                        expanded = showStrokeWidthChooser,
+                        onExpanded = { showStrokeWidthChooser = true },
+                        onCollapsed = { showStrokeWidthChooser = false },
+                        currentStrokeWidth = drawingConfig.strokeWidth,
+                        onStrokeWidthChanged = { width ->
+                            onUpdateDrawingConfig(drawingConfig.copy(strokeWidth = width))
+                        }
+                    )
+                }
+
+                Mode.ERASING -> {
+                    EraserWidthBox(
+                        expanded = showEraserWidthChooser,
+                        onExpanded = { showEraserWidthChooser = true },
+                        onCollapsed = { showEraserWidthChooser = false },
+                        currentEraserWidth = (drawingConfig).eraserWidth,
+                        onEraserWidthChanged = { newWidth ->
+                            onUpdateDrawingConfig(drawingConfig.copy(eraserWidth = newWidth))
+                        },
+                    )
+                }
             }
             IconToggleButton(
-                checked = usingEraser,
-                onCheckedChange = { checked -> usingEraser = checked }) {
-                if (usingEraser) {
+                checked = (drawingConfig.mode == Mode.ERASING),
+                onCheckedChange = { checked ->
+                    val newConfig = if (checked) {
+                        drawingConfig.copy(mode = Mode.ERASING)
+                    } else {
+                        drawingConfig.copy(mode = Mode.DRAWING)
+                    }
+                    onUpdateDrawingConfig(newConfig)
+                }) {
+                if (drawingConfig.mode == Mode.ERASING) {
                     Icon(Icons.Default.Send, "Eraser")
                 } else {
                     Icon(Icons.Default.Edit, "Pen")

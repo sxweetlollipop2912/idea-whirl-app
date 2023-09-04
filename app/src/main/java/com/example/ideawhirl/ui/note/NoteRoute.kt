@@ -21,7 +21,10 @@ fun NoteRoute(
         onTitleSubmit = noteViewModel::onTitleEditDone,
         onTitleChanged = noteViewModel::onTitleChanged,
         onContentChanged = noteViewModel::onContentChanged,
-        onSave = noteViewModel::onSave,
+        onDoneEditing = {
+            noteViewModel.onSave()
+            noteViewModel.onViewMode()
+        },
         onBack = onBack,
         onRequestToAddNewTags = { },
         onTagClick = noteViewModel::onTagRemoved,

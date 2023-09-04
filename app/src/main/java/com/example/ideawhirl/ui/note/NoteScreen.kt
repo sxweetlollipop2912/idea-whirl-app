@@ -86,7 +86,7 @@ fun NoteScreen(
     onTitleSubmit: () -> Unit,
     onTitleChanged: (String) -> Unit,
     onContentChanged: (String) -> Unit,
-    onSave: () -> Unit,
+    onDoneEditing: () -> Unit,
     onBack: () -> Unit,
     onRequestToAddNewTags: () -> Unit,
     onTagClick: (String) -> Unit,
@@ -146,7 +146,7 @@ fun NoteScreen(
                     if (isInEditMode) {
                         FloatingActionButton(
                             modifier = Modifier.size(42.dp),
-                            onClick = onSave,
+                            onClick = onDoneEditing,
                             shape = CircleShape,
                             containerColor = note.palette.variant,
                             contentColor = note.palette.onVariant,

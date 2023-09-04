@@ -125,13 +125,22 @@ class NoteViewModel(
     }
 
     fun onSave() {
-        viewModelScope.launch {
-            repository.saveNote(
-                _noteState.value.note,
-                _noteState.value.tagsAdded,
-                _noteState.value.tagsRemoved
-            )
-            _noteState.update { NoteState(repository.findNoteByUid(noteId).first()) }
+        if (createNote) {
+            viewModelScope.launch {
+                val noteCreated = repository.insert(
+                    _noteState.value.note,
+                )
+                _noteState.update { NoteState(noteCreated) }
+            }
+        } else {
+            viewModelScope.launch {
+                repository.update(
+                    _noteState.value.note,
+                    _noteState.value.tagsAdded,
+                    _noteState.value.tagsRemoved
+                )
+                _noteState.update { NoteState(repository.findNoteByUid(noteId).first()) }
+            }
         }
     }
 

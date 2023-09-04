@@ -57,6 +57,20 @@ class NoteRepo(val database: LocalDatabase) {
         database.noteDao().delete(noteEntity)
     }
 
+    suspend fun update(note: Note, addedTags: List<String>, deletedTags: List<String>) {
+        addedTags.forEach { insertTag(it, note.uid) }
+        deletedTags.forEach { deleteTag(it, note.uid) }
+
+        val noteEntity = NoteEntity(
+            _uid = note.uid,
+            name = note.name,
+            detail = note.detail,
+            createdAt = note.createdAt!!,
+            paletteId = note.palette.id,
+        )
+        database.noteDao().update(noteEntity)
+    }
+
     fun findNoteByName(name: String): Flow<List<Note>> {
         val entities = database.noteDao().findNoteAndTagsByName(name)
         return entities.map { noteEntityMapToNote(it) }
@@ -79,12 +93,11 @@ class NoteRepo(val database: LocalDatabase) {
         }.map { it[0] }
     }
 
-    suspend fun saveNote(note: Note, tagsAdded: List<String>, tagsDeleted: List<String>): Boolean {
-        // TODO: save note, tags, remove deleted tags
-        return true
+    private suspend fun insertTag(tag: String, noteId: Int) {
+        database.tagDao().insert(TagEntity(noteId = noteId, name = tag))
     }
 
-    suspend fun insertTag(noteId: Int, tag: String) {
-        database.tagDao().insert(TagEntity(noteId = noteId, name = tag))
+    private suspend fun deleteTag(tag: String, noteId: Int) {
+        database.tagDao().delete(TagEntity(noteId, tag))
     }
 }

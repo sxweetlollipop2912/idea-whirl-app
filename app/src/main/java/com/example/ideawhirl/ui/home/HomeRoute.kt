@@ -2,6 +2,7 @@ package com.example.ideawhirl.ui.home
 
 import android.hardware.SensorManager
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 
 @Composable
@@ -13,6 +14,7 @@ fun HomeRoute(
     sensorManager: SensorManager,
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(Unit) { homeViewModel.getAllNotes() }
     HomeScreen(
         onToNote = onToNote,
         onToNoteList = onToNoteList,

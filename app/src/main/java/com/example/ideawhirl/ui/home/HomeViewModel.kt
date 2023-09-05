@@ -1,34 +1,42 @@
 package com.example.ideawhirl.ui.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.ideawhirl.data.repo.NoteRepo
 import com.example.ideawhirl.model.Note
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.single
 
 class HomeViewModel(
     repository: NoteRepo
 ) : ViewModel() {
 
-    private val allNotes = repository.getAll()
+    private val notesFlow = repository.getAll()
+    private lateinit var allNotes: List<Note>
 
-    suspend fun getRandomNoteWithTag(tag: String): Note? {
-        var randomNote: Note? = null
-        allNotes.collect { newNotes ->
-            if (newNotes.isEmpty()) {
-                randomNote = null
-            }
-            randomNote = newNotes.filter { it.tags.contains(tag) }.random()
+    suspend fun getAllNotes() {
+        notesFlow.collect {
+            allNotes = it
         }
+    }
+
+    fun getRandomNoteWithTag(tag: String): Note? {
+        var randomNote: Note? = null
+        randomNote = if (allNotes.isEmpty()) {
+            null
+        } else
+            allNotes.filter { it.tags.contains(tag) }.random()
         return randomNote
     }
 
-    suspend fun getRandomNote(): Note? {
+    fun getRandomNote(): Note? {
         var randomNote: Note? = null
-        allNotes.collect { newNotes ->
-            if (newNotes.isEmpty()) {
-                randomNote = null
-            }
-            randomNote = newNotes.random()
+        randomNote = if (allNotes.isEmpty()) {
+            null
+        } else {
+            allNotes.random()
         }
         return randomNote
     }

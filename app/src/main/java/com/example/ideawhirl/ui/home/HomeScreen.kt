@@ -79,7 +79,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onToNote: (String) -> Unit,
+    onToNote: (Int) -> Unit,
     onToNoteList: () -> Unit,
     onToSettings: () -> Unit,
     tags: Array<String>,

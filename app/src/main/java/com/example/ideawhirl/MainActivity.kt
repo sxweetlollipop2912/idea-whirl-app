@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
                 ThisNavGraph(
                     repository = noteRepo,
                     thisNavController = thisNavController,
-                    startDestination = NavRoutes.HOME.route,
+                    startDestination = NavRoutes.NOTE_LIST.route,
                     sensorManager = mSensorManager
                 )
             }

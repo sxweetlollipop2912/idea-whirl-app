@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.ideawhirl.components.drawing_board.DrawingData
 import kotlinx.serialization.json.Json
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.example.compose.note_dark_blue
@@ -12,24 +13,32 @@ import com.example.compose.note_dark_blue_variant
 import com.example.compose.note_dark_green
 import com.example.compose.note_dark_green_background
 import com.example.compose.note_dark_green_variant
+import com.example.compose.note_dark_on_custom
 import com.example.compose.note_dark_orange
 import com.example.compose.note_dark_orange_background
 import com.example.compose.note_dark_orange_variant
 import com.example.compose.note_dark_pink
 import com.example.compose.note_dark_pink_background
 import com.example.compose.note_dark_pink_variant
+import com.example.compose.note_dark_purple
+import com.example.compose.note_dark_purple_background
+import com.example.compose.note_dark_purple_variant
 import com.example.compose.note_light_blue
 import com.example.compose.note_light_blue_background
 import com.example.compose.note_light_blue_variant
 import com.example.compose.note_light_green
 import com.example.compose.note_light_green_background
 import com.example.compose.note_light_green_variant
+import com.example.compose.note_light_on_custom
 import com.example.compose.note_light_orange
 import com.example.compose.note_light_orange_background
 import com.example.compose.note_light_orange_variant
 import com.example.compose.note_light_pink
 import com.example.compose.note_light_pink_background
 import com.example.compose.note_light_pink_variant
+import com.example.compose.note_light_purple
+import com.example.compose.note_light_purple_background
+import com.example.compose.note_light_purple_variant
 import java.util.Date
 
 enum class NotePalette(
@@ -71,7 +80,15 @@ enum class NotePalette(
         note_dark_orange,
         note_dark_orange_variant,
         note_dark_orange_background,
-        4);
+        4),
+    PALETTE_5(
+        note_light_purple,
+        note_light_purple_variant,
+        note_light_purple_background,
+        note_dark_purple,
+        note_dark_purple_variant,
+        note_dark_purple_background,
+        5);
 
     val main: Color
         @Composable
@@ -99,6 +116,20 @@ enum class NotePalette(
             } else {
                 lightBackground
             }
+        }
+    val onVariant: Color
+        @Composable
+        get() {
+            return if (isSystemInDarkTheme()) {
+                note_dark_on_custom
+            } else {
+                note_light_on_custom
+            }
+        }
+    val onBackground: Color
+        @Composable
+        get() {
+            return MaterialTheme.colorScheme.onBackground
         }
 
     companion object {

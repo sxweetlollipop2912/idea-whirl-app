@@ -62,10 +62,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.compose.LottieAnimatable
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCancellationBehavior
+import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieAnimatable
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.ideawhirl.R
 import com.example.ideawhirl.ShakeEventListener
@@ -88,17 +91,10 @@ fun HomeScreen(
     val animatableRotation = remember { Animatable(0f) }
     var currentTag by remember { mutableStateOf("") }
     var showTagsDialog by remember { mutableStateOf(false) }
-    var isPlaying by remember { mutableStateOf(false) }
     val composition by rememberLottieComposition(
         spec = LottieCompositionSpec.RawRes(R.raw.box_anim)
     )
-    val progress by animateLottieCompositionAsState(
-        composition = composition,
-        iterations = 1,
-        isPlaying = isPlaying,
-        restartOnPlay = true,
-        cancellationBehavior = LottieCancellationBehavior.OnIterationFinish,
-    )
+    val animatableBox = rememberLottieAnimatable()
     val scope = rememberCoroutineScope()
     ShakeEventListener(LocalLifecycleOwner.current, sensorManager) {
         scope.launch {
@@ -118,12 +114,11 @@ fun HomeScreen(
                 targetValue = 0f,
                 animationSpec = tween(50, easing = EaseInOut),
             )
-            isPlaying = true
-        }
-    }
-    LaunchedEffect(progress) {
-        if (progress >= 1f) {
-            isPlaying = false
+            animatableBox.animate(
+                composition = composition,
+                iterations = 1,
+                speed = 1.5f,
+            )
         }
     }
     if (showTagsDialog) {
@@ -178,8 +173,8 @@ fun HomeScreen(
                             modifier = Modifier
                                 .size(250.dp),
                             animatableRotation = animatableRotation,
-                            composition,
-                            progress,
+                            composition = composition,
+                            animatableBox = animatableBox,
                             onStopDrag = getRandomNote
                         )
                         Tags(
@@ -335,7 +330,7 @@ fun AnimationBox(
     modifier: Modifier = Modifier,
     animatableRotation: Animatable<Float, AnimationVector1D>,
     composition: LottieComposition?,
-    progress: Float,
+    animatableBox: LottieAnimatable,
     onStopDrag: suspend () -> Note?,
 ) {
 //    val offset = remember { Animatable(Offset.Zero, Offset.VectorConverter) }
@@ -346,25 +341,25 @@ fun AnimationBox(
         val image = ImageBitmap.imageResource(R.drawable.box)
 
         DragTarget(onStartDrag = { /*TODO*/ }, onStopDrag = { /*TODO*/ }) {
-            Canvas(modifier = Modifier.size(250.dp)) {
-                rotate(animatableRotation.value) {
-                    drawIntoCanvas { canvas ->
-                        canvas.nativeCanvas.drawBitmap(
-                            image.asAndroidBitmap(),
-                            null,
-                            RectF(0f, 0f, 250 * density, 250 * density),
-                            null
-                        )
-                    }
-                }
-            }
-//            LottieAnimation(
-//                modifier = Modifier
-//                    .size(250.dp)
-//                    .rotate(animatableRotation.value),
-//                composition = composition,
-//                progress = progress
-//            )
+//            Canvas(modifier = Modifier.size(250.dp)) {
+//                rotate(animatableRotation.value) {
+//                    drawIntoCanvas { canvas ->
+//                        canvas.nativeCanvas.drawBitmap(
+//                            image.asAndroidBitmap(),
+//                            null,
+//                            RectF(0f, 0f, 250 * density, 250 * density),
+//                            null
+//                        )
+//                    }
+//                }
+//            }
+            LottieAnimation(
+                modifier = Modifier
+                    .size(250.dp)
+                    .rotate(animatableRotation.value),
+                composition = composition,
+                progress = animatableBox.progress,
+            )
         }
     }
 }

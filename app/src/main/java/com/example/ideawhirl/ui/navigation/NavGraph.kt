@@ -1,6 +1,7 @@
 package com.example.ideawhirl.ui.navigation
 
 import android.hardware.SensorManager
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
@@ -45,10 +46,9 @@ fun ThisNavGraph(
                 sensorManager = sensorManager
             )
         }
+        val route = NavRoutes.NOTE.route + "?${NavRoutes.NOTE.args[0]}={${NavRoutes.NOTE.args[0]}}"
         composable(
-            route =
-            NavRoutes.NOTE.route +
-                    "/{${NavRoutes.NOTE.args[0]}}",
+            route = route,
             arguments = listOf(
                 navArgument(NavRoutes.NOTE.args[0]) {
                     type = NavType.IntType
@@ -79,7 +79,7 @@ fun ThisNavGraph(
             NoteListRoute(
                 noteListViewModel = noteListViewModel,
                 onToNote = { id -> thisNavController.navigateToNote(navBackStackEntry, id) },
-                onToCreateNote = { thisNavController.navigateTo(NavRoutes.NOTE) },
+                onToCreateNote = { thisNavController.navigateToNote(navBackStackEntry, -1) },
                 onBack = { thisNavController.popBackStack() }
             )
         }

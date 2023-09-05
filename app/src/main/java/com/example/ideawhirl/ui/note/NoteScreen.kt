@@ -91,7 +91,8 @@ fun NoteScreen(
     onDoneEditing: () -> Unit,
     onBack: () -> Unit,
     onRequestToAddNewTags: () -> Unit,
-    onTagClick: (String) -> Unit,
+    onTagUpdated: (String, String) -> Unit,
+    onTagRemoved: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isInEditMode = uiState.isInEditMode
@@ -203,7 +204,8 @@ fun NoteScreen(
             uiState,
             richTextState,
             onRequestToAddNewTags,
-            onTagClick,
+            onTagUpdated,
+            onTagRemoved,
             screenModifier
         )
     }
@@ -216,16 +218,22 @@ fun NoteScreenContent(
     uiState: NoteUiState,
     richTextState: RichTextState,
     onRequestToAddNewTags: () -> Unit,
-    onTagClick: (String) -> Unit,
+    onTagUpdated: (String, String) -> Unit,
+    onTagRemoved: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isInEditMode = uiState.isInEditMode
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
+    ) {
         TagListWithAdd(
             tags = note.tags,
             onAddClick = onRequestToAddNewTags,
-            onTagClick = onTagClick,
+            isEditingNote = isInEditMode,
+            onTagUpdated = onTagUpdated,
+            onTagRemoved = onTagRemoved,
             palette = note.palette,
             contentHorizontalPadding = 16.dp,
             addButtonRemove = !isInEditMode,
@@ -248,12 +256,12 @@ fun NoteScreenContent(
                 unfocusedIndicatorColor = Color.Transparent,
             ),
             contentPadding = PaddingValues(
-                top = 0.dp,
+                top = 16.dp,
                 start = 16.dp,
                 end = 16.dp,
                 bottom = 0.dp
             ),
-            modifier = modifier
+            modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
         )

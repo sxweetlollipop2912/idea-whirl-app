@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
                 ThisNavGraph(
                     repository = noteRepo,
                     thisNavController = thisNavController,
-                    startDestination = NavRoutes.NOTE.route + "/0",
+                    startDestination = NavRoutes.NOTE_LIST.route,
                     sensorManager = mSensorManager,
                     modifier = Modifier.safeDrawingPadding()
                 )

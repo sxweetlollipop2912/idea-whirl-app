@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
                     this,
                     LocalDatabase::class.java,
                 ).fallbackToDestructiveMigration().build()
-                val noteRepo = NoteRepo(db)
+                val noteRepo = NoteRepo(db, this)
 
                 ThisNavGraph(
                     repository = noteRepo,

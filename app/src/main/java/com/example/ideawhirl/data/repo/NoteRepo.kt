@@ -31,7 +31,7 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
                 createdAt = entry.key.createdAt,
                 tags = entry.value.map { it.name },
                 palette = NotePalette.fromId(entry.key.paletteId),
-                context = context,
+                drawingData = loadOrCreateDrawingData(entry.key.uid)
             )
             note
         }
@@ -46,6 +46,7 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
         val noteId = database.noteDao().insert(noteEntity)[0]
         val tagEntities = note.tags.map { TagEntity(noteId = noteId.toInt(), it) }
         database.tagDao().insert(*tagEntities.toTypedArray())
+        /* TODO: Save drawing data into file */
 
         return findNoteByUid(noteId.toInt()).first()
     }
@@ -58,6 +59,7 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
             createdAt = note.createdAt!!,
             paletteId = note.palette.id,
         )
+        /* TODO: Delete drawing file */
         database.noteDao().delete(noteEntity)
     }
 
@@ -72,6 +74,7 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
             createdAt = note.createdAt!!,
             paletteId = note.palette.id,
         )
+        /* TODO: Update drawing data into file */
         database.noteDao().update(noteEntity)
     }
 
@@ -103,5 +106,19 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
 
     private suspend fun deleteTag(tag: String, noteId: Int) {
         database.tagDao().delete(TagEntity(noteId, tag))
+    }
+
+    private fun loadOrCreateDrawingData(uid: Int): DrawingData {
+        val filename = "drawing_$uid.data"
+        try {
+            context.openFileInput(filename).bufferedReader().useLines { lines ->
+                val content = lines.fold("") { content, text ->
+                    content.plus(text)
+                }
+                return Json.decodeFromString(content)
+            }
+        } catch (e: Throwable) {
+            return DrawingData.emptyData()
+        }
     }
 }

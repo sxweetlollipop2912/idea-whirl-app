@@ -3,9 +3,9 @@ package com.example.ideawhirl.ui.note
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.ideawhirl.components.drawing_board.DrawingData
 import com.example.ideawhirl.data.repo.NoteRepo
 import com.example.ideawhirl.model.Note
-import com.example.ideawhirl.model.NotePalette
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,12 +31,7 @@ data class NoteState(
 ) {
     companion object {
         fun dummy() = NoteState(
-            note = Note(
-                name = "",
-                detail = "",
-                tags = emptyList(),
-                palette = NotePalette.PALETTE_0,
-            )
+            note = Note.dummy()
         )
     }
 }
@@ -73,20 +68,14 @@ class NoteViewModel(
     )
 
     init {
-        if (!createNote) {
+        if (createNote) {
+            _noteState.update { NoteState.dummy() }
+        } else {
             _uiState.update { it.copy(isLoading = true) }
             viewModelScope.launch {
                 _noteState.update { NoteState(repository.findNoteByUid(noteId).first()) }
                 _uiState.update { it.copy(isLoading = false) }
             }
-        } else {
-            _noteState.update { NoteState(
-                note = Note(
-                    name = "Untitled",
-                    detail = "",
-                    tags = emptyList(),
-                )
-            ) }
         }
     }
 
@@ -121,6 +110,14 @@ class NoteViewModel(
         _noteState.update { it.copy(
             note = it.note.copy(tags = it.note.tags - tag),
             tagsRemoved = it.tagsRemoved + tag
+        ) }
+    }
+
+    fun onDeleteDrawing() {
+        _noteState.update { it.copy(
+            note = it.note.copy(
+                drawingData = DrawingData.emptyData()
+            )
         ) }
     }
 

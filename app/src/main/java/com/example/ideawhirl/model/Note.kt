@@ -154,36 +154,19 @@ data class Note(
     val detail: String,
     val tags: List<String>,
     val uid: Int = 0,
-    val createdAt: Date? = null,
+    val createdAt: Date?,
     val palette: NotePalette = NotePalette.random(),
-    private val context: Context,
+    val drawingData: DrawingData,
 ) {
-    private var _drawingData: DrawingData? = null
-
-    var drawingData: DrawingData
-        get() {
-            if (_drawingData == null) {
-                return loadOrCreateDrawingData()
-            }
-            return _drawingData
-                ?: throw AssertionError("Set to null after initialized by another thread")
-        }
-        set(value) {
-            _drawingData = value
-        }
-
-    private fun loadOrCreateDrawingData(): DrawingData {
-        val filename = "drawing_$uid.data"
-        try {
-            context.openFileInput(filename).bufferedReader().useLines { lines ->
-                val content = lines.fold("") { content, text ->
-                    content.plus(text)
-                }
-                return Json.decodeFromString(content)
-            }
-        } catch (e: Throwable) {
-            return DrawingData(listOf())
-        }
+    companion object {
+        fun dummy() = Note(
+            name = "",
+            detail = "",
+            tags = emptyList(),
+            uid = 0,
+            createdAt = null,
+            palette = NotePalette.PALETTE_0,
+            drawingData = DrawingData.emptyData(),
+        )
     }
-
 }

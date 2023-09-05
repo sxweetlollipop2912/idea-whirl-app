@@ -39,6 +39,9 @@ import com.example.ideawhirl.ui.theme.note_light_pink_variant
 import com.example.ideawhirl.ui.theme.note_light_purple
 import com.example.ideawhirl.ui.theme.note_light_purple_background
 import com.example.ideawhirl.ui.theme.note_light_purple_variant
+import kotlinx.serialization.encodeToString
+import java.io.File
+import java.nio.file.Files
 import java.util.Date
 
 enum class NotePalette(
@@ -83,15 +86,7 @@ enum class NotePalette(
         note_dark_orange,
         note_dark_orange_variant,
         note_dark_orange_background,
-        4),
-    PALETTE_5(
-        note_light_purple,
-        note_light_purple_variant,
-        note_light_purple_background,
-        note_dark_purple,
-        note_dark_purple_variant,
-        note_dark_purple_background,
-        5);
+        4);
 
     val main: Color
         @Composable
@@ -170,6 +165,47 @@ data class Note(
     val palette: NotePalette = NotePalette.random(),
     val drawingData: DrawingData = DrawingData.emptyData(),
 ) {
+    private var _drawingData: DrawingData? = null
+
+    var drawingData: DrawingData
+        get() {
+            if (_drawingData == null) {
+                return loadOrCreateDrawingData()
+            }
+            return _drawingData
+                ?: throw AssertionError("Set to null after initialized by another thread")
+        }
+        set(value) {
+            _drawingData = value
+        }
+
+    private val filename = "drawing_$uid.data"
+    private fun loadOrCreateDrawingData(): DrawingData {
+        try {
+            context.openFileInput(filename).bufferedReader().useLines { lines ->
+                val content = lines.fold("") { content, text ->
+                    content.plus(text)
+                }
+                return Json.decodeFromString(content)
+            }
+        } catch (e: Throwable) {
+            return DrawingData(listOf())
+        }
+    }
+
+    fun saveDrawingPath() {
+        if (_drawingData == null) {
+            throw AssertionError("Drawing data is not initialized.")
+        }
+
+        if (uid == 0) {
+            throw AssertionError("Note must be fetched from database to save.")
+        }
+        context.openFileOutput(filename, Context.MODE_PRIVATE).use {
+            it.write(Json.encodeToString(drawingData).toByteArray())
+        }
+    }
+
     companion object {
         fun dummy() = Note(
             name = "",
@@ -181,4 +217,5 @@ data class Note(
             drawingData = DrawingData.emptyData(),
         )
     }
+
 }

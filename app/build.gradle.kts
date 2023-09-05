@@ -59,6 +59,7 @@ android {
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
+    implementation("androidx.navigation:navigation-compose:2.6.0")
     val coroutines_version = "1.7.1"
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version")
 

@@ -1,6 +1,5 @@
 package com.example.ideawhirl.data
 
-import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import java.util.Date
 
@@ -12,7 +11,6 @@ class DateTimeConverter {
 
     @TypeConverter
     fun toTimestamp(date: Date?): Long? {
-        return date?.time?.toLong();
+        return date?.time
     }
-
 }

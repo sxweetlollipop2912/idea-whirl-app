@@ -2,6 +2,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("plugin.serialization") version "1.8.10"
 }
 
 android {
@@ -56,6 +57,8 @@ android {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
     implementation("androidx.compose.material:material-icons-extended:1.5.0")
     implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-beta02")
     implementation("androidx.navigation:navigation-compose:2.6.0")

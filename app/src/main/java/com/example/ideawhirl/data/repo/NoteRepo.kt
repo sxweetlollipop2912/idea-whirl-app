@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class NoteRepo(val database: LocalDatabase, val context: Context) {
@@ -115,8 +116,12 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
         database.tagDao().delete(TagEntity(noteId, tag))
     }
 
+    private fun getDrawingFilename(uid: Int): String {
+        return "drawing_$uid.data"
+    }
+
     private fun loadOrCreateDrawingData(uid: Int): DrawingData {
-        val filename = "drawing_$uid.data"
+        val filename = getDrawingFilename(uid)
         try {
             context.openFileInput(filename).bufferedReader().useLines { lines ->
                 val content = lines.fold("") { content, text ->
@@ -126,6 +131,21 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
             }
         } catch (e: Throwable) {
             return DrawingData.emptyData()
+        }
+    }
+
+    private fun saveDrawingData(uid: Int, drawingData: DrawingData) {
+        val filename = getDrawingFilename(uid)
+        if (drawingData == null) {
+            throw AssertionError("Drawing data is not initialized.")
+        }
+
+        if (uid == 0) {
+            throw AssertionError("Note must be fetched from database to save.")
+        }
+
+        context.openFileOutput(filename, Context.MODE_PRIVATE).use {
+            it.write(Json.encodeToString(drawingData).toByteArray())
         }
     }
 }

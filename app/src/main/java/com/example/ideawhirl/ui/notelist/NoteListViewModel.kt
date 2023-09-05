@@ -76,56 +76,56 @@ class NoteListViewModel(
                 Note(
                     name = "test note 1",
                     detail = "test detail",
-                    tags = listOf("tag 1", "tag 2")
+                    tags = setOf("tag 1", "tag 2")
                 )
             )
             repository.insert(
                 Note(
                     name = "test note 2",
                     detail = "test detail 2",
-                    tags = listOf("tag 3", "tag 4", "long tag 5", "long tag 6")
+                    tags = setOf("tag 3", "tag 4", "long tag 5", "long tag 6")
                 )
             )
             repository.insert(
                 Note(
                     name = "test note 3",
                     detail = "test detail",
-                    tags = listOf("tag 1", "tag 2")
+                    tags = setOf("tag 1", "tag 2")
                 )
             )
             repository.insert(
                 Note(
                     name = "test note 4",
                     detail = "test detail 2",
-                    tags = listOf("tag 3", "tag 4", "long tag 5", "long tag 6")
+                    tags = setOf("tag 3", "tag 4", "long tag 5", "long tag 6")
                 )
             )
             repository.insert(
                 Note(
                     name = "test note 3",
                     detail = "test detail",
-                    tags = listOf("tag 1", "tag 2")
+                    tags = setOf("tag 1", "tag 2")
                 )
             )
             repository.insert(
                 Note(
                     name = "test note 4",
                     detail = "test detail 2",
-                    tags = listOf("tag 3", "tag 4", "long tag 5", "long tag 6")
+                    tags = setOf("tag 3", "tag 4", "long tag 5", "long tag 6")
                 )
             )
             repository.insert(
                 Note(
                     name = "test note 3",
                     detail = "test detail",
-                    tags = listOf("tag 1", "tag 2")
+                    tags = setOf("tag 1", "tag 2")
                 )
             )
             repository.insert(
                 Note(
                     name = "test note 4",
                     detail = "test detail 2",
-                    tags = listOf("tag 3", "tag 4", "long tag 5", "long tag 6")
+                    tags = setOf("tag 3", "tag 4", "long tag 5", "long tag 6")
                 )
             )
         }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,11 +15,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.outlined.Close
@@ -31,6 +34,7 @@ import androidx.compose.material.icons.outlined.FormatListBulleted
 import androidx.compose.material.icons.outlined.FormatListNumbered
 import androidx.compose.material.icons.outlined.FormatStrikethrough
 import androidx.compose.material.icons.outlined.FormatUnderlined
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingActionButton
@@ -40,6 +44,9 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -69,6 +76,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.ideawhirl.R
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.model.NotePalette
 import com.example.ideawhirl.ui.components.TagListWithAdd
@@ -77,6 +86,7 @@ import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults.richTextEditorColors
+import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalRichTextApi::class)
 @Composable
@@ -90,7 +100,7 @@ fun NoteScreen(
     onContentChanged: (String) -> Unit,
     onDoneEditing: () -> Unit,
     onBack: () -> Unit,
-    onRequestToAddNewTags: () -> Unit,
+    onTagAdded: (String) -> Unit,
     onTagUpdated: (String, String) -> Unit,
     onTagRemoved: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -203,7 +213,7 @@ fun NoteScreen(
             note,
             uiState,
             richTextState,
-            onRequestToAddNewTags,
+            onTagAdded,
             onTagUpdated,
             onTagRemoved,
             screenModifier
@@ -217,20 +227,24 @@ fun NoteScreenContent(
     note: Note,
     uiState: NoteUiState,
     richTextState: RichTextState,
-    onRequestToAddNewTags: () -> Unit,
+    onTagAdded: (String) -> Unit,
     onTagUpdated: (String, String) -> Unit,
     onTagRemoved: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isInEditMode = uiState.isInEditMode
 
+    var isAddingTag by rememberSaveable { mutableStateOf(false) }
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
     ) {
         TagListWithAdd(
-            tags = note.tags,
-            onAddClick = onRequestToAddNewTags,
+            tags = note.tags.toList(),
+            onAddClick = {
+                isAddingTag = true
+            },
             isEditingNote = isInEditMode,
             onTagUpdated = onTagUpdated,
             onTagRemoved = onTagRemoved,
@@ -239,31 +253,103 @@ fun NoteScreenContent(
             addButtonRemove = !isInEditMode,
             modifier = Modifier.fillMaxWidth(),
         )
-        RichTextEditor(
-            state = richTextState,
-            readOnly = !isInEditMode,
-            textStyle = MaterialTheme.typography.bodyLarge.copy(
-                color = note.palette.onBackground
-            ),
-            colors = richTextEditorColors(
-                containerColor = note.palette.background,
-                cursorColor = note.palette.main,
-                selectionColors = TextSelectionColors(
-                    handleColor = note.palette.main,
-                    backgroundColor = note.palette.variant,
-                ),
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-            ),
-            contentPadding = PaddingValues(
-                top = 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 0.dp
-            ),
+        Column(
             modifier = Modifier
+                .fillMaxSize()
                 .weight(1f)
-                .fillMaxWidth(),
+                .verticalScroll(rememberScrollState())
+        ) {
+            RichTextEditor(
+                state = richTextState,
+                readOnly = !isInEditMode,
+                textStyle = MaterialTheme.typography.bodyLarge.copy(
+                    color = note.palette.onBackground
+                ),
+                colors = richTextEditorColors(
+                    containerColor = note.palette.background,
+                    cursorColor = note.palette.main,
+                    selectionColors = TextSelectionColors(
+                        handleColor = note.palette.main,
+                        backgroundColor = note.palette.variant,
+                    ),
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                ),
+                contentPadding = PaddingValues(
+                    top = 16.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 0.dp
+                ),
+                modifier = Modifier
+                    .fillMaxSize(),
+            )
+            Spacer(
+                modifier = Modifier.height(300.dp)
+            )
+        }
+    }
+
+    var newTag by rememberSaveable { mutableStateOf("") }
+
+    if (isAddingTag) {
+        AlertDialog(
+            onDismissRequest = {
+                isAddingTag = false
+                newTag = ""
+            },
+            title = {
+                Text(
+                    text = "Add tag",
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            },
+            text = {
+                TextField(
+                    value = newTag,
+                    onValueChange = {
+                        newTag = it
+                    },
+
+                    colors = TextFieldDefaults.textFieldColors(
+                        cursorColor = note.palette.main,
+                        focusedIndicatorColor = note.palette.main,
+                        selectionColors = TextSelectionColors(
+                            handleColor = note.palette.main,
+                            backgroundColor = note.palette.variant,
+                        )
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        isAddingTag = false
+                        onTagAdded(newTag)
+                        newTag = ""
+                    },
+                ) {
+                    Text(
+                        text = "OK",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = note.palette.buttonContent
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        isAddingTag = false
+                        newTag = ""
+                    },
+                ) {
+                    Text(
+                        text = "Cancel",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = note.palette.buttonContent
+                    )
+                }
+            }
         )
     }
 }

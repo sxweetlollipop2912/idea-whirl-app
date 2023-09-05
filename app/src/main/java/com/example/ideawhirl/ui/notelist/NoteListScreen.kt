@@ -1,9 +1,11 @@
 package com.example.ideawhirl.ui.notelist
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Add
@@ -30,12 +33,17 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.ui.components.TagFilter
 import com.example.ideawhirl.ui.formatDate
 import com.example.ideawhirl.ui.theme.IdeaWhirlTheme
+import com.mohamedrejeb.richeditor.model.rememberRichTextState
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
+import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults.richTextEditorColors
+import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -218,19 +226,25 @@ fun NoteListItem(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteListItemPreview(
     note: Note,
     modifier: Modifier = Modifier,
 ) {
+
+    // replace all '\n' with "  \n" to make sure that the line breaks are rendered
+    val detail = note.detail.replace("\n", "  \n")
+
     Row(
         modifier = modifier,
     ) {
-        Text(
-            note.detail,
-            style = MaterialTheme.typography.bodyMedium.copy(
+        MarkdownText(
+            markdown = detail,
+            style = MaterialTheme.typography.bodyLarge.copy(
                 color = MaterialTheme.colorScheme.onSurface
-            )
+            ),
+            fontSize = MaterialTheme.typography.bodyLarge.fontSize,
         )
     }
 }
@@ -243,7 +257,7 @@ fun PreviewNoteListItem() {
             note = Note(
                 name = "test note",
                 detail = "test detail",
-                tags = listOf("tag 1", "tag 2")
+                tags = setOf("tag 1", "tag 2")
             ),
             onDeleteNote = {},
             onItemClick = {},

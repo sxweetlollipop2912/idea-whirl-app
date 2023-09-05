@@ -10,6 +10,7 @@ import com.example.ideawhirl.model.NotePalette
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
@@ -29,7 +30,7 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
                 name = entry.key.name,
                 detail = entry.key.detail,
                 createdAt = entry.key.createdAt,
-                tags = entry.value.map { it.name },
+                tags = entry.value.map { it.name }.toSet(),
                 palette = NotePalette.fromId(entry.key.paletteId),
                 drawingData = loadOrCreateDrawingData(entry.key.uid)
             )
@@ -63,9 +64,15 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
         database.noteDao().delete(noteEntity)
     }
 
-    suspend fun update(note: Note, addedTags: List<String>, deletedTags: List<String>) {
-        addedTags.forEach { insertTag(it, note.uid) }
-        deletedTags.forEach { deleteTag(it, note.uid) }
+    suspend fun update(note: Note) {
+        val oldTags = database.tagDao().findTagsByNoteId(note.uid)
+        oldTags.first().forEach {
+            deleteTag(it.name, note.uid)
+        }
+
+        note.tags.forEach {
+            insertTag(it, note.uid)
+        }
 
         val noteEntity = NoteEntity(
             _uid = note.uid,

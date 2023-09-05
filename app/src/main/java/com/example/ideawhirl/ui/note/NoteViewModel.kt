@@ -26,8 +26,6 @@ data class NoteUiState(
 
 data class NoteState(
     val note: Note,
-    val tagsAdded: List<String> = emptyList(),
-    val tagsRemoved: List<String> = emptyList(),
 ) {
     companion object {
         fun dummy() = NoteState(
@@ -102,7 +100,6 @@ class NoteViewModel(
     fun onTagAdded(tag: String) {
         _noteState.update { it.copy(
             note = it.note.copy(tags = it.note.tags + tag),
-            tagsAdded = it.tagsAdded + tag
         ) }
     }
 
@@ -110,15 +107,12 @@ class NoteViewModel(
 //        TODO: fix update anomalies
         _noteState.update { it.copy(
             note = it.note.copy(tags = it.note.tags - tag + newTag),
-            tagsAdded = it.tagsAdded + newTag,
-            tagsRemoved = it.tagsRemoved + tag
         ) }
     }
 
     fun onTagRemoved(tag: String) {
         _noteState.update { it.copy(
             note = it.note.copy(tags = it.note.tags - tag),
-            tagsRemoved = it.tagsRemoved + tag
         ) }
     }
 
@@ -142,8 +136,6 @@ class NoteViewModel(
             viewModelScope.launch {
                 repository.update(
                     _noteState.value.note,
-                    _noteState.value.tagsAdded,
-                    _noteState.value.tagsRemoved
                 )
                 _noteState.update { NoteState(repository.findNoteByUid(noteId).first()) }
             }

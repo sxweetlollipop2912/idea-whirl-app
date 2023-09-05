@@ -57,6 +57,7 @@ android {
 }
 
 dependencies {
+    implementation("com.github.jeziellago:compose-markdown:0.3.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
     implementation("androidx.compose.material:material-icons-extended:1.5.0")

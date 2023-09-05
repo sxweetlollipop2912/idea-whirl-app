@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.AlertDialog
@@ -20,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -98,7 +101,7 @@ fun TagListWithAdd(
                         title = {
                             Text(
                                 text = "Edit tag",
-                                style = MaterialTheme.typography.labelMedium,
+                                style = MaterialTheme.typography.labelLarge,
                             )
                         },
                         text = {
@@ -106,7 +109,16 @@ fun TagListWithAdd(
                                value = newTag,
                                onValueChange = {
                                    newTag = it
-                               }
+                               },
+
+                               colors = TextFieldDefaults.textFieldColors(
+                                   cursorColor = palette.main,
+                                   focusedIndicatorColor = palette.main,
+                                   selectionColors = TextSelectionColors(
+                                       handleColor = palette.main,
+                                       backgroundColor = palette.variant,
+                                   )
+                               )
                            )
                         },
                         confirmButton = {
@@ -118,7 +130,8 @@ fun TagListWithAdd(
                             ) {
                                 Text(
                                     text = "OK",
-                                    style = MaterialTheme.typography.labelMedium,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = palette.buttonContent
                                 )
                             }
                         },
@@ -131,7 +144,7 @@ fun TagListWithAdd(
                             ) {
                                 Text(
                                     text = "Delete",
-                                    style = MaterialTheme.typography.labelMedium,
+                                    style = MaterialTheme.typography.labelLarge,
                                     color = MaterialTheme.colorScheme.error
                                 )
                             }
@@ -144,7 +157,8 @@ fun TagListWithAdd(
                             ) {
                                 Text(
                                     text = "Cancel",
-                                    style = MaterialTheme.typography.labelMedium,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = palette.buttonContent
                                 )
                             }
                         }

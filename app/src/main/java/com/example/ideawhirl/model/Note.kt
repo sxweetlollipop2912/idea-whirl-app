@@ -143,6 +143,18 @@ enum class NotePalette(
             return MaterialTheme.colorScheme.onBackground
         }
 
+    val buttonContent: Color
+        @Composable
+        get() {
+            return if (id == 0) {
+                MaterialTheme.colorScheme.onBackground
+            } else if (isSystemInDarkTheme()) {
+                MaterialTheme.colorScheme.onBackground
+            } else {
+                MaterialTheme.colorScheme.onBackground
+            }
+        }
+
     companion object {
         fun random() = values().toList().random()
         fun fromId(id: Int) = values().first { it.id == id }
@@ -152,17 +164,17 @@ enum class NotePalette(
 data class Note(
     val name: String,
     val detail: String,
-    val tags: List<String>,
+    val tags: Set<String>,
     val uid: Int = 0,
-    val createdAt: Date?,
+    val createdAt: Date? = null,
     val palette: NotePalette = NotePalette.random(),
-    val drawingData: DrawingData,
+    val drawingData: DrawingData = DrawingData.emptyData(),
 ) {
     companion object {
         fun dummy() = Note(
             name = "",
             detail = "",
-            tags = emptyList(),
+            tags = emptySet(),
             uid = 0,
             createdAt = null,
             palette = NotePalette.PALETTE_0,

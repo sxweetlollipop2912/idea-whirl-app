@@ -27,7 +27,7 @@ fun NoteRoute(
             noteViewModel.onViewMode()
         },
         onBack = onBack,
-        onRequestToAddNewTags = { },
+        onTagAdded = noteViewModel::onTagAdded,
         onTagUpdated = noteViewModel::onTagUpdated,
         onTagRemoved = noteViewModel::onTagRemoved,
         modifier = modifier

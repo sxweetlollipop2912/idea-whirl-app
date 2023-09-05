@@ -17,7 +17,7 @@ class HomeViewModel(
             if (newNotes.isEmpty()) {
                 randomNote = null
             }
-            randomNote = newNotes.filter { it.tag.contains(tag) }.random()
+            randomNote = newNotes.filter { it.tags.contains(tag) }.random()
         }
         return randomNote
     }

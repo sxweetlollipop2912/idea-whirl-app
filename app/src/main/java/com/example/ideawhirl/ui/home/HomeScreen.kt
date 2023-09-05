@@ -338,21 +338,7 @@ fun AnimationBox(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        val image = ImageBitmap.imageResource(R.drawable.box)
-
         DragTarget(onStartDrag = { /*TODO*/ }, onStopDrag = { /*TODO*/ }) {
-//            Canvas(modifier = Modifier.size(250.dp)) {
-//                rotate(animatableRotation.value) {
-//                    drawIntoCanvas { canvas ->
-//                        canvas.nativeCanvas.drawBitmap(
-//                            image.asAndroidBitmap(),
-//                            null,
-//                            RectF(0f, 0f, 250 * density, 250 * density),
-//                            null
-//                        )
-//                    }
-//                }
-//            }
             LottieAnimation(
                 modifier = Modifier
                     .size(250.dp)

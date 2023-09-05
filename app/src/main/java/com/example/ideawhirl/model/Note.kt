@@ -30,6 +30,9 @@ import com.example.compose.note_light_orange_variant
 import com.example.compose.note_light_pink
 import com.example.compose.note_light_pink_background
 import com.example.compose.note_light_pink_variant
+import kotlinx.serialization.encodeToString
+import java.io.File
+import java.nio.file.Files
 import java.util.Date
 
 enum class NotePalette(
@@ -39,7 +42,8 @@ enum class NotePalette(
     private val dark: Color,
     private val darkVariant: Color,
     private val darkBackground: Color,
-    val id: Int) {
+    val id: Int
+) {
     PALETTE_1(
         note_light_pink,
         note_light_pink_variant,
@@ -47,7 +51,8 @@ enum class NotePalette(
         note_dark_pink,
         note_dark_pink_variant,
         note_dark_pink_background,
-        1),
+        1
+    ),
     PALETTE_2(
         note_light_blue,
         note_light_blue_variant,
@@ -55,7 +60,8 @@ enum class NotePalette(
         note_dark_blue,
         note_dark_blue_variant,
         note_dark_blue_background,
-        2),
+        2
+    ),
     PALETTE_3(
         note_light_green,
         note_light_green_variant,
@@ -63,7 +69,8 @@ enum class NotePalette(
         note_dark_green,
         note_dark_green_variant,
         note_dark_green_background,
-        3),
+        3
+    ),
     PALETTE_4(
         note_light_orange,
         note_light_orange_variant,
@@ -71,7 +78,8 @@ enum class NotePalette(
         note_dark_orange,
         note_dark_orange_variant,
         note_dark_orange_background,
-        4);
+        4
+    );
 
     val main: Color
         @Composable
@@ -130,8 +138,8 @@ data class Note(
             _drawingData = value
         }
 
+    private val filename = "drawing_$uid.data"
     private fun loadOrCreateDrawingData(): DrawingData {
-        val filename = "drawing_$uid.data"
         try {
             context.openFileInput(filename).bufferedReader().useLines { lines ->
                 val content = lines.fold("") { content, text ->
@@ -144,4 +152,16 @@ data class Note(
         }
     }
 
+    fun saveDrawingPath() {
+        if (_drawingData == null) {
+            throw AssertionError("Drawing data is not initialized.")
+        }
+
+        if (uid == 0) {
+            throw AssertionError("Note must be fetched from database to save.")
+        }
+        context.openFileOutput(filename, Context.MODE_PRIVATE).use {
+            it.write(Json.encodeToString(drawingData).toByteArray())
+        }
+    }
 }

@@ -29,17 +29,6 @@ class MainActivity : ComponentActivity() {
                     LocalDatabase::class.java,
                 ).fallbackToDestructiveMigration().build()
                 val noteRepo = NoteRepo(db, this)
-                LaunchedEffect(Unit) {
-                    val note = noteRepo.insert(
-                        Note(
-                            name = "Test Note",
-                            detail = "Test Detail",
-                            tags = listOf("Test Tag"),
-                            context = noteRepo.context
-                        )
-                    )
-                    Log.d("MainActivity", "$note")
-                }
 
                 ThisNavGraph(
                     repository = noteRepo,

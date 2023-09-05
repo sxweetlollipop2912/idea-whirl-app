@@ -51,7 +51,11 @@ class ThisNavController(
         from: NavBackStackEntry,
         id: Int
     ) {
-        val url = "${NavRoutes.NOTE.route}/$id"
+        val url = if (id == -1) {
+            NavRoutes.NOTE.route
+        } else {
+            "${NavRoutes.NOTE.route}?id=$id"
+        }
         // In order to discard duplicated navigation events, we check the Lifecycle
         if (from.lifecycleIsResumed()) {
             navController.navigate(url)

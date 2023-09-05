@@ -106,6 +106,15 @@ class NoteViewModel(
         ) }
     }
 
+    fun onTagUpdated(tag: String, newTag: String) {
+//        TODO: fix update anomalies
+        _noteState.update { it.copy(
+            note = it.note.copy(tags = it.note.tags - tag + newTag),
+            tagsAdded = it.tagsAdded + newTag,
+            tagsRemoved = it.tagsRemoved + tag
+        ) }
+    }
+
     fun onTagRemoved(tag: String) {
         _noteState.update { it.copy(
             note = it.note.copy(tags = it.note.tags - tag),

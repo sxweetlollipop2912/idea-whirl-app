@@ -31,8 +31,7 @@ interface NoteDao {
     suspend fun insert(vararg noteEntities: NoteEntity): List<Long>
 
     @Update
-    fun update(noteEntity: NoteEntity)
-
+    suspend fun update(noteEntity: NoteEntity)
 
     @Delete
     suspend fun delete(noteEntity: NoteEntity)

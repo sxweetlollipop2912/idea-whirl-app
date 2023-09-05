@@ -2,6 +2,7 @@ package com.example.ideawhirl.ui.note
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -81,6 +83,7 @@ import com.example.ideawhirl.R
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.model.NotePalette
 import com.example.ideawhirl.ui.components.TagListWithAdd
+import com.example.ideawhirl.ui.components.TagPill
 import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -92,6 +95,7 @@ import dev.jeziellago.compose.markdowntext.MarkdownText
 @Composable
 fun NoteScreen(
     note: Note,
+    globalTags: List<String>,
     uiState: NoteUiState,
     onRequestNoteEdit: () -> Unit,
     onRequestTitleEdit: () -> Unit,
@@ -211,6 +215,7 @@ fun NoteScreen(
         )
         NoteScreenContent(
             note,
+            globalTags,
             uiState,
             richTextState,
             onTagAdded,
@@ -225,6 +230,7 @@ fun NoteScreen(
 @Composable
 fun NoteScreenContent(
     note: Note,
+    globalTags: List<String>,
     uiState: NoteUiState,
     richTextState: RichTextState,
     onTagAdded: (String) -> Unit,
@@ -242,6 +248,7 @@ fun NoteScreenContent(
     ) {
         TagListWithAdd(
             tags = note.tags.toList(),
+            globalTags = globalTags,
             onAddClick = {
                 isAddingTag = true
             },
@@ -305,21 +312,43 @@ fun NoteScreenContent(
                 )
             },
             text = {
-                TextField(
-                    value = newTag,
-                    onValueChange = {
-                        newTag = it
-                    },
+                Column {
+                    TextField(
+                        value = newTag,
+                        onValueChange = {
+                            newTag = it
+                        },
 
-                    colors = TextFieldDefaults.textFieldColors(
-                        cursorColor = note.palette.main,
-                        focusedIndicatorColor = note.palette.main,
-                        selectionColors = TextSelectionColors(
-                            handleColor = note.palette.main,
-                            backgroundColor = note.palette.variant,
+                        colors = TextFieldDefaults.textFieldColors(
+                            cursorColor = note.palette.main,
+                            focusedIndicatorColor = note.palette.main,
+                            selectionColors = TextSelectionColors(
+                                handleColor = note.palette.main,
+                                backgroundColor = note.palette.variant,
+                            )
                         )
                     )
-                )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        for (globalTag in globalTags.filter { it.contains(newTag) && !note.tags.contains(it) }) {
+                            key(globalTag) {
+                                TagPill(
+                                    tag = globalTag,
+                                    selected = false,
+                                    onTagPillClick = {
+                                        newTag = globalTag
+                                    },
+                                    selectedContainerColor = note.palette.variant,
+                                    selectedContentColor = note.palette.onVariant,
+                                )
+                            }
+                        }
+                    }
+                }
             },
             confirmButton = {
                 TextButton(

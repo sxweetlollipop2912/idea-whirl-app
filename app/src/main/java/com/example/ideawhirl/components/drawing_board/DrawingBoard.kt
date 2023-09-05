@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,10 +42,10 @@ fun DrawingBoard(
     if (availableStrokeColors.size != 10) {
         throw (Throwable("Invalid arguments, colors list must have exactly 10 colors."))
     }
-    var showEraserWidthChooser by remember { mutableStateOf(false) }
-    var showColorChooser by remember { mutableStateOf(false) }
-    var showStrokeWidthChooser by remember { mutableStateOf(false) }
-    var inViewMode by remember { mutableStateOf(false) }
+    var showEraserWidthChooser by rememberSaveable { mutableStateOf(false) }
+    var showColorChooser by rememberSaveable { mutableStateOf(false) }
+    var showStrokeWidthChooser by rememberSaveable { mutableStateOf(false) }
+    var inViewMode by rememberSaveable { mutableStateOf(false) }
 
     if (!inViewMode) {
         DrawingSurface(

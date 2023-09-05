@@ -13,9 +13,11 @@ fun NoteRoute(
 ) {
     val uiState by noteViewModel.uiState.collectAsStateWithLifecycle()
     val note by noteViewModel.note.collectAsStateWithLifecycle()
+    val globalTags by noteViewModel.globalTags.collectAsStateWithLifecycle()
 
     NoteScreen(
         note = note,
+        globalTags = globalTags,
         uiState = uiState,
         onRequestNoteEdit = noteViewModel::onEditMode,
         onRequestTitleEdit = noteViewModel::onRequestTitleEdit,

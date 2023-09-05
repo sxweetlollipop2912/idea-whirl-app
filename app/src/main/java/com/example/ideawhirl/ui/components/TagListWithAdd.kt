@@ -2,13 +2,14 @@ package com.example.ideawhirl.ui.components
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -18,7 +19,6 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -39,6 +39,7 @@ import com.example.ideawhirl.model.NotePalette
 @Composable
 fun TagListWithAdd(
     tags: List<String>,
+    globalTags: List<String>,
     onAddClick: () -> Unit,
     isEditingNote: Boolean,
     onTagUpdated: (String, String) -> Unit,
@@ -105,21 +106,43 @@ fun TagListWithAdd(
                             )
                         },
                         text = {
-                           TextField(
-                               value = newTag,
-                               onValueChange = {
-                                   newTag = it
-                               },
+                            Column {
+                                TextField(
+                                    value = newTag,
+                                    onValueChange = {
+                                        newTag = it
+                                    },
 
-                               colors = TextFieldDefaults.textFieldColors(
-                                   cursorColor = palette.main,
-                                   focusedIndicatorColor = palette.main,
-                                   selectionColors = TextSelectionColors(
-                                       handleColor = palette.main,
-                                       backgroundColor = palette.variant,
-                                   )
-                               )
-                           )
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        cursorColor = palette.main,
+                                        focusedIndicatorColor = palette.main,
+                                        selectionColors = TextSelectionColors(
+                                            handleColor = palette.main,
+                                            backgroundColor = palette.variant,
+                                        )
+                                    )
+                                )
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .horizontalScroll(rememberScrollState()),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                ) {
+                                    for (globalTag in globalTags.filter { it.contains(newTag) && !tags.contains(it) }) {
+                                        key(globalTag) {
+                                            TagPill(
+                                                tag = globalTag,
+                                                selected = false,
+                                                onTagPillClick = {
+                                                    newTag = globalTag
+                                                },
+                                                selectedContainerColor = palette.variant,
+                                                selectedContentColor = palette.onVariant,
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         },
                         confirmButton = {
                             TextButton(

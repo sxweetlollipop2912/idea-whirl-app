@@ -14,24 +14,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import kotlin.math.abs
 
 @Composable
 fun DrawingSurface(
     paths: List<com.example.ideawhirl.components.drawing_board.Stroke>,
     onPathsChanged: (List<com.example.ideawhirl.components.drawing_board.Stroke>) -> Unit,
-    strokeColorIndex: Int,
-    strokeWidth: StrokeWidth,
     availableStrokeColors: List<Color>,
     backgroundColor: Color,
-    erasing: Boolean,
-    eraserWidth: EraserWidth,
+    drawingConfig: DrawingConfig,
 ) {
     var motionEvent by remember { mutableStateOf(MotionEvent.Idle) }
     var currentPosition by remember { mutableStateOf(Offset.Unspecified) }
@@ -68,15 +62,19 @@ fun DrawingSurface(
         val newPaths = paths.toMutableList()
         when (motionEvent) {
             MotionEvent.Down -> {
-                if (erasing) {
-                    newPaths.add(EraserPath(eraserWidth))
-                } else {
-                    newPaths.add(
-                        DrawingPath(
-                            strokeColorIndex = strokeColorIndex,
-                            strokeWidth = strokeWidth
+                when (drawingConfig.mode) {
+                    Mode.DRAWING -> {
+                        newPaths.add(
+                            DrawingPath(
+                                strokeColorIndex = drawingConfig.strokeColorIndex,
+                                strokeWidth = drawingConfig.strokeWidth
+                            )
                         )
-                    )
+                    }
+
+                    Mode.ERASING -> {
+                        newPaths.add(EraserPath(drawingConfig.eraserWidth))
+                    }
                 }
                 newPaths.last().start(currentPosition.x, currentPosition.y)
                 previousPosition = currentPosition

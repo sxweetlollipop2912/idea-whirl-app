@@ -84,6 +84,7 @@ fun HomeScreen(
     val animatableBox = rememberLottieAnimatable()
     val scope = rememberCoroutineScope()
     ShakeEventListener(LocalLifecycleOwner.current, sensorManager) {
+        if (showNote) return@ShakeEventListener
         scope.launch {
             animatableRotation.animateTo(
                 targetValue = -15f,

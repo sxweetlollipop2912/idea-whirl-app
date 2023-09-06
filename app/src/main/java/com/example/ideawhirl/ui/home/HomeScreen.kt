@@ -51,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -204,7 +205,7 @@ fun HomeScreen(
                     )
                     AnimationBox(
                         modifier = Modifier
-                            .size(250.dp),
+                            .size(400.dp),
                         animatableRotation = animatableRotation,
                         composition = composition,
                         animatableBox = animatableBox,
@@ -384,6 +385,7 @@ fun AnimationBox(
                     },
                 composition = composition,
                 progress = animatableBox.progress,
+                contentScale = ContentScale.Fit
             )
         }
     }

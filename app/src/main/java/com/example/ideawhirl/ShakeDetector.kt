@@ -1,3 +1,5 @@
+package com.example.ideawhirl
+
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -54,6 +56,10 @@ class ShakeEventListener(
 
 
     override fun onPause(owner: LifecycleOwner) {
+        sensorManager.unregisterListener(this)
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
         sensorManager.unregisterListener(this)
     }
 

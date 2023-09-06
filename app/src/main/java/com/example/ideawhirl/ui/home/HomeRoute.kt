@@ -2,6 +2,7 @@ package com.example.ideawhirl.ui.home
 
 import android.hardware.SensorManager
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 
 @Composable
@@ -13,14 +14,15 @@ fun HomeRoute(
     sensorManager: SensorManager,
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(Unit) { homeViewModel.getAllNotes() }
     HomeScreen(
         onToNote = onToNote,
         onToNoteList = onToNoteList,
         onToSettings = onToSettings,
-        onBoxShake = {
-            homeViewModel.getRandomNote()
-        },
         sensorManager = sensorManager,
+        tags = arrayOf("Study", "Drafts", "Ideas"), // TODO: get tags from database
+        getRandomNote = { homeViewModel.getRandomNote() },
+        getRandomNoteWithTag = { tag -> homeViewModel.getRandomNoteWithTag(tag) },
         modifier = modifier,
     )
 }

@@ -377,7 +377,7 @@ fun AnimationBox(
         DragTarget(onStartDrag = { /*TODO*/ }, onStopDrag = { /*TODO*/ }) {
             LottieAnimation(
                 modifier = Modifier
-                    .size(250.dp)
+                    .fillMaxSize()
                     .rotate(animatableRotation.value)
                     .clickable {
                         onPressBox()

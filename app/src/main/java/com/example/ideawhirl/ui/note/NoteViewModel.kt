@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.ideawhirl.components.drawing_board.DrawingData
 import com.example.ideawhirl.data.repo.NoteRepo
 import com.example.ideawhirl.model.Note
+import com.example.ideawhirl.model.NotePalette
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -113,6 +114,14 @@ class NoteViewModel(
     fun onTagRemoved(tag: String) {
         _noteState.update { it.copy(
             note = it.note.copy(tags = it.note.tags - tag),
+        ) }
+    }
+
+    fun onPaletteChanged(palette: NotePalette) {
+        _noteState.update { it.copy(
+            note = it.note.copy(
+                palette = palette
+            )
         ) }
     }
 

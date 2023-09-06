@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -78,10 +80,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.ideawhirl.R
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.model.NotePalette
+import com.example.ideawhirl.ui.components.ColorPickerPopup
 import com.example.ideawhirl.ui.components.TagListWithAdd
 import com.example.ideawhirl.ui.components.TagPill
 import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
@@ -89,7 +90,6 @@ import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults.richTextEditorColors
-import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalRichTextApi::class)
 @Composable
@@ -107,6 +107,7 @@ fun NoteScreen(
     onTagAdded: (String) -> Unit,
     onTagUpdated: (String, String) -> Unit,
     onTagRemoved: (String) -> Unit,
+    onPaletteChanged: (NotePalette) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isInEditMode = uiState.isInEditMode
@@ -164,20 +165,40 @@ fun NoteScreen(
                 },
                 actions = {
                     if (isInEditMode) {
-                        FloatingActionButton(
-                            modifier = Modifier.size(42.dp),
-                            onClick = {
-                                onContentChanged(richTextState.toMarkdown())
-                                onDoneEditing()
-                            },
-                            shape = CircleShape,
-                            containerColor = note.palette.variant,
-                            contentColor = note.palette.onVariant,
+                        val palettesMain = NotePalette.values().map { Pair(it, it.main) }
+                        Box(
+                            modifier = modifier
+                                .width(90.dp)
+                                .wrapContentHeight(),
                         ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Done,
-                                contentDescription = "save note",
+                            ColorPickerPopup(
+                                selectedColor = note.palette.main,
+                                colors = palettesMain.map { it.second },
+                                onColorSelected = {selected ->
+                                    onPaletteChanged(
+                                        palettesMain.find { it.second == selected }?.first
+                                        ?: NotePalette.PALETTE_0
+                                    )
+                                },
+                                backgroundColor = Color(0xFFEAE9E9),
                             )
+                            FloatingActionButton(
+                                modifier = Modifier
+                                    .size(42.dp)
+                                    .align(Alignment.TopEnd),
+                                onClick = {
+                                    onContentChanged(richTextState.toMarkdown())
+                                    onDoneEditing()
+                                },
+                                shape = CircleShape,
+                                containerColor = note.palette.variant,
+                                contentColor = note.palette.onVariant,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Done,
+                                    contentDescription = "save note",
+                                )
+                            }
                         }
                     } else {
                         FloatingActionButton(

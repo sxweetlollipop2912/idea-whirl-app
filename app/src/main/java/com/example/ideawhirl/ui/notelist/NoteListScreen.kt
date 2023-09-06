@@ -213,6 +213,7 @@ fun NoteListItem(
                 ))
                 NoteListItemPreview(
                     note = note,
+                    onItemClick = onItemClick,
                     modifier = Modifier.weight(1f),
                 )
                 Text(
@@ -231,6 +232,7 @@ fun NoteListItem(
 @Composable
 fun NoteListItemPreview(
     note: Note,
+    onItemClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -246,6 +248,7 @@ fun NoteListItemPreview(
                 color = MaterialTheme.colorScheme.onSurface
             ),
             fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+            onClick = onItemClick,
         )
     }
 }

@@ -128,9 +128,8 @@ fun HomeScreen(
                         .wrapContentSize(),
                 ) {
                     NoteListItemPreview(
-                        modifier = Modifier
-                            .clickable { onToNote(note!!.uid) }
-                            .padding(16.dp),
+                        modifier = Modifier.padding(16.dp),
+                        onItemClick = { onToNote(note!!.uid) },
                         note = note!!
                     )
                 }

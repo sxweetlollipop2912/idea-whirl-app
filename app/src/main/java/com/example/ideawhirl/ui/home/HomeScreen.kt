@@ -57,6 +57,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.ideawhirl.R
 import com.example.ideawhirl.ShakeEventListener
 import com.example.ideawhirl.model.Note
+import com.example.ideawhirl.ui.components.ShakeText
 import com.example.ideawhirl.ui.notelist.NoteListItemPreview
 import kotlinx.coroutines.launch
 
@@ -183,9 +184,7 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "Shake your phone to get a random idea!",
-                    )
+                    ShakeText()
                     AnimationBox(
                         modifier = Modifier
                             .size(400.dp),

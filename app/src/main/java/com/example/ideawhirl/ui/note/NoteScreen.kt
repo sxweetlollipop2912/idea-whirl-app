@@ -34,7 +34,6 @@ import androidx.compose.material.icons.outlined.FormatItalic
 import androidx.compose.material.icons.outlined.FormatListBulleted
 import androidx.compose.material.icons.outlined.FormatListNumbered
 import androidx.compose.material.icons.outlined.FormatStrikethrough
-import androidx.compose.material.icons.outlined.FormatUnderlined
 import androidx.compose.material.icons.outlined.Gesture
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -79,8 +78,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.ideawhirl.R
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.model.NotePalette
 import com.example.ideawhirl.ui.components.TagListWithAdd
@@ -90,7 +87,6 @@ import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults.richTextEditorColors
-import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalRichTextApi::class)
 @Composable
@@ -372,7 +368,7 @@ fun NoteScreenContent(
                     Text(
                         text = "OK",
                         style = MaterialTheme.typography.labelLarge,
-                        color = note.palette.buttonContent
+                        color = note.palette.onEmphasis
                     )
                 }
             },
@@ -386,7 +382,7 @@ fun NoteScreenContent(
                     Text(
                         text = "Cancel",
                         style = MaterialTheme.typography.labelLarge,
-                        color = note.palette.buttonContent
+                        color = note.palette.onEmphasis
                     )
                 }
             }

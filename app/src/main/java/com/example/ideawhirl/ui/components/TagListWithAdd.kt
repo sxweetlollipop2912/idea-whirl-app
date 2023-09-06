@@ -154,7 +154,7 @@ fun TagListWithAdd(
                                 Text(
                                     text = "OK",
                                     style = MaterialTheme.typography.labelLarge,
-                                    color = palette.buttonContent
+                                    color = palette.onEmphasis
                                 )
                             }
                         },
@@ -181,7 +181,7 @@ fun TagListWithAdd(
                                 Text(
                                     text = "Cancel",
                                     style = MaterialTheme.typography.labelLarge,
-                                    color = palette.buttonContent
+                                    color = palette.onEmphasis
                                 )
                             }
                         }

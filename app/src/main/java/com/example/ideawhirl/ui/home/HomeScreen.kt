@@ -88,6 +88,7 @@ fun HomeScreen(
     var currentTag by remember { mutableStateOf("") }
     var showTagsDialog by remember { mutableStateOf(false) }
     var showNote by remember { mutableStateOf(false) }
+    var note by remember { mutableStateOf<Note?>(null) }
     val composition by rememberLottieComposition(
         spec = LottieCompositionSpec.RawRes(R.raw.box_anim)
     )
@@ -118,6 +119,7 @@ fun HomeScreen(
                 clipSpec = LottieClipSpec.Progress(0f, 0.5f),
             )
             showNote = true
+            note = if (currentTag != "") getRandomNoteWithTag(currentTag) else getRandomNote()
             animatableBox.animate(
                 composition = composition,
                 iterations = 1,
@@ -130,7 +132,6 @@ fun HomeScreen(
         Dialog(
             onDismissRequest = { showNote = false }
         ) {
-            val note: Note? = if (currentTag != "") getRandomNoteWithTag(currentTag) else getRandomNote()
             if (note != null)
                 Card(
                     modifier = Modifier
@@ -138,9 +139,9 @@ fun HomeScreen(
                 ) {
                     NoteListItemPreview(
                         modifier = Modifier
-                            .clickable { onToNote(note.uid) }
+                            .clickable { onToNote(note!!.uid) }
                             .padding(16.dp),
-                        note = note
+                        note = note!!
                     )
                 }
             else

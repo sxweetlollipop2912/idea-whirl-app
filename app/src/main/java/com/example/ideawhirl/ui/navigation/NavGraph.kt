@@ -3,8 +3,6 @@ package com.example.ideawhirl.ui.navigation
 import android.hardware.SensorManager
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -42,8 +40,8 @@ fun ThisNavGraph(
             HomeRoute(
                 homeViewModel = homeViewModel,
                 onToNote = { id -> thisNavController.navigateToNote(navBackStackEntry, id) },
+                onToCreateNote = { thisNavController.navigateToNote(navBackStackEntry, -1) },
                 onToNoteList = { thisNavController.navigateTo(NavRoutes.NOTE_LIST) },
-                onToSettings = { thisNavController.navigateTo(NavRoutes.SETTINGS) },
                 sensorManager = sensorManager
             )
         }
@@ -110,36 +108,6 @@ fun ThisNavGraph(
                 onToCreateNote = { thisNavController.navigateToNote(navBackStackEntry, -1) },
                 onBack = { thisNavController.popBackStack() }
             )
-        }
-        composable(NavRoutes.SETTINGS.route) {
-            val settingsViewModel: SettingsViewModel = viewModel(
-                factory = SettingsViewModel.provideFactory(
-                    repository = repository,
-                )
-            )
-            SettingsRoute(
-                settingsViewModel = settingsViewModel,
-                onBack = { thisNavController.popBackStack() },
-            )
-        }
-    }
-}
-
-@Composable
-fun SettingsRoute(settingsViewModel: SettingsViewModel, onBack: () -> Unit) {}
-
-
-class SettingsViewModel(
-    private val repository: NoteRepo,
-) : ViewModel() {
-    companion object {
-        fun provideFactory(
-            repository: NoteRepo,
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return SettingsViewModel(repository) as T
-            }
         }
     }
 }

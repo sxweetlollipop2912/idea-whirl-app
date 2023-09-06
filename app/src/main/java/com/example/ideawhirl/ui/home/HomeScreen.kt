@@ -1,28 +1,20 @@
 package com.example.ideawhirl.ui.home
 
 import android.hardware.SensorManager
-import android.util.Log
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.animation.core.repeatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -41,7 +33,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,11 +44,9 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.LottieAnimatable
 import com.airbnb.lottie.compose.LottieAnimation
@@ -68,7 +57,6 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.ideawhirl.R
 import com.example.ideawhirl.ShakeEventListener
 import com.example.ideawhirl.model.Note
-import com.example.ideawhirl.ui.notelist.NoteListItem
 import com.example.ideawhirl.ui.notelist.NoteListItemPreview
 import kotlinx.coroutines.launch
 
@@ -76,8 +64,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     onToNote: (Int) -> Unit,
+    onToCreateNote: () -> Unit,
     onToNoteList: () -> Unit,
-    onToSettings: () -> Unit,
     tags: Array<String>,
     getRandomNote: () -> Note?,
     getRandomNoteWithTag: (tag: String) -> Note?,
@@ -172,24 +160,18 @@ fun HomeScreen(
     }
     // A surface container using the 'background' color from the theme
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         DraggableScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             Scaffold(
-                topBar = {
-                    TopBar(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(16.dp),
-                        onToSettings = onToSettings
-                    )
-                },
                 floatingActionButton = {
-                    FloatingActionButton(onClick = { /*TODO*/ }) {
+                    FloatingActionButton(
+                        onClick = onToCreateNote,
+                        shape = MaterialTheme.shapes.small
+                    ) {
                         Icon(Icons.Default.Add, contentDescription = "Add new idea")
                     }
                 }
@@ -198,7 +180,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    verticalArrangement = Arrangement.SpaceEvenly,
+                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -220,54 +202,6 @@ fun HomeScreen(
                         }
                     )
                 }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar(
-    modifier: Modifier = Modifier,
-    onToSettings: () -> Unit,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Card(
-            modifier = Modifier
-                .size(50.dp),
-            shape = CircleShape,
-            onClick = { /*TODO*/ },
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.user),
-                    contentDescription = "User"
-                )
-            }
-        }
-        Card(
-            modifier = Modifier
-                .size(50.dp),
-            shape = CircleShape,
-            onClick = onToSettings,
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.settings),
-                    contentDescription = "Settings"
-                )
             }
         }
     }

@@ -13,7 +13,6 @@ enum class NavRoutes(val route: String, val args: List<String>) {
     HOME("home", emptyList()),
     NOTE_LIST("note_list", emptyList()),
     NOTE("note", listOf("id", "isDrawing")),
-    SETTINGS("settings", emptyList()),
 }
 
 @Composable

@@ -9,16 +9,16 @@ import androidx.compose.ui.Modifier
 fun HomeRoute(
     homeViewModel: HomeViewModel,
     onToNote: (Int) -> Unit,
+    onToCreateNote: () -> Unit,
     onToNoteList: () -> Unit,
-    onToSettings: () -> Unit,
     sensorManager: SensorManager,
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(Unit) { homeViewModel.getAllNotes() }
     HomeScreen(
         onToNote = onToNote,
+        onToCreateNote = onToCreateNote,
         onToNoteList = onToNoteList,
-        onToSettings = onToSettings,
         sensorManager = sensorManager,
         tags = arrayOf("Study", "Drafts", "Ideas"), // TODO: get tags from database
         getRandomNote = { homeViewModel.getRandomNote() },

@@ -67,7 +67,7 @@ fun HomeScreen(
     onToNote: (Int) -> Unit,
     onToCreateNote: () -> Unit,
     onToNoteList: () -> Unit,
-    tags: Array<String>,
+    tags: List<String>,
     getRandomNote: () -> Note?,
     getRandomNoteWithTag: (tag: String) -> Note?,
     sensorManager: SensorManager,
@@ -210,7 +210,7 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TagsDialog(
-    tags: Array<String>,
+    tags: List<String>,
     currentTag: String,
     onSelect: (String) -> Unit,
     onDismiss: () -> Unit

@@ -3,7 +3,9 @@ package com.example.ideawhirl.ui.home
 import android.hardware.SensorManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun HomeRoute(
@@ -14,15 +16,18 @@ fun HomeRoute(
     sensorManager: SensorManager,
     modifier: Modifier = Modifier,
 ) {
-    LaunchedEffect(Unit) { homeViewModel.getAllNotes() }
+    val tags by homeViewModel.tags.collectAsStateWithLifecycle()
+    val selectedTags by homeViewModel.selectedTags.collectAsStateWithLifecycle()
+    val notes by homeViewModel.notes.collectAsStateWithLifecycle()
+
     HomeScreen(
         onToNote = onToNote,
         onToCreateNote = onToCreateNote,
         onToNoteList = onToNoteList,
         sensorManager = sensorManager,
-        tags = arrayOf("Study", "Drafts", "Ideas"), // TODO: get tags from database
+        tags = tags, // TODO: get tags from database
         getRandomNote = { homeViewModel.getRandomNote() },
-        getRandomNoteWithTag = { tag -> homeViewModel.getRandomNoteWithTag(tag) },
+        getRandomNoteWithTag = { tag -> null },
         modifier = modifier,
     )
 }

@@ -34,6 +34,7 @@ fun NoteRoute(
         onTagAdded = noteViewModel::onTagAdded,
         onTagUpdated = noteViewModel::onTagUpdated,
         onTagRemoved = noteViewModel::onTagRemoved,
+        onPaletteChanged = noteViewModel::onPaletteChanged,
         modifier = modifier
     )
 }

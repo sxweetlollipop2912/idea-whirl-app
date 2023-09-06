@@ -39,7 +39,7 @@ interface NoteDao {
     @Query("select * from NoteEntity")
     fun getAll(): Flow<List<NoteEntity>>
 
-    @Query("select * from noteentity join tagentity on noteentity.uid = tagentity.noteId")
+    @Query("select * from noteentity left join tagentity on noteentity.uid = tagentity.noteId")
     fun getAllNotesWithTags(): Flow<Map<NoteEntity, List<TagEntity>>>
 
     // get notes by using OR operator on tags
@@ -53,7 +53,7 @@ interface NoteDao {
 
     @Query(
         "select *" +
-                " from noteentity note join tagentity tag on note.uid = tag.noteId" +
+                " from noteentity note left join tagentity tag on note.uid = tag.noteId" +
                 " where note.name like :name"
     )
     fun findNoteAndTagsByName(name: String): Flow<Map<NoteEntity, List<TagEntity>>>

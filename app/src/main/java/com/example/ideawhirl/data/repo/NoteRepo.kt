@@ -136,9 +136,6 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
 
     fun saveDrawingData(uid: Int, drawingData: DrawingData) {
         val filename = getDrawingFilename(uid)
-        if (drawingData == null) {
-            throw AssertionError("Drawing data is not initialized.")
-        }
 
         if (uid == 0) {
             throw AssertionError("Note must be fetched from database to save.")

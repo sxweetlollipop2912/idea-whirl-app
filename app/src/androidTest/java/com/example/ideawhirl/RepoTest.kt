@@ -46,10 +46,10 @@ class RepoTest {
     @Test
     fun insertAndGet() {
         val note = Note(
-            name = "test note", detail = "test detail", tags = listOf(
+            name = "test note", detail = "test detail", tags = setOf(
                 "test tag 1",
                 "test tag 2",
-            ), context = context
+            )
         )
         runBlocking {
             noteRepo.insert(note)
@@ -65,20 +65,19 @@ class RepoTest {
     @Test
     fun multipleInsertAndGet() {
         val note = Note(
-            name = "test note", detail = "test detail", tags = listOf(
+            name = "test note", detail = "test detail", tags = setOf(
                 "test tag 1",
                 "test tag 2",
-            ), context = context
+            )
         )
         val note2 = Note(
-            name = "test note 2", detail = "test detail 2", tags = listOf(
+            name = "test note 2", detail = "test detail 2", tags = setOf(
                 "test tag 3",
                 "test tag 4",
                 "test tag 5",
                 "test tag 6",
                 "test tag 7",
-            ),
-            context = context
+            )
         )
         runBlocking {
             noteRepo.insert(note)
@@ -100,22 +99,20 @@ class RepoTest {
     fun insertAndFindByName() {
         val note = Note(
             name = "test note", detail = "test detail",
-            tags = listOf(
+            tags = setOf(
                 "test tag 1",
                 "test tag 2",
             ),
-            context = context,
         )
         val note2 = Note(
             name = "test note 2", detail = "test detail 2",
-            tags = listOf(
+            tags = setOf(
                 "test tag 3",
                 "test tag 4",
                 "test tag 5",
                 "test tag 6",
                 "test tag 7",
             ),
-            context = context,
         )
         runBlocking {
             noteRepo.insert(note)
@@ -155,27 +152,25 @@ class RepoTest {
 
     @Test
     fun insertDrawInsertAndGet() {
-        val note = Note(
+        var note = Note(
             name = "test note", detail = "test detail",
-            tags = listOf(
+            tags = setOf(
                 "test tag 1",
                 "test tag 2",
             ),
-            context = context,
         )
         val note2 = Note(
             name = "test note 2", detail = "test detail 2",
-            tags = listOf(
+            tags = setOf(
                 "test tag 3",
                 "test tag 4",
                 "test tag 5",
                 "test tag 6",
                 "test tag 7",
             ),
-            context = context,
         )
         val drawingData = generateDrawingData(1)
-        note.drawingData = drawingData
+        note = note.copy(drawingData = drawingData)
         context.openFileOutput("drawing_1.data", Context.MODE_PRIVATE).use {
             it.write(Json.encodeToString(drawingData).toByteArray())
         }
@@ -194,14 +189,14 @@ class RepoTest {
 
     @Test
     fun deleteNote() {
-        val note = Note(name = "test note", detail = "test detail", tags = listOf(
+        val note = Note(name = "test note", detail = "test detail", tags = setOf(
             "test tag 1",
             "test tag 2",
-        ), context = context)
-        val note2 = Note(name = "test note 2", detail = "test detail 2", tags = listOf(
+        ))
+        val note2 = Note(name = "test note 2", detail = "test detail 2", tags = setOf(
             "test tag 3",
             "test tag 4",
-        ), context = context)
+        ))
         runBlocking {
             val note = noteRepo.insert(note)
             noteRepo.insert(note2)
@@ -217,14 +212,14 @@ class RepoTest {
 
     @Test
     fun findNotesByTags() {
-        val note = Note(name = "test note", detail = "test detail", tags = listOf(
+        val note = Note(name = "test note", detail = "test detail", tags = setOf(
             "test tag 1",
             "test tag 2",
-        ), context = context)
-        val note2 = Note(name = "test note 2", detail = "test detail 2", tags = listOf(
+        ))
+        val note2 = Note(name = "test note 2", detail = "test detail 2", tags = setOf(
             "test tag 3",
             "test tag 4",
-        ), context = context)
+        ))
         runBlocking {
             noteRepo.insert(note)
             noteRepo.insert(note2)
@@ -250,14 +245,14 @@ class RepoTest {
 
     @Test
     fun getAllTagNames() {
-        val note = Note(name = "test note", detail = "test detail", tags = listOf(
+        val note = Note(name = "test note", detail = "test detail", tags = setOf(
             "test tag 1",
             "test tag 2",
-        ), context = context)
-        val note2 = Note(name = "test note 2", detail = "test detail 2", tags = listOf(
+        ))
+        val note2 = Note(name = "test note 2", detail = "test detail 2", tags = setOf(
             "test tag 3",
             "test tag 4",
-        ), context = context)
+        ))
         runBlocking {
             noteRepo.insert(note)
             noteRepo.insert(note2)
@@ -272,32 +267,31 @@ class RepoTest {
 
     @Test
     fun updateNote() {
-        val note = Note(name = "test note", detail = "test detail", tags = listOf(
+        val note = Note(name = "test note", detail = "test detail", tags = setOf(
             "test tag 1",
             "test tag 2",
-        ), context = context)
-        val note2 = Note(name = "test note 2", detail = "test detail 2", tags = listOf(
+        ))
+        val note2 = Note(name = "test note 2", detail = "test detail 2", tags = setOf(
             "test tag 3",
             "test tag 4",
-        ), context = context)
+        ))
         runBlocking {
             val note = noteRepo.insert(note)
-            noteRepo.insert(note2)
+            val note2 = noteRepo.insert(note2)
             noteRepo.update(
-                note.copy(name = "test note updated", tags = listOf("test tag 1", "test tag 3")),
-                listOf("test tag 3", "test tag 4"),
-                listOf("test tag 2"),
+                note.copy(name = "test note updated", tags = setOf("test tag 1", "test tag 3")),
             )
-            val notes = noteRepo.getAll().first()
-            TestCase.assertEquals(2, notes.size)
-            TestCase.assertEquals("test note updated", notes[0].name)
-            TestCase.assertEquals(note.detail, notes[0].detail)
-            TestCase.assertEquals(listOf("test tag 1", "test tag 3", "test tag 4"), notes[0].tags)
-            TestCase.assertEquals(note.palette, notes[0].palette)
-            TestCase.assertEquals(note2.name, notes[1].name)
-            TestCase.assertEquals(note2.detail, notes[1].detail)
-            TestCase.assertEquals(note2.tags, notes[1].tags)
-            TestCase.assertEquals(note2.palette, notes[1].palette)
+            val noteUpd = noteRepo.findNoteByUid(note.uid).first()
+            val note2Db = noteRepo.findNoteByUid(note2.uid).first()
+            TestCase.assertEquals(note.uid, noteUpd.uid)
+            TestCase.assertEquals("test note updated", noteUpd.name)
+            TestCase.assertEquals(note.detail, noteUpd.detail)
+            TestCase.assertEquals(setOf("test tag 1", "test tag 3"), noteUpd.tags)
+            TestCase.assertEquals(note.palette, noteUpd.palette)
+            TestCase.assertEquals(note2.name, note2Db.name)
+            TestCase.assertEquals(note2.detail, note2Db.detail)
+            TestCase.assertEquals(note2.tags, note2Db.tags)
+            TestCase.assertEquals(note2.palette, note2Db.palette)
         }
     }
 }

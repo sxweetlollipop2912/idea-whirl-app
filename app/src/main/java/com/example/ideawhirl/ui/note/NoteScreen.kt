@@ -35,6 +35,7 @@ import androidx.compose.material.icons.outlined.FormatListBulleted
 import androidx.compose.material.icons.outlined.FormatListNumbered
 import androidx.compose.material.icons.outlined.FormatStrikethrough
 import androidx.compose.material.icons.outlined.FormatUnderlined
+import androidx.compose.material.icons.outlined.Gesture
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
@@ -103,6 +104,7 @@ fun NoteScreen(
     onTitleChanged: (String) -> Unit,
     onContentChanged: (String) -> Unit,
     onDoneEditing: () -> Unit,
+    onToNoteDraw: () -> Unit,
     onBack: () -> Unit,
     onTagAdded: (String) -> Unit,
     onTagUpdated: (String, String) -> Unit,
@@ -202,7 +204,16 @@ fun NoteScreen(
         },
         bottomBar = {
             if (isInEditMode) {
-                BottomBar(richTextState, note.palette)
+                BottomBar(
+                    richTextState,
+                    note.palette,
+                    onDrawClick = {
+                        // save note content to viewmodel
+                        onContentChanged(richTextState.toMarkdown())
+                        onDoneEditing()
+                        onToNoteDraw()
+                    }
+                )
             }
         },
         containerColor = note.palette.background,
@@ -387,6 +398,7 @@ fun NoteScreenContent(
 fun BottomBar(
     state: RichTextState,
     palette: NotePalette,
+    onDrawClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var active by rememberSaveable { mutableStateOf(false) }
@@ -429,13 +441,13 @@ fun BottomBar(
                     palette = palette,
                     description = "Italic"
                 )
-                RTEControlButton(
-                    selected = state.currentSpanStyle.textDecoration?.contains(TextDecoration.Underline) == true,
-                    onClick = { state.toggleSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline)) },
-                    iconId = Icons.Outlined.FormatUnderlined,
-                    palette = palette,
-                    description = "Underline"
-                )
+//                RTEControlButton(
+//                    selected = state.currentSpanStyle.textDecoration?.contains(TextDecoration.Underline) == true,
+//                    onClick = { state.toggleSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline)) },
+//                    iconId = Icons.Outlined.FormatUnderlined,
+//                    palette = palette,
+//                    description = "Underline"
+//                )
                 RTEControlButton(
                     selected = state.currentSpanStyle.textDecoration?.contains(TextDecoration.LineThrough) == true,
                     onClick = { state.toggleSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough)) },
@@ -457,6 +469,19 @@ fun BottomBar(
                     palette = palette,
                     description = "Ordered List"
                 )
+                IconButton(
+                    onClick = onDrawClick,
+                    modifier = Modifier.size(42.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = palette.onVariant,
+                    ),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Gesture,
+                        contentDescription = "Draw",
+                        modifier = Modifier.size(28.dp),
+                    )
+                }
                 IconButton(
                     onClick = { active = !active },
                     modifier = Modifier.size(42.dp),

@@ -1,4 +1,4 @@
-package com.example.ideawhirl.components.drawing_board
+package com.example.ideawhirl.ui.components.drawing_board
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -21,8 +21,8 @@ import kotlin.math.abs
 
 @Composable
 fun DrawingSurface(
-    paths: List<com.example.ideawhirl.components.drawing_board.Stroke>,
-    onPathsChanged: (List<com.example.ideawhirl.components.drawing_board.Stroke>) -> Unit,
+    paths: List<com.example.ideawhirl.ui.components.drawing_board.Stroke>,
+    onPathsChanged: (List<com.example.ideawhirl.ui.components.drawing_board.Stroke>) -> Unit,
     availableStrokeColors: List<Color>,
     backgroundColor: Color,
     drawingConfig: DrawingConfig,

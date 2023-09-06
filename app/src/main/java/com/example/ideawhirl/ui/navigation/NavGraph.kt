@@ -1,7 +1,6 @@
 package com.example.ideawhirl.ui.navigation
 
 import android.hardware.SensorManager
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
@@ -16,6 +15,8 @@ import com.example.ideawhirl.ui.home.HomeRoute
 import com.example.ideawhirl.ui.home.HomeViewModel
 import com.example.ideawhirl.ui.note.NoteRoute
 import com.example.ideawhirl.ui.note.NoteViewModel
+import com.example.ideawhirl.ui.noteDrawdraw.NoteDrawViewModel
+import com.example.ideawhirl.ui.notedraw.NoteDrawRoute
 import com.example.ideawhirl.ui.notelist.NoteListRoute
 import com.example.ideawhirl.ui.notelist.NoteListViewModel
 
@@ -46,7 +47,15 @@ fun ThisNavGraph(
                 sensorManager = sensorManager
             )
         }
-        val route = NavRoutes.NOTE.route + "?${NavRoutes.NOTE.args[0]}={${NavRoutes.NOTE.args[0]}}"
+
+        var route = NavRoutes.NOTE.route + "?"
+        for (arg in NavRoutes.NOTE.args) {
+            route += "$arg={$arg}"
+            if (arg != NavRoutes.NOTE.args.last()) {
+                route += "&"
+            }
+        }
+
         composable(
             route = route,
             arguments = listOf(
@@ -54,21 +63,40 @@ fun ThisNavGraph(
                     type = NavType.IntType
                     defaultValue = -1
                 },
+                navArgument(NavRoutes.NOTE.args[1]) {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
             )
         ) { navBackStackEntry ->
             val arguments = requireNotNull(navBackStackEntry.arguments)
             val id = arguments.getInt(NavRoutes.NOTE.args[0])
+            val isDrawing = arguments.getBoolean(NavRoutes.NOTE.args[1])
 
-            val noteViewModel: NoteViewModel = viewModel(
-                factory = NoteViewModel.provideFactory(
-                    noteId = id,
-                    repository = repository,
+            if (!isDrawing) {
+                val noteViewModel: NoteViewModel = viewModel(
+                    factory = NoteViewModel.provideFactory(
+                        noteId = id,
+                        repository = repository,
+                    )
                 )
-            )
-            NoteRoute(
-                noteViewModel = noteViewModel,
-                onBack = { thisNavController.popBackStack() }
-            )
+                NoteRoute(
+                    noteViewModel = noteViewModel,
+                    onToNoteDraw = { thisNavController.navigateToNoteDraw(navBackStackEntry, id) },
+                    onBack = { thisNavController.popBackStack() }
+                )
+            } else {
+                val noteDrawViewModel: NoteDrawViewModel = viewModel(
+                    factory = NoteDrawViewModel.provideFactory(
+                        noteId = id,
+                        repository = repository,
+                    )
+                )
+                NoteDrawRoute(
+                    noteDrawViewModel = noteDrawViewModel,
+                    onBack = { thisNavController.popBackStack() }
+                )
+            }
         }
         composable(NavRoutes.NOTE_LIST.route) { navBackStackEntry ->
             val noteListViewModel: NoteListViewModel = viewModel(

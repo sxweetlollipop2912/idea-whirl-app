@@ -8,6 +8,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun NoteRoute(
     noteViewModel: NoteViewModel,
+    onToNoteDraw: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -28,6 +29,7 @@ fun NoteRoute(
             noteViewModel.onSave()
             noteViewModel.onViewMode()
         },
+        onToNoteDraw = onToNoteDraw,
         onBack = onBack,
         onTagAdded = noteViewModel::onTagAdded,
         onTagUpdated = noteViewModel::onTagUpdated,

@@ -12,7 +12,7 @@ import androidx.navigation.compose.rememberNavController
 enum class NavRoutes(val route: String, val args: List<String>) {
     HOME("home", emptyList()),
     NOTE_LIST("note_list", emptyList()),
-    NOTE("note", listOf("id")),
+    NOTE("note", listOf("id", "isDrawing")),
     SETTINGS("settings", emptyList()),
 }
 
@@ -54,7 +54,22 @@ class ThisNavController(
         val url = if (id == -1) {
             NavRoutes.NOTE.route
         } else {
-            "${NavRoutes.NOTE.route}?id=$id"
+            "${NavRoutes.NOTE.route}?id=$id&isDrawing=false"
+        }
+        // In order to discard duplicated navigation events, we check the Lifecycle
+        if (from.lifecycleIsResumed()) {
+            navController.navigate(url)
+        }
+    }
+
+    fun navigateToNoteDraw(
+        from: NavBackStackEntry,
+        id: Int
+    ) {
+        val url = if (id == -1) {
+            NavRoutes.NOTE.route
+        } else {
+            "${NavRoutes.NOTE.route}?id=$id&isDrawing=true"
         }
         // In order to discard duplicated navigation events, we check the Lifecycle
         if (from.lifecycleIsResumed()) {

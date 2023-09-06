@@ -1,4 +1,4 @@
-package com.example.ideawhirl.components.drawing_board
+package com.example.ideawhirl.ui.components.drawing_board
 
 enum class Mode {
     DRAWING,

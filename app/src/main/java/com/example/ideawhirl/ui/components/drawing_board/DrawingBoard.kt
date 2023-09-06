@@ -1,4 +1,4 @@
-package com.example.ideawhirl.components.drawing_board
+package com.example.ideawhirl.ui.components.drawing_board
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -16,7 +16,6 @@ import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -35,7 +34,7 @@ fun DrawingBoard(
     availableStrokeColors: List<Color>, backgroundColor: Color,
     drawingData: DrawingData,
     onUpdateDrawingData: (DrawingData) -> Unit,
-    onSave: (DrawingData) -> Unit,
+    onSave: () -> Unit,
     drawingConfig: DrawingConfig,
     onUpdateDrawingConfig: (DrawingConfig) -> Unit,
 ) {
@@ -137,7 +136,7 @@ fun DrawingBoard(
                 Icon(Icons.Outlined.Delete, "Clear")
             }
             OutlinedIconButton(onClick = {
-                onSave(drawingData)
+                onSave()
                 inViewMode = true
             }) {
                 Icon(Icons.Outlined.Done, "Done")

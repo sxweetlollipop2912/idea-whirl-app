@@ -1,8 +1,6 @@
 package com.example.ideawhirl.model
 
-import android.content.Context
-import com.example.ideawhirl.components.drawing_board.DrawingData
-import kotlinx.serialization.json.Json
+import com.example.ideawhirl.ui.components.drawing_board.DrawingData
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -20,9 +18,6 @@ import com.example.ideawhirl.ui.theme.note_dark_orange_variant
 import com.example.ideawhirl.ui.theme.note_dark_pink
 import com.example.ideawhirl.ui.theme.note_dark_pink_background
 import com.example.ideawhirl.ui.theme.note_dark_pink_variant
-import com.example.ideawhirl.ui.theme.note_dark_purple
-import com.example.ideawhirl.ui.theme.note_dark_purple_background
-import com.example.ideawhirl.ui.theme.note_dark_purple_variant
 import com.example.ideawhirl.ui.theme.note_light_blue
 import com.example.ideawhirl.ui.theme.note_light_blue_background
 import com.example.ideawhirl.ui.theme.note_light_blue_variant
@@ -36,12 +31,6 @@ import com.example.ideawhirl.ui.theme.note_light_orange_variant
 import com.example.ideawhirl.ui.theme.note_light_pink
 import com.example.ideawhirl.ui.theme.note_light_pink_background
 import com.example.ideawhirl.ui.theme.note_light_pink_variant
-import com.example.ideawhirl.ui.theme.note_light_purple
-import com.example.ideawhirl.ui.theme.note_light_purple_background
-import com.example.ideawhirl.ui.theme.note_light_purple_variant
-import kotlinx.serialization.encodeToString
-import java.io.File
-import java.nio.file.Files
 import java.util.Date
 
 enum class NotePalette(

@@ -3,7 +3,7 @@ package com.example.ideawhirl.ui.note
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.ideawhirl.components.drawing_board.DrawingData
+import com.example.ideawhirl.ui.components.drawing_board.DrawingData
 import com.example.ideawhirl.data.repo.NoteRepo
 import com.example.ideawhirl.model.Note
 import kotlinx.coroutines.flow.MutableStateFlow

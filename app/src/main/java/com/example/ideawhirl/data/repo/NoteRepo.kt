@@ -1,7 +1,8 @@
 package com.example.ideawhirl.data.repo
 
 import android.content.Context
-import com.example.ideawhirl.components.drawing_board.DrawingData
+import androidx.compose.ui.graphics.Color
+import com.example.ideawhirl.ui.components.drawing_board.DrawingData
 import com.example.ideawhirl.data.data_source.LocalDatabase
 import com.example.ideawhirl.data.data_source.NoteEntity
 import com.example.ideawhirl.data.data_source.TagEntity
@@ -10,7 +11,6 @@ import com.example.ideawhirl.model.NotePalette
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -120,7 +120,7 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
         return "drawing_$uid.data"
     }
 
-    private fun loadOrCreateDrawingData(uid: Int): DrawingData {
+    fun loadOrCreateDrawingData(uid: Int): DrawingData {
         val filename = getDrawingFilename(uid)
         try {
             context.openFileInput(filename).bufferedReader().useLines { lines ->
@@ -134,7 +134,7 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
         }
     }
 
-    private fun saveDrawingData(uid: Int, drawingData: DrawingData) {
+    fun saveDrawingData(uid: Int, drawingData: DrawingData) {
         val filename = getDrawingFilename(uid)
         if (drawingData == null) {
             throw AssertionError("Drawing data is not initialized.")
@@ -147,5 +147,20 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
         context.openFileOutput(filename, Context.MODE_PRIVATE).use {
             it.write(Json.encodeToString(drawingData).toByteArray())
         }
+    }
+
+    fun getAvailableColors(): List<Color> {
+        return listOf(
+            Color(0XFFFF1F31),
+            Color(0XFFFF8B00),
+            Color(0XFFFFD200),
+            Color(0XFF00C344),
+            Color(0XFF456EFE),
+            Color(0XFF8C5AFF),
+            Color(0XFFFF7AAD),
+            Color(0XFFAA7942),
+            Color(0xFF000000),
+            Color(0xFFFFFFFF),
+        )
     }
 }

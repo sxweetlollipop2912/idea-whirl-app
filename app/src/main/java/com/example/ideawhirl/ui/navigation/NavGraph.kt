@@ -13,6 +13,10 @@ import androidx.navigation.navArgument
 import com.example.ideawhirl.data.repo.NoteRepo
 import com.example.ideawhirl.ui.home.HomeRoute
 import com.example.ideawhirl.ui.home.HomeViewModel
+import com.example.ideawhirl.ui.note.NoteRoute
+import com.example.ideawhirl.ui.note.NoteViewModel
+import com.example.ideawhirl.ui.noteDrawdraw.NoteDrawViewModel
+import com.example.ideawhirl.ui.notedraw.NoteDrawRoute
 import com.example.ideawhirl.ui.notelist.NoteListRoute
 import com.example.ideawhirl.ui.notelist.NoteListViewModel
 
@@ -43,30 +47,56 @@ fun ThisNavGraph(
                 sensorManager = sensorManager
             )
         }
+
+        var route = NavRoutes.NOTE.route + "?"
+        for (arg in NavRoutes.NOTE.args) {
+            route += "$arg={$arg}"
+            if (arg != NavRoutes.NOTE.args.last()) {
+                route += "&"
+            }
+        }
+
         composable(
-            route =
-            NavRoutes.NOTE.route +
-                    "/{${NavRoutes.NOTE.args[0]}}",
+            route = route,
             arguments = listOf(
                 navArgument(NavRoutes.NOTE.args[0]) {
                     type = NavType.IntType
                     defaultValue = -1
                 },
+                navArgument(NavRoutes.NOTE.args[1]) {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
             )
         ) { navBackStackEntry ->
             val arguments = requireNotNull(navBackStackEntry.arguments)
             val id = arguments.getInt(NavRoutes.NOTE.args[0])
+            val isDrawing = arguments.getBoolean(NavRoutes.NOTE.args[1])
 
-            val noteViewModel: NoteViewModel = viewModel(
-                factory = NoteViewModel.provideFactory(
-                    repository = repository,
-                    id = id,
+            if (!isDrawing) {
+                val noteViewModel: NoteViewModel = viewModel(
+                    factory = NoteViewModel.provideFactory(
+                        noteId = id,
+                        repository = repository,
+                    )
                 )
-            )
-            NoteRoute(
-                noteViewModel = noteViewModel,
-                id = id,
-            ) { thisNavController.popBackStack() }
+                NoteRoute(
+                    noteViewModel = noteViewModel,
+                    onToNoteDraw = { thisNavController.navigateToNoteDraw(navBackStackEntry, id) },
+                    onBack = { thisNavController.popBackStack() }
+                )
+            } else {
+                val noteDrawViewModel: NoteDrawViewModel = viewModel(
+                    factory = NoteDrawViewModel.provideFactory(
+                        noteId = id,
+                        repository = repository,
+                    )
+                )
+                NoteDrawRoute(
+                    noteDrawViewModel = noteDrawViewModel,
+                    onBack = { thisNavController.popBackStack() }
+                )
+            }
         }
         composable(NavRoutes.NOTE_LIST.route) { navBackStackEntry ->
             val noteListViewModel: NoteListViewModel = viewModel(
@@ -77,7 +107,7 @@ fun ThisNavGraph(
             NoteListRoute(
                 noteListViewModel = noteListViewModel,
                 onToNote = { id -> thisNavController.navigateToNote(navBackStackEntry, id) },
-                onToCreateNote = { thisNavController.navigateTo(NavRoutes.NOTE) },
+                onToCreateNote = { thisNavController.navigateToNote(navBackStackEntry, -1) },
                 onBack = { thisNavController.popBackStack() }
             )
         }
@@ -98,26 +128,6 @@ fun ThisNavGraph(
 @Composable
 fun SettingsRoute(settingsViewModel: SettingsViewModel, onBack: () -> Unit) {}
 
-@Composable
-fun NoteRoute(noteViewModel: NoteViewModel, id: Int, onBack: () -> Unit) {}
-
-
-class NoteViewModel(
-    private val repository: NoteRepo,
-    private val id: Int,
-) : ViewModel() {
-    companion object {
-        fun provideFactory(
-            repository: NoteRepo,
-            id: Int,
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return NoteViewModel(repository, id) as T
-            }
-        }
-    }
-}
 
 class SettingsViewModel(
     private val repository: NoteRepo,

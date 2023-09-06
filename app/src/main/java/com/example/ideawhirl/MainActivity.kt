@@ -5,8 +5,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import androidx.room.Room
 import com.example.ideawhirl.data.data_source.LocalDatabase
 import com.example.ideawhirl.data.repo.NoteRepo
@@ -20,6 +21,10 @@ class MainActivity : ComponentActivity() {
     private lateinit var mSensorManager: SensorManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // for adaptability when keyboard is open
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
             IdeaWhirlTheme {
                 val thisNavController = rememberThisNavController()
@@ -34,7 +39,8 @@ class MainActivity : ComponentActivity() {
                     repository = noteRepo,
                     thisNavController = thisNavController,
                     startDestination = NavRoutes.HOME.route,
-                    sensorManager = mSensorManager
+                    sensorManager = mSensorManager,
+                    modifier = Modifier.safeDrawingPadding()
                 )
             }
         }

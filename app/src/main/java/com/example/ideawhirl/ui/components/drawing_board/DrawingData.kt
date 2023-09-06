@@ -1,4 +1,4 @@
-package com.example.ideawhirl.components.drawing_board
+package com.example.ideawhirl.ui.components.drawing_board
 
 import kotlinx.serialization.Serializable
 
@@ -6,7 +6,13 @@ import kotlinx.serialization.Serializable
 data class DrawingData(
     val paths: List<Stroke>,
 ) {
+    fun isEmpty() = paths.isEmpty()
+
     override fun equals(other: Any?): Boolean {
         return paths == (other as DrawingData).paths
+    }
+
+    companion object {
+        fun emptyData() = DrawingData(emptyList())
     }
 }

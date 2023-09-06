@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.example.ideawhirl"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.ideawhirl"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -57,8 +57,11 @@ android {
 }
 
 dependencies {
+    implementation("com.github.jeziellago:compose-markdown:0.3.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 
+    implementation("androidx.compose.material:material-icons-extended:1.5.0")
+    implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-beta02")
     implementation("androidx.navigation:navigation-compose:2.6.0")
 
     val lifecycle_version = "2.6.1"

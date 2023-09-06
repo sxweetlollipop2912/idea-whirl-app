@@ -1,4 +1,4 @@
-package com.example.ideawhirl.components.drawing_board
+package com.example.ideawhirl.ui.components.drawing_board
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -17,11 +17,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 
 @Composable
 fun DisplayBoard(
-    paths: List<com.example.ideawhirl.components.drawing_board.Stroke>,
+    paths: List<com.example.ideawhirl.ui.components.drawing_board.Stroke>,
     onEditRequested: () -> Unit,
     availableStrokeColors: List<Color>,
     backgroundColor: Color,
@@ -32,7 +31,6 @@ fun DisplayBoard(
     var partialPathLists: List<Path> by remember() { mutableStateOf(listOf(Path())) }
     LaunchedEffect(key1 = playAnimation, key2 = currentSegment) {
         if (playAnimation) {
-            delay(5)
             val currentPath = paths[currentDrawingPath]
             when (currentSegment) {
                 0 -> {

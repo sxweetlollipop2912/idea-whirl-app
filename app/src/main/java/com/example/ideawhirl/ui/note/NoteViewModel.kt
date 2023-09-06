@@ -30,7 +30,12 @@ data class NoteState(
 ) {
     companion object {
         fun dummy() = NoteState(
-            note = Note.dummy()
+            note = Note(
+                name = "Untitled",
+                detail = "",
+                tags = emptySet(),
+                palette = NotePalette.random(),
+            )
         )
     }
 }

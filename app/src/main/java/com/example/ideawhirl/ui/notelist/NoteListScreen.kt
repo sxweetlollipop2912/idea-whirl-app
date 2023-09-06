@@ -86,6 +86,7 @@ fun NoteListScreen(
                 onClick = onToCreateNote,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
+                shape = MaterialTheme.shapes.small,
             ) {
                 Icon(Icons.Rounded.Add, contentDescription = "create new note")
             }

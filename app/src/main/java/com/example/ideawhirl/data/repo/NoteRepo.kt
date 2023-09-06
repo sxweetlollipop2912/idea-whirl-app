@@ -10,7 +10,6 @@ import com.example.ideawhirl.model.NotePalette
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -136,9 +135,6 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
 
     private fun saveDrawingData(uid: Int, drawingData: DrawingData) {
         val filename = getDrawingFilename(uid)
-        if (drawingData == null) {
-            throw AssertionError("Drawing data is not initialized.")
-        }
 
         if (uid == 0) {
             throw AssertionError("Note must be fetched from database to save.")

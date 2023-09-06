@@ -1,7 +1,11 @@
 package com.example.ideawhirl.ui.components.drawing_board
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitDragOrCancellation
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,27 +38,23 @@ fun DrawingSurface(
         .fillMaxSize()
         .background(backgroundColor)
         .pointerInput(Unit) {
-            awaitPointerEventScope {
+            awaitEachGesture {
                 while (true) {
-                    val event = awaitPointerEvent()
-                    when (event.type) {
-                        PointerEventType.Press -> {
-                            motionEvent = MotionEvent.Down
-                            val change = event.changes.last().position
-                            currentPosition = Offset(change.x, change.y)
-                        }
-
-                        PointerEventType.Move -> {
-                            val change = event.changes.last().position
-                            currentPosition = Offset(change.x, change.y)
-                        }
-
-                        PointerEventType.Release -> {
+                    val change = awaitFirstDown()
+                    motionEvent = MotionEvent.Down
+                    currentPosition = Offset(change.position.x, change.position.y)
+                    val currentPointerId = change.id
+                    withTimeout(10) {}
+                    while (true) {
+                        val ptr = awaitDragOrCancellation(currentPointerId)
+                        if (ptr == null || ptr.id != currentPointerId) {
                             motionEvent = MotionEvent.Up
-                            val change = event.changes.last().position
-                            currentPosition = Offset(change.x, change.y)
+                            break
                         }
+                        val newPos = ptr.position
+                        currentPosition = Offset(newPos.x, newPos.y)
                     }
+                    motionEvent = MotionEvent.Up
                 }
             }
         }

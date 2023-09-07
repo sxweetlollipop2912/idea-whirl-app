@@ -4,6 +4,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import kotlin.math.abs
@@ -70,7 +71,7 @@ class ShakeEventListener(
         val z = se.values[2]
 
         // calculate movement
-        val totalMovement = abs(x + y + z - lastX - lastY - lastZ)
+        val totalMovement = abs(x - lastX) + abs(y - lastY) + abs(z - lastZ)
         if (totalMovement > MIN_FORCE) {
 
             // get time
@@ -127,16 +128,16 @@ class ShakeEventListener(
 
     companion object {
         /** Minimum movement force to consider.  */
-        private const val MIN_FORCE = 10
+        private const val MIN_FORCE = 30
 
         /**
          * Minimum times in a shake gesture that the direction of movement needs to
          * change.
          */
-        private const val MIN_DIRECTION_CHANGE = 3
+        private const val MIN_DIRECTION_CHANGE = 4
 
         /** Maximum pause between movements.  */
-        private const val MAX_PAUSE_BETWEEN_DIRECTION_CHANGE = 200
+        private const val MAX_PAUSE_BETWEEN_DIRECTION_CHANGE = 100
 
         /** Maximum allowed time for shake gesture.  */
         private const val MAX_TOTAL_DURATION_OF_SHAKE = 400

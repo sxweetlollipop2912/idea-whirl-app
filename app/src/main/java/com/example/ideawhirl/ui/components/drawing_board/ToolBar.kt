@@ -96,7 +96,7 @@ fun StrokeWidthBox(
             ) {
                 Column {
                     val strokes = (strokeList - currentStrokeWidth).toMutableList()
-                    strokes.add(0, currentStrokeWidth)
+                    strokes.add(currentStrokeWidth)
                     strokes.forEach {
                         DrawingToolButton(
                             onClick = {
@@ -175,7 +175,7 @@ fun EraserWidthBox(
             ) {
                 Column {
                     val strokes = (strokeList - currentEraserWidth).toMutableList()
-                    strokes.add(0, currentEraserWidth)
+                    strokes.add(currentEraserWidth)
                     strokes.forEach {
                         DrawingToolButton(
                             onClick = {

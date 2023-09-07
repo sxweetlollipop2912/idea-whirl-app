@@ -1,12 +1,16 @@
 package com.example.ideawhirl.ui.components.drawing_board
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -26,31 +30,45 @@ fun ColorBox(
 ) {
     Box() {
         if (expanded) {
-            Popup(onDismissRequest = { onCollapsed() }) {
+            Popup(
+                onDismissRequest = { onCollapsed() },
+                alignment = Alignment.BottomCenter
+            ) {
                 Column {
                     val colors = availableStrokeColors.zip(0 until 10).toMutableList()
                     val color = colors.removeAt(currentStrokeColorIndex)
-                    colors.add(0, color)
+                    colors.add(color)
                     (0 until 10).forEach {
-                        OutlinedIconButton(
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = colors[it].first
-                            ),
+                        DrawingToolButton(
                             onClick = {
                                 onStrokeColorChanged(colors[it].second)
                                 onCollapsed()
-                            }) {}
+                            },
+                            backgroundColor = MaterialTheme.colorScheme.secondary.copy(
+                                alpha = 0.8f
+                            )
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .background(colors[it].first, CircleShape)
+                            )
+                        }
                     }
                 }
             }
         }
-        OutlinedIconButton(
-            colors = IconButtonDefaults.iconButtonColors(
-                containerColor = availableStrokeColors[currentStrokeColorIndex]
-            ),
+        DrawingToolButton(
             onClick = {
                 onExpanded()
-            }) {}
+            }
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .background(availableStrokeColors[currentStrokeColorIndex], CircleShape)
+            )
+        }
     }
 }
 
@@ -72,39 +90,51 @@ fun StrokeWidthBox(
     )
     Box {
         if (expanded) {
-            Popup(onDismissRequest = { onCollapsed() }) {
+            Popup(
+                onDismissRequest = { onCollapsed() },
+                alignment = Alignment.BottomCenter
+            ) {
                 Column {
                     val strokes = (strokeList - currentStrokeWidth).toMutableList()
                     strokes.add(0, currentStrokeWidth)
                     strokes.forEach {
-                        OutlinedIconButton(
-                            modifier = Modifier
-                                .drawBehind {
-                                    val canvasWidth = size.width
-                                    val canvasHeight = size.height
-                                    val padding = canvasWidth * 0.1
-                                    drawLine(
-                                        cap = StrokeCap.Round,
-                                        strokeWidth = it.toFloat().dp.toPx(),
-                                        start = Offset(
-                                            x = canvasWidth - padding.dp.toPx(),
-                                            y = canvasHeight / 2
-                                        ),
-                                        end = Offset(x = padding.dp.toPx(), y = canvasHeight / 2),
-                                        color = strokeColor
-                                    )
-                                },
+                        DrawingToolButton(
                             onClick = {
                                 onStrokeWidthChanged(it)
                                 onCollapsed()
-                            }) {}
+                            },
+                            backgroundColor = MaterialTheme.colorScheme.secondary.copy(
+                                alpha = 0.8f
+                            )
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .drawBehind {
+                                        val canvasWidth = size.width
+                                        val canvasHeight = size.height
+                                        val padding = canvasWidth * 0.1
+                                        drawLine(
+                                            cap = StrokeCap.Round,
+                                            strokeWidth = it.toFloat().dp.toPx(),
+                                            start = Offset(
+                                                x = canvasWidth - padding.dp.toPx(),
+                                                y = canvasHeight / 2
+                                            ),
+                                            end = Offset(x = padding.dp.toPx(), y = canvasHeight / 2),
+                                            color = strokeColor
+                                        )
+                                    },
+                            )
+                        }
                         Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
         }
-        OutlinedIconButton(
-            modifier = Modifier
+        DrawingToolButton(onClick = onExpanded) {
+            Box(modifier = Modifier
+                .fillMaxSize()
                 .drawBehind {
                     val canvasWidth = size.width
                     val canvasHeight = size.height
@@ -117,10 +147,8 @@ fun StrokeWidthBox(
                         color = strokeColor
                     )
                 },
-            onClick = {
-                onExpanded()
-            }
-        ) {}
+            )
+        }
     }
 }
 @Composable
@@ -139,46 +167,60 @@ fun EraserWidthBox(
         EraserWidth.Bolder
     )
     Box {
+        val eraserColor = MaterialTheme.colorScheme.background
         if (expanded) {
-            Popup(onDismissRequest = { onCollapsed() }) {
+            Popup(
+                onDismissRequest = { onCollapsed() },
+                alignment = Alignment.BottomCenter
+            ) {
                 Column {
                     val strokes = (strokeList - currentEraserWidth).toMutableList()
                     strokes.add(0, currentEraserWidth)
                     strokes.forEach {
-                        OutlinedIconButton(
-                            modifier = Modifier
+                        DrawingToolButton(
+                            onClick = {
+                                onEraserWidthChanged(it)
+                                onCollapsed()
+                            },
+                            backgroundColor = MaterialTheme.colorScheme.secondary.copy(
+                                alpha = 0.8f
+                            )
+                        ) {
+                            Box(modifier = Modifier
+                                .fillMaxSize()
                                 .drawBehind {
                                     val canvasWidth = size.width
                                     val canvasHeight = size.height
                                     drawCircle(
-                                        color = Color.DarkGray,
+                                        color = eraserColor,
                                         center = Offset(canvasWidth / 2, canvasHeight / 2),
                                         radius = it.toFloat().dp.toPx() / 2,
                                     )
                                 },
-                            onClick = {
-                                onEraserWidthChanged(it)
-                                onCollapsed()
-                            }) {}
+                            )
+                        }
                         Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
         }
-        OutlinedIconButton(
-            modifier = Modifier
+        DrawingToolButton(
+            onClick = {
+                onExpanded()
+            }
+        ) {
+            Box(modifier = Modifier
+                .fillMaxSize()
                 .drawBehind {
                     val canvasWidth = size.width
                     val canvasHeight = size.height
                     drawCircle(
-                        color = Color.DarkGray,
+                        color = eraserColor,
                         center = Offset(canvasWidth / 2, canvasHeight / 2),
                         radius = currentEraserWidth.toFloat().dp.toPx() / 2,
                     )
                 },
-            onClick = {
-                onExpanded()
-            }
-        ) {}
+            )
+        }
     }
 }

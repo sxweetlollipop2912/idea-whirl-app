@@ -85,10 +85,11 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.ideawhirl.model.Note
-import com.example.ideawhirl.model.NotePalette
 import com.example.ideawhirl.ui.components.ColorPickerPopup
 import com.example.ideawhirl.ui.components.TagListWithAdd
 import com.example.ideawhirl.ui.components.TagPill
+import com.example.ideawhirl.ui.theme.NotePalette
+import com.example.ideawhirl.ui.theme.NoteTheme
 import com.mohamedrejeb.richeditor.annotation.ExperimentalRichTextApi
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
@@ -115,171 +116,198 @@ fun NoteScreen(
     onPaletteChanged: (NotePalette) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isInEditMode = uiState.isInEditMode
-    val isEditingTitle = uiState.isEditingTitle
-    val richTextState = rememberRichTextState()
-    richTextState.setConfig(
-        linkColor = note.palette.onEmphasis,
-        linkTextDecoration = TextDecoration.Underline,
-    )
-    // load note content from viewmodel
-    if (!isInEditMode) {
-        richTextState.setMarkdown(note.detail)
-    }
-
-    val focusManager = LocalFocusManager.current
-    var requestingFocusRTE by rememberSaveable { mutableStateOf(uiState.isEditingContent) }
-    val focusRequesterRTE = remember { FocusRequester() }
-    if (requestingFocusRTE) {
-        requestingFocusRTE = false
-        LaunchedEffect(Unit) {
-            Log.d("NoteScreen", "requesting focus")
-            focusRequesterRTE.requestFocus()
+    NoteTheme(palette = note.palette) {
+        val isInEditMode = uiState.isInEditMode
+        val isEditingTitle = uiState.isEditingTitle
+        val richTextState = rememberRichTextState()
+        richTextState.setConfig(
+            linkColor = MaterialTheme.colorScheme.inversePrimary,
+            linkTextDecoration = TextDecoration.Underline,
+        )
+        // load note content from viewmodel
+        if (!isInEditMode) {
+            richTextState.setMarkdown(note.detail)
         }
-    }
 
-    val focusRequesterTitle = remember { FocusRequester() }
-
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Row {
-                        if (isEditingTitle) {
-                            EditField(
-                                content = note.name,
-                                onChanged = onTitleChanged,
-                                onSubmit = onTitleSubmit,
-                                focusRequester = focusRequesterTitle,
-                                palette = note.palette,
-                            )
-                        } else {
-                            DisplayField(
-                                isInEditMode = isInEditMode,
-                                onEditClick = onRequestTitleEdit
-                            ) {
-                                Text(
-                                    text = note.name,
-                                    style = MaterialTheme.typography.headlineLarge.copy(
-                                        color = note.palette.onBackground,
-                                        platformStyle = PlatformTextStyle(
-                                            includeFontPadding = false,
-                                        ),
-                                    )
-                                )
-                            }
-                        }
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.Outlined.ArrowBackIosNew,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    if (isInEditMode) {
-                        val palettesMain = NotePalette.values().map { Pair(it, it.main) }
-                        Box(
-                            modifier = modifier
-                                .width(90.dp)
-                                .wrapContentHeight(),
-                        ) {
-                            ColorPickerPopup(
-                                selectedColor = note.palette.main,
-                                colors = palettesMain.map { it.second },
-                                onColorSelected = {selected ->
-                                    onPaletteChanged(
-                                        palettesMain.find { it.second == selected }?.first
-                                        ?: NotePalette.PALETTE_0
-                                    )
-                                },
-                                backgroundColor = MaterialTheme.colorScheme.outlineVariant.copy(
-                                    alpha = 0.4f
-                                ),
-                            )
-                            FloatingActionButton(
-                                modifier = Modifier
-                                    .size(42.dp)
-                                    .align(Alignment.TopEnd),
-                                onClick = {
-                                    onContentChanged(richTextState.toMarkdown())
-                                    onDoneEditing()
-                                    focusManager.clearFocus()
-                                },
-                                shape = CircleShape,
-                                containerColor = note.palette.variant,
-                                contentColor = note.palette.onVariant,
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Done,
-                                    contentDescription = "save note",
-                                )
-                            }
-                        }
-                    } else {
-                        FloatingActionButton(
-                            modifier = Modifier.size(42.dp),
-                            onClick = {
-                                onRequestNoteEdit()
-                                requestingFocusRTE = true
-                            },
-                            shape = CircleShape,
-                            containerColor = note.palette.variant,
-                            contentColor = note.palette.onVariant,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.EditNote,
-                                contentDescription = "edit note",
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = note.palette.background,
-                ),
-                modifier = Modifier.padding(end = 16.dp),
-            )
-        },
-        bottomBar = {
-            if (isInEditMode) {
-                BottomBar(
-                    richTextState,
-                    note.palette,
-                    onDrawClick = {
-                        // save note content to viewmodel
-                        onContentChanged(richTextState.toMarkdown())
-                        onDoneEditing()
-                        onToNoteDraw()
-                    }
-                )
+        val focusManager = LocalFocusManager.current
+        var requestingFocusRTE by rememberSaveable { mutableStateOf(uiState.isEditingContent) }
+        val focusRequesterRTE = remember { FocusRequester() }
+        if (requestingFocusRTE) {
+            requestingFocusRTE = false
+            LaunchedEffect(Unit) {
+                Log.d("NoteScreen", "requesting focus")
+                focusRequesterRTE.requestFocus()
             }
-        },
-        containerColor = note.palette.background,
-    ) { innerPadding ->
-        val screenModifier = Modifier.padding(
-            innerPadding.calculateStartPadding(LayoutDirection.Ltr),
-            innerPadding.calculateTopPadding(),
-            innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-            0.dp,
-        )
-        NoteScreenContent(
-            note,
-            globalTags,
-            uiState,
-            richTextState,
-            onTagAdded,
-            onTagUpdated,
-            onTagRemoved,
-            focusRequesterRTE,
-            onRichTextFocusRequest = {
-                requestingFocusRTE = true
+        }
+
+        val focusRequesterTitle = remember { FocusRequester() }
+
+        var bottomBarExpanded by rememberSaveable { mutableStateOf(false) }
+
+        Scaffold(
+            modifier = modifier,
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Row {
+                            if (isEditingTitle) {
+                                EditField(
+                                    content = note.name,
+                                    onChanged = onTitleChanged,
+                                    onSubmit = onTitleSubmit,
+                                    focusRequester = focusRequesterTitle,
+                                )
+                            } else {
+                                DisplayField(
+                                    isInEditMode = isInEditMode,
+                                    onEditClick = onRequestTitleEdit
+                                ) {
+                                    Text(
+                                        text = note.name,
+                                        style = MaterialTheme.typography.headlineLarge.copy(
+                                            color = MaterialTheme.colorScheme.onBackground,
+                                            platformStyle = PlatformTextStyle(
+                                                includeFontPadding = false,
+                                            ),
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.Outlined.ArrowBackIosNew,
+                                contentDescription = "Back"
+                            )
+                        }
+                    },
+                    actions = {
+                        if (isInEditMode) {
+                            val palettesMain = NotePalette.values().map { Pair(it, it.main) }
+                            Box(
+                                modifier = modifier
+                                    .width(100.dp)
+                                    .wrapContentHeight(),
+                            ) {
+                                ColorPickerPopup(
+                                    selectedColor = MaterialTheme.colorScheme.primary,
+                                    colors = palettesMain.map { it.second },
+                                    onColorSelected = { selected ->
+                                        onPaletteChanged(
+                                            palettesMain.find { it.second == selected }?.first
+                                                ?: NotePalette.PALETTE_0
+                                        )
+                                    },
+                                    backgroundColor = MaterialTheme.colorScheme.outlineVariant.copy(
+                                        alpha = 0.4f
+                                    ),
+                                )
+                                FloatingActionButton(
+                                    modifier = Modifier
+                                        .size(42.dp)
+                                        .align(Alignment.TopEnd),
+                                    onClick = {
+                                        onContentChanged(richTextState.toMarkdown())
+                                        onDoneEditing()
+                                        focusManager.clearFocus()
+                                    },
+                                    shape = CircleShape,
+                                    containerColor = MaterialTheme.colorScheme.secondary,
+                                    contentColor = MaterialTheme.colorScheme.onSecondary,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Done,
+                                        contentDescription = "save note",
+                                    )
+                                }
+                            }
+                        } else {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(15.dp)
+                            ) {
+                                FloatingActionButton(
+                                    modifier = Modifier.size(42.dp),
+                                    onClick = {
+                                        onContentChanged(richTextState.toMarkdown())
+                                        onDoneEditing()
+                                        onToNoteDraw()
+                                    },
+                                    shape = CircleShape,
+                                    containerColor = MaterialTheme.colorScheme.secondary,
+                                    contentColor = MaterialTheme.colorScheme.onSecondary,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Gesture,
+                                        contentDescription = "go to drawing",
+                                    )
+                                }
+                                FloatingActionButton(
+                                    modifier = Modifier.size(42.dp),
+                                    onClick = {
+                                        onRequestNoteEdit()
+                                        requestingFocusRTE = true
+                                        bottomBarExpanded = true
+                                    },
+                                    shape = CircleShape,
+                                    containerColor = MaterialTheme.colorScheme.secondary,
+                                    contentColor = MaterialTheme.colorScheme.onSecondary,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.EditNote,
+                                        contentDescription = "edit note",
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                    ),
+                    modifier = Modifier.padding(end = 16.dp),
+                )
             },
-            screenModifier
-        )
+            bottomBar = {
+                if (isInEditMode) {
+                    BottomBar(
+                        bottomBarExpanded,
+                        onToggleExpansion = {
+                            bottomBarExpanded = !bottomBarExpanded
+                        },
+                        richTextState,
+                        onDrawClick = {
+                            // save note content to viewmodel
+                            onContentChanged(richTextState.toMarkdown())
+                            onDoneEditing()
+                            onToNoteDraw()
+                        }
+                    )
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.background,
+        ) { innerPadding ->
+            val screenModifier = Modifier.padding(
+                innerPadding.calculateStartPadding(LayoutDirection.Ltr),
+                innerPadding.calculateTopPadding(),
+                innerPadding.calculateEndPadding(LayoutDirection.Ltr),
+                0.dp,
+            )
+            NoteScreenContent(
+                note,
+                globalTags,
+                uiState,
+                richTextState,
+                onTagAdded,
+                onTagUpdated,
+                onTagRemoved,
+                focusRequesterRTE,
+                onRichTextFocusRequest = {
+                    requestingFocusRTE = true
+                },
+                screenModifier
+            )
+        }
     }
 }
 
@@ -313,7 +341,6 @@ fun NoteScreenContent(
             isEditingNote = isInEditMode,
             onTagUpdated = onTagUpdated,
             onTagRemoved = onTagRemoved,
-            palette = note.palette,
             contentHorizontalPadding = 16.dp,
             addButtonRemove = !isInEditMode,
             modifier = Modifier.fillMaxWidth(),
@@ -337,14 +364,14 @@ fun NoteScreenContent(
                 state = richTextState,
                 readOnly = !isInEditMode,
                 textStyle = MaterialTheme.typography.bodyLarge.copy(
-                    color = note.palette.onBackground
+                    color = MaterialTheme.colorScheme.onBackground
                 ),
                 colors = richTextEditorColors(
-                    containerColor = note.palette.background,
-                    cursorColor = note.palette.main,
+                    containerColor = MaterialTheme.colorScheme.background,
+                    cursorColor = MaterialTheme.colorScheme.primary,
                     selectionColors = TextSelectionColors(
-                        handleColor = note.palette.main,
-                        backgroundColor = note.palette.variant,
+                        handleColor = MaterialTheme.colorScheme.primary,
+                        backgroundColor = MaterialTheme.colorScheme.secondary,
                     ),
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -388,11 +415,11 @@ fun NoteScreenContent(
                         },
 
                         colors = TextFieldDefaults.textFieldColors(
-                            cursorColor = note.palette.main,
-                            focusedIndicatorColor = note.palette.main,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
                             selectionColors = TextSelectionColors(
-                                handleColor = note.palette.main,
-                                backgroundColor = note.palette.variant,
+                                handleColor = MaterialTheme.colorScheme.primary,
+                                backgroundColor = MaterialTheme.colorScheme.secondary,
                             )
                         )
                     )
@@ -410,8 +437,8 @@ fun NoteScreenContent(
                                     onTagPillClick = {
                                         newTag = globalTag
                                     },
-                                    selectedContainerColor = note.palette.variant,
-                                    selectedContentColor = note.palette.onVariant,
+                                    selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                                    selectedContentColor = MaterialTheme.colorScheme.onSecondary,
                                 )
                             }
                         }
@@ -429,7 +456,7 @@ fun NoteScreenContent(
                     Text(
                         text = "OK",
                         style = MaterialTheme.typography.labelLarge,
-                        color = note.palette.onEmphasis
+                        color = MaterialTheme.colorScheme.inversePrimary
                     )
                 }
             },
@@ -443,7 +470,7 @@ fun NoteScreenContent(
                     Text(
                         text = "Cancel",
                         style = MaterialTheme.typography.labelLarge,
-                        color = note.palette.onEmphasis
+                        color = MaterialTheme.colorScheme.inversePrimary
                     )
                 }
             }
@@ -453,12 +480,12 @@ fun NoteScreenContent(
 
 @Composable
 fun BottomBar(
+    expanded: Boolean,
+    onToggleExpansion: () -> Unit,
     state: RichTextState,
-    palette: NotePalette,
     onDrawClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    var active by rememberSaveable { mutableStateOf(false) }
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -468,7 +495,7 @@ fun BottomBar(
         Row(
             modifier = Modifier
                 .align(
-                    if (active)
+                    if (expanded)
                         Alignment.TopCenter
                     else
                         Alignment.TopEnd
@@ -477,60 +504,54 @@ fun BottomBar(
                     elevation = 2.dp,
                     shape = MaterialTheme.shapes.small,
                 )
-                .background(palette.variant)
+                .background(MaterialTheme.colorScheme.secondary)
                 .padding(5.dp)
                 .animateContentSize(),
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (active) {
+            if (expanded) {
                 RTEControlButton(
                     selected = state.currentSpanStyle.fontWeight == FontWeight.Bold,
                     onClick = { state.toggleSpanStyle(SpanStyle(fontWeight = FontWeight.Bold)) },
                     iconId = Icons.Outlined.FormatBold,
-                    palette = palette,
                     description = "Bold"
                 )
                 RTEControlButton(
                     selected = state.currentSpanStyle.fontStyle == FontStyle.Italic,
                     onClick = { state.toggleSpanStyle(SpanStyle(fontStyle = FontStyle.Italic)) },
                     iconId = Icons.Outlined.FormatItalic,
-                    palette = palette,
                     description = "Italic"
                 )
 //                RTEControlButton(
 //                    selected = state.currentSpanStyle.textDecoration?.contains(TextDecoration.Underline) == true,
 //                    onClick = { state.toggleSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline)) },
 //                    iconId = Icons.Outlined.FormatUnderlined,
-//                    palette = palette,
 //                    description = "Underline"
 //                )
                 RTEControlButton(
                     selected = state.currentSpanStyle.textDecoration?.contains(TextDecoration.LineThrough) == true,
                     onClick = { state.toggleSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough)) },
                     iconId = Icons.Outlined.FormatStrikethrough,
-                    palette = palette,
                     description = "Strikethrough"
                 )
                 RTEControlButton(
                     selected = state.isUnorderedList,
                     onClick = { state.toggleUnorderedList() },
                     iconId = Icons.Outlined.FormatListBulleted,
-                    palette = palette,
                     description = "Unordered List"
                 )
                 RTEControlButton(
                     selected = state.isOrderedList,
                     onClick = { state.toggleOrderedList() },
                     iconId = Icons.Outlined.FormatListNumbered,
-                    palette = palette,
                     description = "Ordered List"
                 )
                 IconButton(
                     onClick = onDrawClick,
                     modifier = Modifier.size(42.dp),
                     colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = palette.onVariant,
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
                     ),
                 ) {
                     Icon(
@@ -540,29 +561,29 @@ fun BottomBar(
                     )
                 }
                 IconButton(
-                    onClick = { active = !active },
+                    onClick = onToggleExpansion,
                     modifier = Modifier.size(42.dp),
                     colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = palette.onVariant,
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
                     ),
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Close,
-                        contentDescription = "Edit",
+                        contentDescription = "Close tool bar",
                         modifier = Modifier.size(28.dp),
                     )
                 }
             } else {
                 IconButton(
-                    onClick = { active = !active },
+                    onClick = onToggleExpansion,
                     modifier = Modifier.size(42.dp),
                     colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = palette.onVariant,
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
                     ),
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
-                        contentDescription = "Edit",
+                        contentDescription = "Open tool bar",
                         modifier = Modifier.size(28.dp)
                     )
                 }
@@ -577,7 +598,6 @@ fun RTEControlButton(
     onClick: () -> Unit,
     iconId: ImageVector,
     description: String,
-    palette: NotePalette,
     modifier: Modifier = Modifier,
 ) {
     FilledIconButton(
@@ -585,9 +605,9 @@ fun RTEControlButton(
         modifier = modifier.size(42.dp),
         shape = CircleShape,
         colors = IconButtonDefaults.iconButtonColors(
-            contentColor = palette.onVariant,
+            contentColor = MaterialTheme.colorScheme.onSecondary,
             containerColor = if (selected) {
-                palette.main
+                MaterialTheme.colorScheme.primary
             } else {
                 Color.Transparent
         },
@@ -624,7 +644,6 @@ private fun EditField(
     content: String,
     onChanged: (String) -> Unit,
     onSubmit: () -> Unit,
-    palette: NotePalette,
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
@@ -638,12 +657,12 @@ private fun EditField(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(4.dp))
-                .background(palette.background)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(10.dp, 5.dp)
         ) {
             val customTextSelectionColors = TextSelectionColors(
-                handleColor = palette.main,
-                backgroundColor = palette.variant,
+                handleColor = MaterialTheme.colorScheme.primary,
+                backgroundColor = MaterialTheme.colorScheme.secondary,
             )
 
             CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
@@ -674,9 +693,9 @@ private fun EditField(
                         },
                     textStyle = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Normal,
-                        color = palette.onBackground
+                        color = MaterialTheme.colorScheme.onBackground
                     ),
-                    cursorBrush = SolidColor(palette.main)
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
                 )
             }
         }

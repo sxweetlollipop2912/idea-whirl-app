@@ -1,12 +1,9 @@
 package com.example.ideawhirl.ui.notedraw
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.ideawhirl.ui.noteDrawdraw.NoteDrawViewModel
 
 @Composable
 fun NoteDrawRoute(
@@ -21,11 +18,13 @@ fun NoteDrawRoute(
 
     NoteDrawScreen(
         availableColors = availableColors,
-        backgroundColor = palette.background,
+        palette = palette,
         drawingData = drawingData,
         onUpdateDrawingData = noteDrawViewModel::onUpdateDrawingData,
         onSave = noteDrawViewModel::onSave,
+        onBack = onBack,
         drawingConfig = drawingConfig,
         onUpdateDrawingConfig = noteDrawViewModel::onUpdateDrawingConfig,
+        modifier = modifier,
     )
 }

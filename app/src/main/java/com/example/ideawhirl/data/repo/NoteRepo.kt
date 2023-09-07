@@ -7,7 +7,7 @@ import com.example.ideawhirl.data.data_source.LocalDatabase
 import com.example.ideawhirl.data.data_source.NoteEntity
 import com.example.ideawhirl.data.data_source.TagEntity
 import com.example.ideawhirl.model.Note
-import com.example.ideawhirl.model.NotePalette
+import com.example.ideawhirl.ui.theme.NotePalette
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first

@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.awaitDragOrCancellation
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import kotlin.math.abs
@@ -34,76 +36,81 @@ fun DrawingSurface(
     var motionEvent by remember { mutableStateOf(MotionEvent.Idle) }
     var currentPosition by remember { mutableStateOf(Offset.Unspecified) }
     var previousPosition by remember { mutableStateOf(Offset.Unspecified) }
+    var currentPointerId: PointerId? by remember { mutableStateOf(null) }
     val canvasModifier = Modifier
         .fillMaxSize()
         .background(backgroundColor)
-        .pointerInput(Unit) {
+        .pointerInput(currentPosition, motionEvent, paths) {
             awaitEachGesture {
-                while (true) {
-                    val change = awaitFirstDown()
-                    motionEvent = MotionEvent.Down
-                    currentPosition = Offset(change.position.x, change.position.y)
-                    val currentPointerId = change.id
-                    withTimeout(10) {}
-                    while (true) {
-                        val ptr = awaitDragOrCancellation(currentPointerId)
+                val newPaths = paths.toMutableList()
+                when (motionEvent) {
+                    MotionEvent.Idle -> {
+                        if (currentPointerId != null) {
+                            currentPointerId == null
+                        }
+                        Log.d("DrawingSurface", "Start")
+                        val change = awaitFirstDown()
+                        currentPosition = Offset(change.position.x, change.position.y)
+                        currentPointerId = change.id
+                        when (drawingConfig.mode) {
+                            Mode.DRAWING -> {
+                                newPaths.add(
+                                    DrawingPath(
+                                        strokeColorIndex = drawingConfig.strokeColorIndex,
+                                        strokeWidth = drawingConfig.strokeWidth
+                                    )
+                                )
+                            }
+
+                            Mode.ERASING -> {
+                                newPaths.add(EraserPath(drawingConfig.eraserWidth))
+                            }
+                        }
+                        newPaths
+                            .last()
+                            .start(currentPosition.x, currentPosition.y)
+                        previousPosition = currentPosition
+                        motionEvent = MotionEvent.Down
+                    }
+
+                    MotionEvent.Down -> {
+                        motionEvent = MotionEvent.Move
+                    }
+
+                    MotionEvent.Move -> {
+                        val ptr = awaitDragOrCancellation(currentPointerId!!)
                         if (ptr == null || ptr.id != currentPointerId) {
                             motionEvent = MotionEvent.Up
-                            break
+                            return@awaitEachGesture
                         }
+                        Log.d("DrawingSurface", "Draw")
                         val newPos = ptr.position
                         currentPosition = Offset(newPos.x, newPos.y)
+                        val dx = abs(currentPosition.x - previousPosition.x)
+                        val dy = abs(currentPosition.y - previousPosition.y)
+                        newPaths
+                            .last()
+                            .drawTo(
+                                currentPosition.x,
+                                currentPosition.y,
+                            )
+                        previousPosition = currentPosition
                     }
-                    motionEvent = MotionEvent.Up
+
+                    MotionEvent.Up -> {
+                        newPaths
+                            .last()
+                            .finish(currentPosition.x, currentPosition.y)
+                        currentPosition = Offset.Unspecified
+                        previousPosition = Offset.Unspecified
+                        motionEvent = MotionEvent.Idle
+                        Log.d("DrawingSurface", "Done")
+                    }
                 }
+                onPathsChanged(newPaths)
             }
         }
     Canvas(modifier = canvasModifier) {
-        val newPaths = paths.toMutableList()
-        when (motionEvent) {
-            MotionEvent.Down -> {
-                when (drawingConfig.mode) {
-                    Mode.DRAWING -> {
-                        newPaths.add(
-                            DrawingPath(
-                                strokeColorIndex = drawingConfig.strokeColorIndex,
-                                strokeWidth = drawingConfig.strokeWidth
-                            )
-                        )
-                    }
-
-                    Mode.ERASING -> {
-                        newPaths.add(EraserPath(drawingConfig.eraserWidth))
-                    }
-                }
-                newPaths.last().start(currentPosition.x, currentPosition.y)
-                previousPosition = currentPosition
-                motionEvent = MotionEvent.Move
-            }
-
-            MotionEvent.Move -> {
-                val dx = abs(currentPosition.x - previousPosition.x)
-                val dy = abs(currentPosition.y - previousPosition.y)
-                if (dx >= OFFSET_TOLERANCE || dy >= OFFSET_TOLERANCE) {
-                    newPaths.last().drawTo(
-                        currentPosition.x,
-                        currentPosition.y,
-                    )
-                }
-                previousPosition = currentPosition
-            }
-
-            MotionEvent.Up -> {
-                newPaths.last().finish(currentPosition.x, currentPosition.y)
-                currentPosition = Offset.Unspecified
-                previousPosition = currentPosition
-                motionEvent = MotionEvent.Idle
-            }
-
-            else -> Unit
-        }
-        onPathsChanged(newPaths.toList())
-
         for (path in paths) {
             val pathColorIndex = path.strokeColorIndex() ?: -1
             val pathColor = if (pathColorIndex == -1) {

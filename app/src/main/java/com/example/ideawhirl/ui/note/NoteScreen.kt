@@ -74,6 +74,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
@@ -126,6 +127,7 @@ fun NoteScreen(
         richTextState.setMarkdown(note.detail)
     }
 
+    val focusManager = LocalFocusManager.current
     var requestingFocusRTE by rememberSaveable { mutableStateOf(uiState.isEditingContent) }
     val focusRequesterRTE = remember { FocusRequester() }
     if (requestingFocusRTE) {
@@ -204,6 +206,7 @@ fun NoteScreen(
                                 onClick = {
                                     onContentChanged(richTextState.toMarkdown())
                                     onDoneEditing()
+                                    focusManager.clearFocus()
                                 },
                                 shape = CircleShape,
                                 containerColor = note.palette.variant,

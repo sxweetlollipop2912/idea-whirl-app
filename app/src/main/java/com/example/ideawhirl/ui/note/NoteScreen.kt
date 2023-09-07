@@ -1,8 +1,11 @@
 package com.example.ideawhirl.ui.note
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -114,16 +117,26 @@ fun NoteScreen(
     val isInEditMode = uiState.isInEditMode
     val isEditingTitle = uiState.isEditingTitle
     val richTextState = rememberRichTextState()
-
     richTextState.setConfig(
-        // TODO: set color that matches current palette
-        linkColor = note.palette.main,
+        linkColor = note.palette.onEmphasis,
         linkTextDecoration = TextDecoration.Underline,
     )
     // load note content from viewmodel
     if (!isInEditMode) {
         richTextState.setMarkdown(note.detail)
     }
+
+    var requestingFocusRTE by rememberSaveable { mutableStateOf(uiState.isEditingContent) }
+    val focusRequesterRTE = remember { FocusRequester() }
+    if (requestingFocusRTE) {
+        requestingFocusRTE = false
+        LaunchedEffect(Unit) {
+            Log.d("NoteScreen", "requesting focus")
+            focusRequesterRTE.requestFocus()
+        }
+    }
+
+    val focusRequesterTitle = remember { FocusRequester() }
 
     Scaffold(
         modifier = modifier,
@@ -136,6 +149,7 @@ fun NoteScreen(
                                 content = note.name,
                                 onChanged = onTitleChanged,
                                 onSubmit = onTitleSubmit,
+                                focusRequester = focusRequesterTitle,
                                 palette = note.palette,
                             )
                         } else {
@@ -204,7 +218,10 @@ fun NoteScreen(
                     } else {
                         FloatingActionButton(
                             modifier = Modifier.size(42.dp),
-                            onClick = onRequestNoteEdit,
+                            onClick = {
+                                onRequestNoteEdit()
+                                requestingFocusRTE = true
+                            },
                             shape = CircleShape,
                             containerColor = note.palette.variant,
                             contentColor = note.palette.onVariant,
@@ -252,6 +269,10 @@ fun NoteScreen(
             onTagAdded,
             onTagUpdated,
             onTagRemoved,
+            focusRequesterRTE,
+            onRichTextFocusRequest = {
+                requestingFocusRTE = true
+            },
             screenModifier
         )
     }
@@ -267,10 +288,11 @@ fun NoteScreenContent(
     onTagAdded: (String) -> Unit,
     onTagUpdated: (String, String) -> Unit,
     onTagRemoved: (String) -> Unit,
+    focusRequester: FocusRequester,
+    onRichTextFocusRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isInEditMode = uiState.isInEditMode
-
     var isAddingTag by rememberSaveable { mutableStateOf(false) }
 
     Column(
@@ -291,11 +313,20 @@ fun NoteScreenContent(
             addButtonRemove = !isInEditMode,
             modifier = Modifier.fillMaxWidth(),
         )
+
+        val interactionSource = MutableInteractionSource()
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    enabled = uiState.isEditingContent
+                ) {
+                    onRichTextFocusRequest()
+                }
         ) {
             RichTextEditor(
                 state = richTextState,
@@ -320,7 +351,8 @@ fun NoteScreenContent(
                     bottom = 0.dp
                 ),
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .focusRequester(focusRequester),
             )
             Spacer(
                 modifier = Modifier.height(300.dp)
@@ -588,9 +620,9 @@ private fun EditField(
     onChanged: (String) -> Unit,
     onSubmit: () -> Unit,
     palette: NotePalette,
+    focusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
-    val focusRequester = remember { FocusRequester() }
     var hasFocused by rememberSaveable { mutableStateOf(false) }
 
     BaseField(
@@ -646,6 +678,7 @@ private fun EditField(
     }
 
     LaunchedEffect(Unit) {
+        Log.d("NoteScreen: EditField", "requesting focus")
         focusRequester.requestFocus()
     }
 }

@@ -22,6 +22,10 @@ import com.example.ideawhirl.ui.theme.note_dark_pink
 import com.example.ideawhirl.ui.theme.note_dark_pink_background
 import com.example.ideawhirl.ui.theme.note_dark_pink_on_emphasis
 import com.example.ideawhirl.ui.theme.note_dark_pink_variant
+import com.example.ideawhirl.ui.theme.note_dark_purple
+import com.example.ideawhirl.ui.theme.note_dark_purple_background
+import com.example.ideawhirl.ui.theme.note_dark_purple_on_emphasis
+import com.example.ideawhirl.ui.theme.note_dark_purple_variant
 import com.example.ideawhirl.ui.theme.note_light_blue
 import com.example.ideawhirl.ui.theme.note_light_blue_background
 import com.example.ideawhirl.ui.theme.note_light_blue_on_emphasis
@@ -39,6 +43,10 @@ import com.example.ideawhirl.ui.theme.note_light_pink
 import com.example.ideawhirl.ui.theme.note_light_pink_background
 import com.example.ideawhirl.ui.theme.note_light_pink_on_emphasis
 import com.example.ideawhirl.ui.theme.note_light_pink_variant
+import com.example.ideawhirl.ui.theme.note_light_purple
+import com.example.ideawhirl.ui.theme.note_light_purple_background
+import com.example.ideawhirl.ui.theme.note_light_purple_on_emphasis
+import com.example.ideawhirl.ui.theme.note_light_purple_variant
 import java.util.Date
 
 enum class NotePalette(
@@ -93,7 +101,17 @@ enum class NotePalette(
         note_dark_orange_variant,
         note_dark_orange_background,
         note_dark_orange_on_emphasis,
-        4);
+        4),
+    PALETTE_5(
+        note_light_purple,
+        note_light_purple_variant,
+        note_light_purple_background,
+        note_light_purple_on_emphasis,
+        note_dark_purple,
+        note_dark_purple_variant,
+        note_dark_purple_background,
+        note_dark_purple_on_emphasis,
+        5);
 
     val main: Color
         @Composable

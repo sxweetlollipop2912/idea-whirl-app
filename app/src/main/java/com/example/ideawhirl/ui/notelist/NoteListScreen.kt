@@ -2,6 +2,7 @@ package com.example.ideawhirl.ui.notelist
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -17,9 +18,12 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -30,6 +34,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
@@ -178,50 +187,91 @@ fun NoteListItem(
     modifier: Modifier = Modifier,
 ) {
     val borderColor = note.palette.main
-    Card(
-        modifier = modifier
-            .fillMaxWidth(),
-        border = BorderStroke(1.dp, borderColor),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-        onClick = onItemClick,
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 1.5.dp,
-        ),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
+    var isMenuOpened by remember { mutableStateOf(false) }
+    Box {
+        Card(
+            modifier = modifier
+                .fillMaxWidth(),
+            border = BorderStroke(1.dp, borderColor),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
+            onClick = onItemClick,
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 1.5.dp,
+            ),
         ) {
-            Divider(
-                modifier = Modifier
-                    .width(10.dp)
-                    .fillMaxHeight(),
-                color = borderColor,
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
             ) {
-                Text(note.name, style = MaterialTheme.typography.titleSmall.copy(
-                    color = MaterialTheme.colorScheme.onSurface
-                ))
-                NoteListItemPreview(
-                    note = note,
-                    onItemClick = onItemClick,
-                    modifier = Modifier.weight(1f),
+                Divider(
+                    modifier = Modifier
+                        .width(10.dp)
+                        .fillMaxHeight(),
+                    color = borderColor,
                 )
-                Text(
-                    formatDate(note.createdAt!!),
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                ) {
+                    Text(
+                        note.name, style = MaterialTheme.typography.titleSmall.copy(
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     )
-                )
+                    NoteListItemPreview(
+                        note = note,
+                        onItemClick = onItemClick,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        formatDate(note.createdAt!!),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+                }
             }
         }
+        Box(
+            modifier = Modifier.align(Alignment.BottomEnd)
+        ) {
+            IconButton(
+                onClick = { isMenuOpened = !isMenuOpened },
+                modifier = Modifier.padding(start = 8.dp),
 
+                ) {
+                Icon(
+                    imageVector = Icons.Rounded.MoreVert,
+                    contentDescription = "More",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            if (isMenuOpened) {
+                DropdownMenu(
+                    expanded = isMenuOpened,
+                    onDismissRequest = { isMenuOpened = false },
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "Delete",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            )
+                        },
+                        onClick = {
+                            onDeleteNote.invoke(note)
+                            isMenuOpened = false
+                        }
+                    )
+                }
+            }
+        }
     }
 }
 

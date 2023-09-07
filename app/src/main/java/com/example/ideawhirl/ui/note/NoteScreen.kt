@@ -197,7 +197,9 @@ fun NoteScreen(
                                         ?: NotePalette.PALETTE_0
                                     )
                                 },
-                                backgroundColor = Color(0xFFEAE9E9),
+                                backgroundColor = MaterialTheme.colorScheme.outlineVariant.copy(
+                                    alpha = 0.4f
+                                ),
                             )
                             FloatingActionButton(
                                 modifier = Modifier

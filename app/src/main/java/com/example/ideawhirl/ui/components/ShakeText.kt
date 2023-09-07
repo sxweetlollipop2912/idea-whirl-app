@@ -13,7 +13,7 @@ import com.example.ideawhirl.model.NotePalette
 @Composable
 fun ShakeText() {
     val text = "shake !!"
-    val colors = NotePalette.values().filter { it.id != 0 }.map { listOf(it.onEmphasis, it.main).random() }
+    val colors = NotePalette.values().filter { it.id != 0 }.map { listOf(it.main).random() }
     val colorText = buildAnnotatedString {
         text.forEachIndexed { index, c ->
             withStyle(style = SpanStyle(color = colors[index % colors.size])) {
@@ -24,8 +24,8 @@ fun ShakeText() {
     Text(
         text = colorText,
         style = MaterialTheme.typography.displayMedium.copy(
-            fontWeight = FontWeight.ExtraLight,
-            letterSpacing = 3.sp
+            fontWeight = FontWeight.Light,
+            letterSpacing = 3.sp,
         )
     )
 }

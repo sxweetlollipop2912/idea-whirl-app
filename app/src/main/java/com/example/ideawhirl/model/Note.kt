@@ -176,7 +176,7 @@ enum class NotePalette(
         }
 
     companion object {
-        fun random() = values().toList().random()
+        fun random() = values().filter { it.id != 0 }.toList().random()
         fun fromId(id: Int) = values().first { it.id == id }
     }
 }

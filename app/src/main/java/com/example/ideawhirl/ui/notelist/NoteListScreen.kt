@@ -1,12 +1,11 @@
 package com.example.ideawhirl.ui.notelist
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Add
@@ -33,16 +31,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.ui.components.TagFilter
 import com.example.ideawhirl.ui.formatDate
 import com.example.ideawhirl.ui.theme.IdeaWhirlTheme
-import com.mohamedrejeb.richeditor.model.rememberRichTextState
-import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
-import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults.richTextEditorColors
 import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,12 +88,16 @@ fun NoteListScreen(
         },
         modifier = modifier
     ) { innerPadding ->
-        val screenModifier = Modifier.padding(innerPadding)
+        val screenModifier = Modifier.padding(
+            innerPadding.calculateStartPadding(LayoutDirection.Ltr),
+            innerPadding.calculateTopPadding(),
+            innerPadding.calculateEndPadding(LayoutDirection.Ltr),
+            0.dp,
+        )
         NoteListScreenContent(
             notes = notes,
             tags = tags,
             selectedTags = selectedTags,
-            onToCreateNote = onToCreateNote,
             onDeleteNote = onDeleteNote,
             onAddTagOption = onAddTagOption,
             onRemoveTagOption = onRemoveTagOption,
@@ -114,7 +113,6 @@ fun NoteListScreenContent(
     notes: List<Note>,
     tags: List<String>,
     selectedTags: List<String>,
-    onToCreateNote: () -> Unit,
     onDeleteNote: (Note) -> Unit,
     onAddTagOption: (String) -> Unit,
     onRemoveTagOption: (String) -> Unit,
@@ -139,12 +137,11 @@ fun NoteListScreenContent(
             onToNote = onToNote,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
+                .padding(top = 8.dp, start = 8.dp, end = 8.dp),
         )
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoteList(
     notes: List<Note>,

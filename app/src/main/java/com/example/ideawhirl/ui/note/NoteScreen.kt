@@ -1,6 +1,5 @@
 package com.example.ideawhirl.ui.note
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -135,7 +134,6 @@ fun NoteScreen(
         if (requestingFocusRTE) {
             requestingFocusRTE = false
             LaunchedEffect(Unit) {
-                Log.d("NoteScreen", "requesting focus")
                 focusRequesterRTE.requestFocus()
             }
         }
@@ -702,7 +700,6 @@ private fun EditField(
     }
 
     LaunchedEffect(Unit) {
-        Log.d("NoteScreen: EditField", "requesting focus")
         focusRequester.requestFocus()
     }
 }

@@ -9,7 +9,7 @@ data class Note(
     val detail: String,
     val tags: Set<String>,
     val uid: Int = 0,
-    val createdAt: Date? = null,
+    val updatedAt: Date? = null,
     val palette: NotePalette = NotePalette.random(),
     val drawingData: DrawingData = DrawingData.emptyData(),
 ) {
@@ -19,7 +19,7 @@ data class Note(
             detail = "",
             tags = emptySet(),
             uid = 0,
-            createdAt = null,
+            updatedAt = null,
             palette = NotePalette.PALETTE_0,
             drawingData = DrawingData.emptyData(),
         )

@@ -19,7 +19,7 @@ data class NoteEntity(
 
     val name: String,
     val detail: String = "",
-    val createdAt: Date = Date(),
+    val updatedAt: Date = Date(),
     val paletteId: Int,
 ) {
     val uid get() = _uid

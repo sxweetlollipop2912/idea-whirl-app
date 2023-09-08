@@ -163,7 +163,7 @@ fun HomeScreen(
                             modifier = Modifier.weight(1f),
                         )
                         Text(
-                            formatDate(note!!.createdAt!!),
+                            formatDate(note!!.updatedAt!!),
                             style = MaterialTheme.typography.bodySmall.copy(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

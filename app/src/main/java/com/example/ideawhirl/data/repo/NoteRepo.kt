@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.util.Date
 
 class NoteRepo(val database: LocalDatabase, val context: Context) {
     init {
@@ -95,7 +96,7 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
                 uid = entry.key.uid,
                 name = entry.key.name,
                 detail = entry.key.detail,
-                createdAt = entry.key.createdAt,
+                updatedAt = entry.key.updatedAt,
                 tags = entry.value.map { it.name }.toSet(),
                 palette = NotePalette.fromId(entry.key.paletteId),
                 drawingData = loadOrCreateDrawingData(entry.key.uid)
@@ -104,6 +105,7 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
         }
     }
 
+    /** Does not handle creating a new drawing data file **/
     suspend fun insert(note: Note): Note {
         val noteEntity = NoteEntity(
             name = note.name,
@@ -113,7 +115,6 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
         val noteId = database.noteDao().insert(noteEntity)[0]
         val tagEntities = note.tags.map { TagEntity(noteId = noteId.toInt(), it) }
         database.tagDao().insert(*tagEntities.toTypedArray())
-        /* TODO: Save drawing data into file */
 
         return findNoteByUid(noteId.toInt()).first()
     }
@@ -123,13 +124,14 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
             _uid = note.uid,
             name = note.name,
             detail = note.detail,
-            createdAt = note.createdAt!!,
+            updatedAt = note.updatedAt!!,
             paletteId = note.palette.id,
         )
         /* TODO: Delete drawing file */
         database.noteDao().delete(noteEntity)
     }
 
+    /** Does not handle drawing data update **/
     suspend fun update(note: Note) {
         val oldTags = database.tagDao().findTagsByNoteId(note.uid)
         oldTags.first().forEach {
@@ -144,10 +146,9 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
             _uid = note.uid,
             name = note.name,
             detail = note.detail,
-            createdAt = note.createdAt!!,
+            updatedAt = Date(),
             paletteId = note.palette.id,
         )
-        /* TODO: Update drawing data into file */
         database.noteDao().update(noteEntity)
     }
 
@@ -199,6 +200,7 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
         }
     }
 
+    /** Does not handle update for updateAt in NoteEntity table **/
     fun saveDrawingData(uid: Int, drawingData: DrawingData) {
         val filename = getDrawingFilename(uid)
 

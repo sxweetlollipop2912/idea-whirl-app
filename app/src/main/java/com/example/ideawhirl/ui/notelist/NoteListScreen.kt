@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material.icons.Icons
@@ -250,32 +251,36 @@ fun NoteListItem(
                 )
             }
             if (isMenuOpened) {
-                DropdownMenu(
-                    expanded = isMenuOpened,
-                    onDismissRequest = { isMenuOpened = false },
-                    modifier = Modifier.align(Alignment.BottomEnd)
+                MaterialTheme(
+                    shapes = MaterialTheme.shapes.copy(extraSmall = MaterialTheme.shapes.medium)
                 ) {
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = "Delete",
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MaterialTheme.colorScheme.onSurface
+                    DropdownMenu(
+                        expanded = isMenuOpened,
+                        onDismissRequest = { isMenuOpened = false },
+                        modifier = Modifier.align(Alignment.BottomEnd)
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = "Delete",
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.error
+                                    )
                                 )
-                            )
-                        },
-                        onClick = {
-                            onDeleteNote.invoke(note)
-                            isMenuOpened = false
-                        }
-                    )
+                            },
+                            onClick = {
+                                onDeleteNote.invoke(note)
+                                isMenuOpened = false
+                            },
+                            modifier = Modifier.wrapContentSize()
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteListItemPreview(
     note: Note,

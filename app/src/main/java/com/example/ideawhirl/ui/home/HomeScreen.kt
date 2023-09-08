@@ -12,8 +12,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -22,6 +24,7 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -60,6 +63,7 @@ import com.example.ideawhirl.ShakeEventListener
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.ui.components.ShakeText
 import com.example.ideawhirl.ui.components.TagFilter
+import com.example.ideawhirl.ui.formatDate
 import com.example.ideawhirl.ui.notelist.NoteListItemPreview
 import kotlinx.coroutines.launch
 
@@ -129,13 +133,42 @@ fun HomeScreen(
             if (note != null)
                 Card(
                     modifier = Modifier
-                        .wrapContentSize(),
+                        .height(300.dp)
+                        .fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
+                    onClick = { onToNote(note!!.uid) },
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 1.5.dp,
+                    ),
                 ) {
-                    NoteListItemPreview(
-                        modifier = Modifier.padding(16.dp),
-                        onItemClick = { onToNote(note!!.uid) },
-                        note = note!!
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(note!!.palette.variant.copy(
+                                alpha = 0.3f
+                            ))
+                            .padding(16.dp),
+                    ) {
+                        Text(
+                            note!!.name, style = MaterialTheme.typography.titleMedium.copy(
+                                color = note!!.palette.onEmphasis
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        NoteListItemPreview(
+                            note = note!!,
+                            onItemClick = { onToNote(note!!.uid) },
+                            modifier = Modifier.weight(1f),
+                        )
+                        Text(
+                            formatDate(note!!.createdAt!!),
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
+                    }
                 }
             else
                 Card(

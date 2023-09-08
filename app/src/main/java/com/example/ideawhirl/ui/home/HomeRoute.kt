@@ -21,13 +21,17 @@ fun HomeRoute(
     val notes by homeViewModel.notes.collectAsStateWithLifecycle()
 
     HomeScreen(
+        notes = notes,
         onToNote = onToNote,
         onToCreateNote = onToCreateNote,
         onToNoteList = onToNoteList,
         sensorManager = sensorManager,
         tags = tags, // TODO: get tags from database
+        selectedTags = selectedTags,
         getRandomNote = { homeViewModel.getRandomNote() },
-        getRandomNoteWithTag = { tag -> null },
+        onSelectAllTags = homeViewModel::selectAllTags,
+        onAddTagOption = homeViewModel::addTagOption,
+        onRemoveTagOption = homeViewModel::removeTagOption,
         modifier = modifier,
     )
 }

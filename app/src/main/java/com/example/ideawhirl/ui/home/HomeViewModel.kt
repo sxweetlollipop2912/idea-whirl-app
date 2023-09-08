@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
@@ -49,13 +50,28 @@ class HomeViewModel(
     )
 
     fun getRandomNote(): Note? {
-        var randomNote: Note? = null
-        randomNote = if (notes.value.isEmpty()) {
+        val randomNote = if (notes.value.isEmpty()) {
             null
         } else {
             notes.value.random()
         }
         return randomNote
+    }
+
+    fun addTagOption(tag: String) {
+        _selectedTags.update { selectedTags ->
+            selectedTags + tag
+        }
+    }
+
+    fun removeTagOption(tag: String) {
+        _selectedTags.update { selectedTags ->
+            selectedTags - tag
+        }
+    }
+
+    fun selectAllTags() {
+        _selectedTags.update { emptyList() }
     }
 
     companion object {

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -58,24 +59,27 @@ import com.example.ideawhirl.R
 import com.example.ideawhirl.ShakeEventListener
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.ui.components.ShakeText
+import com.example.ideawhirl.ui.components.TagFilter
 import com.example.ideawhirl.ui.notelist.NoteListItemPreview
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    notes: List<Note>,
     onToNote: (Int) -> Unit,
     onToCreateNote: () -> Unit,
     onToNoteList: () -> Unit,
     tags: List<String>,
+    selectedTags: List<String>,
     getRandomNote: () -> Note?,
-    getRandomNoteWithTag: (tag: String) -> Note?,
+    onSelectAllTags: () -> Unit,
+    onAddTagOption: (String) -> Unit,
+    onRemoveTagOption: (String) -> Unit,
     sensorManager: SensorManager,
     modifier: Modifier = Modifier,
 ) {
     val animatableRotation = remember { Animatable(0f) }
-    var currentTag by remember { mutableStateOf("") }
-    var showTagsDialog by remember { mutableStateOf(false) }
     var showNote by remember { mutableStateOf(false) }
     var note by remember { mutableStateOf<Note?>(null) }
     val composition by rememberLottieComposition(
@@ -109,7 +113,7 @@ fun HomeScreen(
                 clipSpec = LottieClipSpec.Progress(0f, 0.5f),
             )
             showNote = true
-            note = if (currentTag != "") getRandomNoteWithTag(currentTag) else getRandomNote()
+            note = getRandomNote()
             animatableBox.animate(
                 composition = composition,
                 iterations = 1,
@@ -146,19 +150,6 @@ fun HomeScreen(
                 }
         }
     }
-    if (showTagsDialog) {
-        TagsDialog(
-            tags = tags,
-            currentTag = currentTag,
-            onSelect = { selected ->
-                currentTag = selected
-                showTagsDialog = false
-            },
-            onDismiss = {
-                showTagsDialog = false
-            }
-        )
-    }
     // A surface container using the 'background' color from the theme
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -194,11 +185,16 @@ fun HomeScreen(
                         onPressBox = onToNoteList,
                         onStopDrag = getRandomNote
                     )
-                    Tags(
-                        currentTag = currentTag,
-                        onRequestTags = {
-                            showTagsDialog = true
-                        }
+                    Text(
+                        text = "Number of ideas: ${notes.size}"
+                    )
+                    TagFilter(
+                        tags = tags,
+                        selectedTags = selectedTags,
+                        onSelectAllTags = onSelectAllTags,
+                        onAddTagOption = onAddTagOption,
+                        onRemoveTagOption = onRemoveTagOption,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     )
                 }
             }

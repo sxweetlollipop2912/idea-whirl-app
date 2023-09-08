@@ -12,7 +12,7 @@ import com.example.ideawhirl.ui.theme.NotePalette
 
 @Composable
 fun ShakeText() {
-    val text = "shake !!"
+    val text = "  shake !!"
     val colors = NotePalette.values().filter { it.id != 0 }.map { listOf(it.main).random() }
     val colorText = buildAnnotatedString {
         text.forEachIndexed { index, c ->

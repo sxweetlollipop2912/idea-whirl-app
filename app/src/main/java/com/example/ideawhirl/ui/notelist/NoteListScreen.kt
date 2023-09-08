@@ -41,11 +41,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.ui.components.TagFilter
+import com.example.ideawhirl.ui.components.drawing_board.PreviewDisplayBoard
 import com.example.ideawhirl.ui.formatDate
 import com.example.ideawhirl.ui.theme.IdeaWhirlTheme
 import dev.jeziellago.compose.markdowntext.MarkdownText
@@ -54,6 +56,7 @@ import dev.jeziellago.compose.markdowntext.MarkdownText
 @Composable
 fun NoteListScreen(
     notes: List<Note>,
+    availableStrokeColors: List<Color>,
     tags: List<String>,
     selectedTags: List<String>,
 
@@ -106,6 +109,7 @@ fun NoteListScreen(
         )
         NoteListScreenContent(
             notes = notes,
+            availableStrokeColors = availableStrokeColors,
             tags = tags,
             selectedTags = selectedTags,
             onDeleteNote = onDeleteNote,
@@ -121,6 +125,7 @@ fun NoteListScreen(
 @Composable
 fun NoteListScreenContent(
     notes: List<Note>,
+    availableStrokeColors: List<Color>,
     tags: List<String>,
     selectedTags: List<String>,
     onDeleteNote: (Note) -> Unit,
@@ -143,6 +148,7 @@ fun NoteListScreenContent(
         )
         NoteList(
             notes = notes,
+            availableStrokeColors = availableStrokeColors,
             onDeleteNote = onDeleteNote,
             onToNote = onToNote,
             modifier = Modifier
@@ -155,6 +161,7 @@ fun NoteListScreenContent(
 @Composable
 fun NoteList(
     notes: List<Note>,
+    availableStrokeColors: List<Color>,
     onDeleteNote: (Note) -> Unit,
     onToNote: (Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -171,6 +178,7 @@ fun NoteList(
         ) { index ->
             NoteListItem(
                 note = notes[index],
+                availableStrokeColors = availableStrokeColors,
                 onDeleteNote = onDeleteNote,
                 onItemClick = { onToNote(notes[index].uid) },
                 modifier = Modifier.height(if (index == 0 || index == notes.size - 1) 150.dp else 200.dp)
@@ -183,6 +191,7 @@ fun NoteList(
 @Composable
 fun NoteListItem(
     note: Note,
+    availableStrokeColors: List<Color>,
     onDeleteNote: (Note) -> Unit,
     onItemClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -221,6 +230,11 @@ fun NoteListItem(
                         note.name, style = MaterialTheme.typography.titleSmall.copy(
                             color = MaterialTheme.colorScheme.onSurface
                         )
+                    )
+                    PreviewDisplayBoard(
+                        drawingData = note.drawingData,
+                        availableStrokeColors = availableStrokeColors,
+                        backgroundColor = note.palette.background
                     )
                     NoteListItemPreview(
                         note = note,
@@ -317,6 +331,7 @@ fun PreviewNoteListItem() {
             ),
             onDeleteNote = {},
             onItemClick = {},
+            availableStrokeColors = listOf(Color.Red, Color.Blue),
         )
     }
 }

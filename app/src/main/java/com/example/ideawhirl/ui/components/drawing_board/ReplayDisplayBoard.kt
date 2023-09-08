@@ -3,7 +3,9 @@ package com.example.ideawhirl.ui.components.drawing_board
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,6 +27,13 @@ fun DisplayBoard(
     availableStrokeColors: List<Color>,
     backgroundColor: Color,
 ) {
+    if (paths.isEmpty()) {
+        return Canvas(modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor)
+            .clickable { onEditRequested() }) {
+        }
+    }
     var playAnimation by remember { mutableStateOf(true) }
     var currentSegment by remember { mutableStateOf(0) }
     var currentDrawingPath by remember { mutableStateOf(0) }
@@ -68,7 +77,7 @@ fun DisplayBoard(
         .fillMaxSize()
         .background(backgroundColor)
         .clickable { onEditRequested() }) {
-        for (i in 0 .. currentDrawingPath) {
+        for (i in 0..currentDrawingPath) {
             val pathColorIndex = paths[i].strokeColorIndex() ?: -1
             val pathColor = if (pathColorIndex == -1) {
                 backgroundColor

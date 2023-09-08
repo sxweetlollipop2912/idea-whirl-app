@@ -33,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.ideawhirl.model.NotePalette
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +43,6 @@ fun TagListWithAdd(
     isEditingNote: Boolean,
     onTagUpdated: (String, String) -> Unit,
     onTagRemoved: (String) -> Unit,
-    palette: NotePalette,
     contentHorizontalPadding: Dp = 0.dp,
     addButtonRemove: Boolean = false,
     modifier: Modifier = Modifier,
@@ -65,8 +63,8 @@ fun TagListWithAdd(
                     onClick = onAddClick,
                     shape = CircleShape,
                     colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = palette.variant,
-                        contentColor = palette.onVariant
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
                     ),
                     modifier = Modifier
                         .size(32.dp),
@@ -90,8 +88,8 @@ fun TagListWithAdd(
                             isEditingTag = true
                         }
                     },
-                    selectedContainerColor = palette.variant,
-                    selectedContentColor = palette.onVariant,
+                    selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                    selectedContentColor = MaterialTheme.colorScheme.onSecondary,
                 )
                 if (isEditingTag) {
                     AlertDialog(
@@ -114,11 +112,11 @@ fun TagListWithAdd(
                                     },
 
                                     colors = TextFieldDefaults.textFieldColors(
-                                        cursorColor = palette.main,
-                                        focusedIndicatorColor = palette.main,
+                                        cursorColor = MaterialTheme.colorScheme.primary,
+                                        focusedIndicatorColor = MaterialTheme.colorScheme.primary,
                                         selectionColors = TextSelectionColors(
-                                            handleColor = palette.main,
-                                            backgroundColor = palette.variant,
+                                            handleColor = MaterialTheme.colorScheme.primary,
+                                            backgroundColor = MaterialTheme.colorScheme.secondary,
                                         )
                                     )
                                 )
@@ -136,8 +134,8 @@ fun TagListWithAdd(
                                                 onTagPillClick = {
                                                     newTag = globalTag
                                                 },
-                                                selectedContainerColor = palette.variant,
-                                                selectedContentColor = palette.onVariant,
+                                                selectedContainerColor = MaterialTheme.colorScheme.secondary,
+                                                selectedContentColor = MaterialTheme.colorScheme.onSecondary,
                                             )
                                         }
                                     }
@@ -154,7 +152,7 @@ fun TagListWithAdd(
                                 Text(
                                     text = "OK",
                                     style = MaterialTheme.typography.labelLarge,
-                                    color = palette.onEmphasis
+                                    color = MaterialTheme.colorScheme.inversePrimary
                                 )
                             }
                         },
@@ -181,7 +179,7 @@ fun TagListWithAdd(
                                 Text(
                                     text = "Cancel",
                                     style = MaterialTheme.typography.labelLarge,
-                                    color = palette.onEmphasis
+                                    color = MaterialTheme.colorScheme.inversePrimary
                                 )
                             }
                         }

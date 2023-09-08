@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.ideawhirl.ui.components.drawing_board.DrawingData
 import com.example.ideawhirl.data.repo.NoteRepo
 import com.example.ideawhirl.model.Note
-import com.example.ideawhirl.model.NotePalette
+import com.example.ideawhirl.ui.theme.NotePalette
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 data class NoteUiState(
     val isLoading: Boolean,
@@ -29,13 +30,16 @@ data class NoteState(
     val note: Note,
 ) {
     companion object {
-        fun dummy() = NoteState(
+        fun createNew() = NoteState(
             note = Note(
                 name = "Untitled",
                 detail = "",
                 tags = emptySet(),
                 palette = NotePalette.random(),
             )
+        )
+        fun dummy() = NoteState(
+            note = Note.dummy()
         )
     }
 }
@@ -44,6 +48,9 @@ class NoteViewModel(
     private val noteId: Int,
     private val repository: NoteRepo,
 ): ViewModel() {
+    val currentNoteId: Int
+        get() = _noteState.value.note.uid
+
     private val createNote: Boolean
         get() = noteId == -1
 
@@ -73,7 +80,7 @@ class NoteViewModel(
 
     init {
         if (createNote) {
-            _noteState.update { NoteState.dummy() }
+            _noteState.update { NoteState.createNew() }
         } else {
             _uiState.update { it.copy(isLoading = true) }
             viewModelScope.launch {
@@ -140,17 +147,14 @@ class NoteViewModel(
 
     fun onSave() {
         if (createNote) {
-            viewModelScope.launch {
-                val noteCreated = repository.insert(
-                    _noteState.value.note,
-                )
+            // run blocking to make sure noteId is available before doing other stuff
+            runBlocking {
+                val noteCreated = repository.insert(_noteState.value.note)
                 _noteState.update { NoteState(noteCreated) }
             }
         } else {
             viewModelScope.launch {
-                repository.update(
-                    _noteState.value.note,
-                )
+                repository.update(_noteState.value.note)
                 _noteState.update { NoteState(repository.findNoteByUid(noteId).first()) }
             }
         }

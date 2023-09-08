@@ -13,7 +13,7 @@ import com.example.ideawhirl.ui.home.HomeRoute
 import com.example.ideawhirl.ui.home.HomeViewModel
 import com.example.ideawhirl.ui.note.NoteRoute
 import com.example.ideawhirl.ui.note.NoteViewModel
-import com.example.ideawhirl.ui.noteDrawdraw.NoteDrawViewModel
+import com.example.ideawhirl.ui.notedraw.NoteDrawViewModel
 import com.example.ideawhirl.ui.notedraw.NoteDrawRoute
 import com.example.ideawhirl.ui.notelist.NoteListRoute
 import com.example.ideawhirl.ui.notelist.NoteListViewModel
@@ -80,7 +80,7 @@ fun ThisNavGraph(
                 )
                 NoteRoute(
                     noteViewModel = noteViewModel,
-                    onToNoteDraw = { thisNavController.navigateToNoteDraw(navBackStackEntry, id) },
+                    onToNoteDraw = { thisNavController.navigateToNoteDraw(navBackStackEntry, noteViewModel.currentNoteId) },
                     onBack = { thisNavController.popBackStack() }
                 )
             } else {

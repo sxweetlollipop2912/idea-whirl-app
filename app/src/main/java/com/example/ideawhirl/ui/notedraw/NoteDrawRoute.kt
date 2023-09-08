@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ideawhirl.ui.theme.DrawingColor
 
 @Composable
 fun NoteDrawRoute(
@@ -11,13 +12,12 @@ fun NoteDrawRoute(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val availableColors = noteDrawViewModel.availableColors
     val palette by noteDrawViewModel.palette.collectAsStateWithLifecycle()
     val drawingData by noteDrawViewModel.drawingData.collectAsStateWithLifecycle()
     val drawingConfig by noteDrawViewModel.drawingConfig.collectAsStateWithLifecycle()
 
     NoteDrawScreen(
-        availableColors = availableColors,
+        availableColors = DrawingColor.toColorList(),
         palette = palette,
         drawingData = drawingData,
         onUpdateDrawingData = noteDrawViewModel::onUpdateDrawingData,

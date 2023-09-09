@@ -24,7 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -197,9 +197,11 @@ fun HomeScreen(
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = onToCreateNote,
-                        shape = MaterialTheme.shapes.small
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        shape = MaterialTheme.shapes.small,
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = "Add new idea")
+                        Icon(Icons.Rounded.Add, contentDescription = "create new note")
                     }
                 }
             ) { innerPadding ->

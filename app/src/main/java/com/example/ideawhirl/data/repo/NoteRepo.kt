@@ -11,76 +11,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.Date
 
 class NoteRepo(val database: LocalDatabase, val context: Context) {
-    init {
-        runBlocking {
-            insertMockNote()
-        }
-    }
-
-    suspend fun insertMockNote() {
-        this.insert(
-            Note(
-                name = "test note 1",
-                detail = "test detail",
-                tags = setOf("tag 1", "tag 2")
-            )
-        )
-        this.insert(
-            Note(
-                name = "test note 2",
-                detail = "test detail 2",
-                tags = setOf("tag 3", "tag 4", "long tag 5", "long tag 6")
-            )
-        )
-        this.insert(
-            Note(
-                name = "test note 3",
-                detail = "test detail",
-                tags = setOf("tag 1", "tag 2")
-            )
-        )
-        this.insert(
-            Note(
-                name = "test note 4",
-                detail = "test detail 2",
-                tags = setOf("tag 3", "tag 4", "long tag 5", "long tag 6")
-            )
-        )
-        this.insert(
-            Note(
-                name = "test note 3",
-                detail = "test detail",
-                tags = setOf("tag 1", "tag 2")
-            )
-        )
-        this.insert(
-            Note(
-                name = "test note 4",
-                detail = "test detail 2",
-                tags = setOf("tag 3", "tag 4", "long tag 5", "long tag 6")
-            )
-        )
-        this.insert(
-            Note(
-                name = "test note 3",
-                detail = "test detail",
-                tags = setOf("tag 1", "tag 2")
-            )
-        )
-        this.insert(
-            Note(
-                name = "test note 4",
-                detail = "test detail 2",
-                tags = setOf("tag 3", "tag 4", "long tag 5", "long tag 6")
-            )
-        )
-    }
     fun getAll(): Flow<List<Note>> {
         val entities = database.noteDao().getAllNotesWithTags()
         return entities.map { noteEntityMapToNote(it) }

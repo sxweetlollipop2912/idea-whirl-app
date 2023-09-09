@@ -127,7 +127,7 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
             updatedAt = note.updatedAt!!,
             paletteId = note.palette.id,
         )
-        /* TODO: Delete drawing file */
+        context.deleteFile(getDrawingFilename(note.uid))
         database.noteDao().delete(noteEntity)
     }
 

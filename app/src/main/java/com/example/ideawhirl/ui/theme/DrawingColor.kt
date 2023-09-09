@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 enum class DrawingColor(val light: Color, val dark: Color, val id: Int) {
-    WHITE(Color(0xFFFFFFFF), Color(0xFFD1D2D2), id = 0),
-    BLACK(Color(0xFF000000), Color(0xFF000000), id = 1),
+    ON_BACKGROUND(Color(0xFF000000), Color(0xFFD1D2D2), id = 0),
+    INVERSE_ON_BACKGROUND(Color(0xFFFFFFFF), Color(0xFF000000), id = 1),
     RED(Color(0xFFFF1F31), Color(0xFFBA1E2B), id = 2),
     ORANGE(Color(0xFFFF8B00), Color(0xFFDD7A04), id = 3),
     YELLOW(Color(0xFFFFD200), Color(0xFFE8C003), id = 4),

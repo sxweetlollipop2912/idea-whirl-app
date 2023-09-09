@@ -60,7 +60,7 @@ class NoteViewModel(
         get() = _noteState.value.note.uid
 
     private val createNote: Boolean
-        get() = noteId <= 0
+        get() = noteId <= 0 && _noteId == -1
 
     private val _uiState = MutableStateFlow(
         NoteUiState(

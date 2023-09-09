@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -315,9 +314,10 @@ fun NoteListItem(
                                 )
                             },
                             onClick = {
+                                val content = "# ${note.name}\n\n${note.detail}"
                                 val sendIntent: Intent = Intent().apply {
                                     action = Intent.ACTION_SEND
-                                    putExtra(Intent.EXTRA_TEXT, note.detail)
+                                    putExtra(Intent.EXTRA_TEXT, content)
                                     type = "text/plain"
                                 }
 

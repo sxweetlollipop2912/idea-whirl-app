@@ -17,9 +17,6 @@ import kotlinx.coroutines.launch
 class NoteListViewModel(
     private val repository: NoteRepo,
 ) : ViewModel() {
-
-    val availableColors = repository.getAvailableColors()
-
     // emptyList means all tags are selected
     private val _tagOptions = MutableStateFlow(
         emptyList<String>()

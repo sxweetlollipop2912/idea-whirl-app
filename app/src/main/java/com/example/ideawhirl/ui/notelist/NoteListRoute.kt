@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ideawhirl.ui.theme.DrawingColor
 
 @Composable
 fun NoteListRoute(
@@ -16,11 +17,10 @@ fun NoteListRoute(
     val notes by noteListViewModel.notes.collectAsStateWithLifecycle()
     val tags by noteListViewModel.tags.collectAsStateWithLifecycle()
     val selectedTags by noteListViewModel.selectedTags.collectAsStateWithLifecycle()
-    val availableColors = noteListViewModel.availableColors
 
     NoteListScreen(
         notes = notes,
-        availableStrokeColors = availableColors,
+        availableStrokeColors = DrawingColor.toColorList(),
         tags = tags,
         selectedTags = selectedTags,
 

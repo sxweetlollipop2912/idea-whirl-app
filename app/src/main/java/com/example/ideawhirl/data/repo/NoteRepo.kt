@@ -1,7 +1,6 @@
 package com.example.ideawhirl.data.repo
 
 import android.content.Context
-import androidx.compose.ui.graphics.Color
 import com.example.ideawhirl.ui.components.drawing_board.DrawingData
 import com.example.ideawhirl.data.data_source.LocalDatabase
 import com.example.ideawhirl.data.data_source.NoteEntity
@@ -211,20 +210,5 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
         context.openFileOutput(filename, Context.MODE_PRIVATE).use {
             it.write(Json.encodeToString(drawingData).toByteArray())
         }
-    }
-
-    fun getAvailableColors(): List<Color> {
-        return listOf(
-            Color(0XFFFF1F31),
-            Color(0XFFFF8B00),
-            Color(0XFFFFD200),
-            Color(0XFF00C344),
-            Color(0XFF456EFE),
-            Color(0XFF8C5AFF),
-            Color(0XFFFF7AAD),
-            Color(0XFFAA7942),
-            Color(0xFF000000),
-            Color(0xFFFFFFFF),
-        )
     }
 }

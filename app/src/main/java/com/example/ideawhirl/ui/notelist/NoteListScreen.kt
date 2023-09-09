@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -181,7 +182,7 @@ fun NoteList(
                 availableStrokeColors = availableStrokeColors,
                 onDeleteNote = onDeleteNote,
                 onItemClick = { onToNote(notes[index].uid) },
-                modifier = Modifier.height(if (index == 0 || index == notes.size - 1) 150.dp else 200.dp)
+                modifier = Modifier.height(200.dp)
             )
         }
     }
@@ -231,17 +232,29 @@ fun NoteListItem(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     )
-                    PreviewDisplayBoard(
-                        drawingData = note.drawingData,
-                        availableStrokeColors = availableStrokeColors,
-                        backgroundColor = note.palette.background,
-                        height = 100.dp
-                    )
-                    NoteListItemPreview(
-                        note = note,
-                        onItemClick = onItemClick,
-                        modifier = Modifier.weight(1f),
-                    )
+                    if (note.drawingData.isEmpty()) {
+                        NoteListItemPreview(
+                            note = note,
+                            onItemClick = onItemClick,
+                            modifier = Modifier.weight(1f),
+                        )
+                    } else {
+                        Column(
+                            modifier = Modifier.weight(1f).padding(bottom = 8.dp),
+                        ) {
+                            NoteListItemPreview(
+                                note = note,
+                                onItemClick = onItemClick,
+                                modifier = Modifier.weight(1f),
+                            )
+                            PreviewDisplayBoard(
+                                drawingData = note.drawingData,
+                                availableStrokeColors = availableStrokeColors,
+                                backgroundColor = note.palette.background,
+                                height = 60.dp
+                            )
+                        }
+                    }
                     Text(
                         formatDate(note.updatedAt!!),
                         style = MaterialTheme.typography.bodySmall.copy(

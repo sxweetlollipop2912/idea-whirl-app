@@ -1,11 +1,10 @@
 package com.example.ideawhirl.ui.components.drawing_board
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -94,7 +93,9 @@ fun StrokeWidthBox(
                 onDismissRequest = { onCollapsed() },
                 alignment = Alignment.BottomCenter
             ) {
-                Column {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
                     val strokes = (strokeList - currentStrokeWidth).toMutableList()
                     strokes.add(currentStrokeWidth)
                     strokes.forEach {
@@ -127,7 +128,6 @@ fun StrokeWidthBox(
                                     },
                             )
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
@@ -173,7 +173,9 @@ fun EraserWidthBox(
                 onDismissRequest = { onCollapsed() },
                 alignment = Alignment.BottomCenter
             ) {
-                Column {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
                     val strokes = (strokeList - currentEraserWidth).toMutableList()
                     strokes.add(currentEraserWidth)
                     strokes.forEach {
@@ -199,7 +201,6 @@ fun EraserWidthBox(
                                 },
                             )
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }

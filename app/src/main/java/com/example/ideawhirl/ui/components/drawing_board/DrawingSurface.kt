@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke as CanvasStroke
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import kotlin.math.abs
 
@@ -50,9 +51,6 @@ fun DrawingSurface(
                     MotionEvent.Idle -> {
                         currentPosition = Offset.Unspecified
                         previousPosition = Offset.Unspecified
-                        if (currentPointerId != null) {
-                            currentPointerId == null
-                        }
                         val change = awaitFirstDown()
                         currentPosition = Offset(change.position.x, change.position.y)
                         currentPointerId = change.id
@@ -118,11 +116,10 @@ fun DrawingSurface(
     Canvas(modifier = canvasModifier) {
         val paths = drawingData.paths
         if (drawingData.canvasSizeX == null) {
-            Log.d("DrawingSurface", "Add canvas size: ${size}")
             onDrawingDataChanged(
                 drawingData.copy(
-                    canvasSizeX = size.width,
-                    canvasSizeY = size.height
+                    canvasSizeX = size.width.toDp().value,
+                    canvasSizeY = size.height.toDp().value,
                 )
             )
         }

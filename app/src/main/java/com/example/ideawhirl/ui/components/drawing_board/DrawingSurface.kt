@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -20,13 +21,14 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke as CanvasStroke
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import kotlin.math.abs
 
 @Composable
 fun DrawingSurface(
-    paths: List<Stroke>,
-    onPathsChanged: (List<Stroke>) -> Unit,
+    drawingData: DrawingData,
+    onDrawingDataChanged: (DrawingData) -> Unit,
     availableStrokeColors: List<Color>,
     backgroundColor: Color,
     drawingConfig: DrawingConfig,
@@ -35,7 +37,7 @@ fun DrawingSurface(
     var currentPosition by remember { mutableStateOf(Offset.Unspecified) }
     var previousPosition by remember { mutableStateOf(Offset.Unspecified) }
     var currentPointerId: PointerId? by remember { mutableStateOf(null) }
-    var currentPath: Stroke? by remember(key1 = paths) {
+    var currentPath: Stroke? by remember(key1 = drawingData.paths) {
         mutableStateOf(
             null
         )
@@ -43,15 +45,12 @@ fun DrawingSurface(
     val canvasModifier = Modifier
         .fillMaxSize()
         .background(backgroundColor)
-        .pointerInput(currentPosition, motionEvent, paths, drawingConfig) {
+        .pointerInput(currentPosition, motionEvent, drawingData.paths, drawingConfig) {
             awaitEachGesture {
                 when (motionEvent) {
                     MotionEvent.Idle -> {
                         currentPosition = Offset.Unspecified
                         previousPosition = Offset.Unspecified
-                        if (currentPointerId != null) {
-                            currentPointerId == null
-                        }
                         val change = awaitFirstDown()
                         currentPosition = Offset(change.position.x, change.position.y)
                         currentPointerId = change.id
@@ -107,16 +106,25 @@ fun DrawingSurface(
                         currentPosition = Offset.Unspecified
                         previousPosition = Offset.Unspecified
                         motionEvent = MotionEvent.Idle
-                        var newPaths = paths
+                        var newPaths = drawingData.paths
                         newPaths += (currentPath!!)
-                        onPathsChanged(newPaths)
+                        onDrawingDataChanged(drawingData.copy(paths = newPaths))
                     }
                 }
             }
         }
     Canvas(modifier = canvasModifier) {
+        val paths = drawingData.paths
+        if (drawingData.canvasSizeX == null) {
+            onDrawingDataChanged(
+                drawingData.copy(
+                    canvasSizeX = size.width.toDp().value,
+                    canvasSizeY = size.height.toDp().value,
+                )
+            )
+        }
         val pathColor = { path: Stroke ->
-            val pathColorIndex = path!!.strokeColorIndex() ?: -1
+            val pathColorIndex = path.strokeColorIndex() ?: -1
             if (pathColorIndex == -1) {
                 backgroundColor
             } else {

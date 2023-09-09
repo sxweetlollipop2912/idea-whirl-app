@@ -1,5 +1,6 @@
 package com.example.ideawhirl.ui.components.drawing_board
 
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -72,6 +73,7 @@ class DrawingPath(
     private val strokeWidth: StrokeWidth,
     val strokeColorIndex: Int,
 ) : Stroke() {
+
     override fun strokeWidth(): Float {
         return strokeWidth.toFloat()
     }

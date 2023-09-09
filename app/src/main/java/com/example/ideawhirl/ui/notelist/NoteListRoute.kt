@@ -16,9 +16,11 @@ fun NoteListRoute(
     val notes by noteListViewModel.notes.collectAsStateWithLifecycle()
     val tags by noteListViewModel.tags.collectAsStateWithLifecycle()
     val selectedTags by noteListViewModel.selectedTags.collectAsStateWithLifecycle()
+    val availableColors = noteListViewModel.availableColors
 
     NoteListScreen(
         notes = notes,
+        availableStrokeColors = availableColors,
         tags = tags,
         selectedTags = selectedTags,
 

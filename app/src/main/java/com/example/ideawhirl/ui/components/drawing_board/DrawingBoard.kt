@@ -74,15 +74,15 @@ fun DrawingBoard(
         }) {
         if (!inViewMode) {
             DrawingSurface(
-                drawingData.paths,
-                { newPaths -> onUpdateDrawingData(DrawingData(newPaths)) },
+                drawingData,
+                { newData -> onUpdateDrawingData(newData) },
                 availableStrokeColors,
                 backgroundColor,
                 drawingConfig = drawingConfig,
             )
         } else {
-            DisplayBoard(
-                drawingData.paths,
+            ReplayableDisplayBoard(
+                drawingData,
                 { inViewMode = false },
                 availableStrokeColors,
                 backgroundColor
@@ -175,7 +175,7 @@ fun DrawingBoard(
                     if (!inViewMode && isToolBarExpanded) {
                         DrawingToolButton(
                             onClick = {
-                                onUpdateDrawingData(DrawingData(listOf()))
+                                onUpdateDrawingData(DrawingData(listOf(), null, null))
                             }
                         ) {
                             Icon(
@@ -186,7 +186,13 @@ fun DrawingBoard(
                         }
                         DrawingToolButton(
                             onClick = {
-                                onUpdateDrawingData(DrawingData(drawingData.paths.dropLast(1)))
+                                onUpdateDrawingData(
+                                    drawingData.copy(
+                                        paths = drawingData.paths.dropLast(
+                                            1
+                                        )
+                                    )
+                                )
                             }
                         ) {
                             Icon(Icons.Outlined.Undo, "Undo")

@@ -3,9 +3,7 @@ package com.example.ideawhirl.ui.components.drawing_board
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -21,13 +19,13 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DisplayBoard(
-    paths: List<com.example.ideawhirl.ui.components.drawing_board.Stroke>,
+fun ReplayableDisplayBoard(
+    drawingData: DrawingData,
     onEditRequested: () -> Unit,
     availableStrokeColors: List<Color>,
     backgroundColor: Color,
 ) {
-    if (paths.isEmpty()) {
+    if (drawingData.paths.isEmpty()) {
         return Canvas(modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
@@ -40,7 +38,7 @@ fun DisplayBoard(
     var partialPathLists: List<Path> by remember() { mutableStateOf(listOf(Path())) }
     LaunchedEffect(key1 = playAnimation, key2 = currentSegment) {
         if (playAnimation) {
-            val currentPath = paths[currentDrawingPath]
+            val currentPath = drawingData.paths[currentDrawingPath]
             when (currentSegment) {
                 0 -> {
                     partialPathLists.last()
@@ -67,7 +65,7 @@ fun DisplayBoard(
                     partialPathLists += Path()
                 }
             }
-            if (currentDrawingPath >= paths.size) {
+            if (currentDrawingPath >= drawingData.paths.size) {
                 playAnimation = false
                 currentDrawingPath--
             }
@@ -78,7 +76,7 @@ fun DisplayBoard(
         .background(backgroundColor)
         .clickable { onEditRequested() }) {
         for (i in 0..currentDrawingPath) {
-            val pathColorIndex = paths[i].strokeColorIndex() ?: -1
+            val pathColorIndex = drawingData.paths[i].strokeColorIndex() ?: -1
             val pathColor = if (pathColorIndex == -1) {
                 backgroundColor
             } else {
@@ -88,7 +86,7 @@ fun DisplayBoard(
                 color = pathColor,
                 path = partialPathLists[i],
                 style = Stroke(
-                    width = paths[i].strokeWidth().dp.toPx(),
+                    width = drawingData.paths[i].strokeWidth().dp.toPx(),
                     cap = StrokeCap.Round,
                     join = StrokeJoin.Round
                 )

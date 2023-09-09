@@ -19,8 +19,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -204,7 +206,8 @@ fun HomeScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding)
+                        .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -221,14 +224,18 @@ fun HomeScreen(
                     Text(
                         text = "Number of ideas: ${notes.size}"
                     )
-                    TagFilter(
-                        tags = tags,
-                        selectedTags = selectedTags,
-                        onSelectAllTags = onSelectAllTags,
-                        onAddTagOption = onAddTagOption,
-                        onRemoveTagOption = onRemoveTagOption,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        TagFilter(
+                            tags = tags,
+                            selectedTags = selectedTags,
+                            onSelectAllTags = onSelectAllTags,
+                            onAddTagOption = onAddTagOption,
+                            onRemoveTagOption = onRemoveTagOption,
+                        )
+                    }
                 }
             }
         }

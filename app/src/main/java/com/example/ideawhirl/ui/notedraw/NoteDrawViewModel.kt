@@ -23,8 +23,6 @@ class NoteDrawViewModel(
     )
     val drawingData = _drawingData.asStateFlow()
 
-    val availableColors = repository.getAvailableColors()
-
     val palette = repository.findNoteByUid(noteId).map { it.palette }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),

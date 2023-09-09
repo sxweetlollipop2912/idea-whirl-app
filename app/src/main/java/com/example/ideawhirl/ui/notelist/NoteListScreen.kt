@@ -1,5 +1,6 @@
 package com.example.ideawhirl.ui.notelist
 
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +19,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Card
@@ -43,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -82,7 +84,7 @@ fun NoteListScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.Outlined.ArrowBackIosNew,
                             contentDescription = "Back"
                         )
                     }
@@ -199,6 +201,7 @@ fun NoteListItem(
 ) {
     val borderColor = note.palette.main
     var isMenuOpened by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     Box {
         Card(
             modifier = modifier
@@ -299,6 +302,28 @@ fun NoteListItem(
                             onClick = {
                                 onDeleteNote.invoke(note)
                                 isMenuOpened = false
+                            },
+                            modifier = Modifier.wrapContentSize()
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = "Share",
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                )
+                            },
+                            onClick = {
+                                val sendIntent: Intent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, note.detail)
+                                    type = "text/plain"
+                                }
+
+                                val shareIntent = Intent.createChooser(sendIntent, null)
+
+                                context.startActivity(shareIntent)
                             },
                             modifier = Modifier.wrapContentSize()
                         )

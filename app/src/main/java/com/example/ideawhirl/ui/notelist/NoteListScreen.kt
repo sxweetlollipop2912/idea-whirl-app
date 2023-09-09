@@ -234,7 +234,8 @@ fun NoteListItem(
                     PreviewDisplayBoard(
                         drawingData = note.drawingData,
                         availableStrokeColors = availableStrokeColors,
-                        backgroundColor = note.palette.background
+                        backgroundColor = note.palette.background,
+                        height = 100.dp
                     )
                     NoteListItemPreview(
                         note = note,

@@ -80,7 +80,7 @@ fun ThisNavGraph(
                 )
                 NoteRoute(
                     noteViewModel = noteViewModel,
-                    onToNoteDraw = { thisNavController.navigateToNoteDraw(navBackStackEntry, noteViewModel.currentNoteId) },
+                    onToNoteDraw = { thisNavController.navigateToNoteDraw(navBackStackEntry, noteViewModel.noteId) },
                     onBack = { thisNavController.popBackStack() }
                 )
             } else {

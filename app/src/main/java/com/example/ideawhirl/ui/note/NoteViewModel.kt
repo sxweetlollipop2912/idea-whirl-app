@@ -3,7 +3,6 @@ package com.example.ideawhirl.ui.note
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.ideawhirl.ui.components.drawing_board.DrawingData
 import com.example.ideawhirl.data.repo.NoteRepo
 import com.example.ideawhirl.model.Note
 import com.example.ideawhirl.ui.theme.NotePalette
@@ -45,14 +44,23 @@ data class NoteState(
 }
 
 class NoteViewModel(
-    private val noteId: Int,
+    private val _noteId: Int,
     private val repository: NoteRepo,
 ): ViewModel() {
-    val currentNoteId: Int
+    private val _noteState = MutableStateFlow(
+        NoteState.dummy()
+    )
+    val note = _noteState.map { it.note }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        NoteState.dummy().note
+    )
+
+    val noteId: Int
         get() = _noteState.value.note.uid
 
     private val createNote: Boolean
-        get() = noteId == -1
+        get() = noteId <= 0
 
     private val _uiState = MutableStateFlow(
         NoteUiState(
@@ -62,15 +70,6 @@ class NoteViewModel(
         )
     )
     val uiState = _uiState.asStateFlow()
-
-    private val _noteState = MutableStateFlow(
-        NoteState.dummy()
-    )
-    val note = _noteState.map { it.note }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        NoteState.dummy().note
-    )
 
     val globalTags = repository.getALlTagNames().stateIn(
         viewModelScope,
@@ -84,7 +83,7 @@ class NoteViewModel(
         } else {
             _uiState.update { it.copy(isLoading = true) }
             viewModelScope.launch {
-                _noteState.update { NoteState(repository.findNoteByUid(noteId).first()) }
+                _noteState.update { NoteState(repository.findNoteByUid(_noteId).first()) }
                 _uiState.update { it.copy(isLoading = false) }
             }
         }
@@ -133,14 +132,6 @@ class NoteViewModel(
         _noteState.update { it.copy(
             note = it.note.copy(
                 palette = palette
-            )
-        ) }
-    }
-
-    fun onDeleteDrawing() {
-        _noteState.update { it.copy(
-            note = it.note.copy(
-                drawingData = DrawingData.emptyData()
             )
         ) }
     }

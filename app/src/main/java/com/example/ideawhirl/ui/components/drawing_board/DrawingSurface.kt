@@ -37,7 +37,7 @@ fun DrawingSurface(
     var currentPosition by remember { mutableStateOf(Offset.Unspecified) }
     var previousPosition by remember { mutableStateOf(Offset.Unspecified) }
     var currentPointerId: PointerId? by remember { mutableStateOf(null) }
-    var currentPath: Stroke? by remember(key1 = paths) {
+    var currentPath: Stroke? by remember(key1 = drawingData.paths) {
         mutableStateOf(
             null
         )

@@ -8,7 +8,7 @@ import com.example.ideawhirl.data.data_source.NoteDao
 import com.example.ideawhirl.data.data_source.NoteEntity
 import com.example.ideawhirl.data.data_source.TagDao
 import com.example.ideawhirl.data.data_source.TagEntity
-import com.example.ideawhirl.model.NotePalette
+import com.example.ideawhirl.ui.theme.NotePalette
 import junit.framework.TestCase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking

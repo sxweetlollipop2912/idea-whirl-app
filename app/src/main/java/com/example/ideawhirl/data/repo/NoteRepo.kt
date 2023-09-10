@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.Date
@@ -145,5 +146,86 @@ class NoteRepo(val database: LocalDatabase, val context: Context) {
         context.openFileOutput(filename, Context.MODE_PRIVATE).use {
             it.write(Json.encodeToString(drawingData).toByteArray())
         }
+    }
+
+    suspend fun initMockData() {
+        database.tagDao().deleteAll()
+        database.noteDao().deleteAll()
+
+        val longNote = Note(
+            name = "Long Note",
+            detail = "Three steps for blah blah blah:\n" +
+                    "1. step 1\n" +
+                    "2. step 2\n" +
+                    "3. step 3\n" +
+                    "\n" +
+                    "My ideas for blah blah blah:\n" +
+                    "- climb a **tree**\n" +
+                    "- swim to *the end of the world*\n" +
+                    "- run at ~~the sun~~\n" +
+                    "\n" +
+                    "We can use both **bold** and *italic* ***at the same time***.\n" +
+                    "\n" +
+                    "***~~The same to the other things.~~***\n" +
+                    "\n" +
+                    "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Iure id possimus assumenda, reiciendis repudiandae facilis iusto quis animi modi nisi, ducimus quod quam doloremque nesciunt tempora mollitia. Iste, doloribus aliquid.\n" +
+                    "Debitis voluptatibus provident adipisci neque distinctio velit, ex vero. Dignissimos sit commodi ratione possimus voluptatibus nobis voluptatem laboriosam dolor hic. Corrupti eveniet sequi aspernatur, doloribus deserunt necessitatibus voluptatum illum commodi.\n" +
+                    "Vel dolorem hic nulla officia architecto, dolore odio dolor nisi eius qui voluptatibus explicabo optio, aspernatur autem sapiente commodi. Dignissimos quam explicabo sapiente perspiciatis quis voluptate, vitae similique assumenda cumque?\n" +
+                    "Voluptatum, harum ipsam explicabo error minima autem accusantium. Error dicta officiis, placeat, soluta autem assumenda fugit aut facilis distinctio delectus dolores exercitationem laudantium at accusantium odio quam ratione explicabo reiciendis!\n" +
+                    "Eligendi mollitia fugit velit eveniet odio ducimus sed molestias deleniti? Doloribus temporibus eius architecto, est facilis, laborum laudantium provident beatae voluptatibus in, tenetur recusandae expedita harum maiores nemo animi dolorum!",
+            tags = setOf("idea", "study"),
+            palette = NotePalette.PALETTE_1,
+        )
+        val note2 = Note(
+            name = "Note 2",
+            detail = "This is a note",
+            tags = setOf("idea", "study"),
+            palette = NotePalette.PALETTE_2,
+        )
+        val note3 = Note(
+            name = "Note 3",
+            detail = "This is a note",
+            tags = setOf("study", "drawing"),
+            palette = NotePalette.PALETTE_3,
+        )
+        val note4 = Note(
+            name = "Note 4",
+            detail = "This is a note",
+            tags = setOf("hobby", "drawing"),
+            palette = NotePalette.PALETTE_4,
+        )
+        val note5 = Note(
+            name = "Note 5",
+            detail = "This is a note",
+            tags = setOf("idea", "writing"),
+            palette = NotePalette.PALETTE_5,
+        )
+        val note6 = Note(
+            name = "Note 6",
+            detail = "This is a note",
+            tags = setOf("study", "dontwannadoit"),
+            palette = NotePalette.PALETTE_1,
+        )
+        val note7 = Note(
+            name = "Note 7",
+            detail = "This is a note",
+            tags = setOf("study", "idea"),
+            palette = NotePalette.PALETTE_2,
+        )
+        val note8 = Note(
+            name = "Note 8",
+            detail = "This is a note",
+            tags = setOf("hobby", "idea"),
+            palette = NotePalette.PALETTE_3,
+        )
+
+        insert(note8)
+        insert(note7)
+        insert(note6)
+        insert(note5)
+        insert(note4)
+        insert(note3)
+        insert(note2)
+        insert(longNote)
     }
 }

@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    repository: NoteRepo
+    private val repository: NoteRepo
 ) : ViewModel() {
 
     private val _selectedTags = MutableStateFlow(emptyList<String>())
@@ -72,6 +72,12 @@ class HomeViewModel(
 
     fun selectAllTags() {
         _selectedTags.update { emptyList() }
+    }
+
+    fun initMockData() {
+        viewModelScope.launch {
+            repository.initMockData()
+        }
     }
 
     companion object {

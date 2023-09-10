@@ -83,6 +83,7 @@ fun HomeScreen(
     onAddTagOption: (String) -> Unit,
     onRemoveTagOption: (String) -> Unit,
     sensorManager: SensorManager,
+    initMockData: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val animatableRotation = remember { Animatable(0f) }
@@ -213,7 +214,13 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    ShakeText()
+                    Box(
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .clickable { initMockData() }
+                    ) {
+                        ShakeText()
+                    }
                     AnimationBox(
                         modifier = Modifier
                             .size(400.dp),

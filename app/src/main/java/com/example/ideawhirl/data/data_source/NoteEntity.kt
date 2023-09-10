@@ -60,4 +60,7 @@ interface NoteDao {
 
     @Query("select * from noteentity where noteentity.uid = :uid")
     fun findNoteByUid(uid: Int): Flow<NoteEntity>
+
+    @Query("DELETE FROM noteentity")
+    suspend fun deleteAll()
 }

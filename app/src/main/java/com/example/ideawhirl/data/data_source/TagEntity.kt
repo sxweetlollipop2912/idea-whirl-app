@@ -39,4 +39,7 @@ interface TagDao {
 
     @Query("select * from tagentity where tagentity.noteId in (:noteIds)")
     fun findTagsByNoteIds(noteIds: List<Int>): Flow<List<TagEntity>>
+
+    @Query("DELETE FROM tagentity")
+    suspend fun deleteAll()
 }

@@ -32,6 +32,7 @@ fun HomeRoute(
         onSelectAllTags = homeViewModel::selectAllTags,
         onAddTagOption = homeViewModel::addTagOption,
         onRemoveTagOption = homeViewModel::removeTagOption,
+        initMockData = homeViewModel::initMockData,
         modifier = modifier,
     )
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -257,6 +258,7 @@ fun NoteListItem(
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(15.dp))
                     Text(
                         formatDate(note.updatedAt!!),
                         style = MaterialTheme.typography.bodySmall.copy(

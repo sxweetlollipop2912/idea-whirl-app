@@ -1,6 +1,7 @@
 package com.example.ideawhirl.ui.notelist
 
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
@@ -169,8 +172,15 @@ fun NoteList(
     onToNote: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val configuration = LocalConfiguration.current
     LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(2),
+        columns = StaggeredGridCells.Fixed(
+            if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                3
+            } else {
+                2
+            }
+        ),
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalItemSpacing = 16.dp,
@@ -253,7 +263,7 @@ fun NoteListItem(
                             PreviewDisplayBoard(
                                 drawingData = note.drawingData,
                                 availableStrokeColors = availableStrokeColors,
-                                backgroundColor = note.palette.background,
+                                backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(1.5.dp),
                                 height = 60.dp
                             )
                         }
@@ -322,10 +332,10 @@ fun NoteListItem(
                                     putExtra(Intent.EXTRA_TEXT, content)
                                     type = "text/plain"
                                 }
-
                                 val shareIntent = Intent.createChooser(sendIntent, null)
-
                                 context.startActivity(shareIntent)
+
+                                isMenuOpened = false
                             },
                             modifier = Modifier.wrapContentSize()
                         )
